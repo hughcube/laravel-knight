@@ -26,7 +26,7 @@ trait PaginateQuery
     protected function appendPaginateRules($rules = []): array
     {
         $rules['page'] = ['remove_if_empty_string', 'remove_if_null', 'integer', 'min:1', 'remove_if_empty'];
-        $rules['page_size'] = ['remove_if_empty_string', 'remove_if_null', 'integer', 'min:1', 'remove_if_empty'];
+        $rules['page_size'] = ['remove_if_empty_string', 'remove_if_null', 'integer', 'min:1', 'max:1000', 'remove_if_empty'];
 
         return $rules;
     }
