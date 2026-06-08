@@ -26,7 +26,7 @@ trait PaginateQuery
     protected function appendPaginateRules($rules = []): array
     {
         $rules['page'] = ['remove_if_empty_string', 'remove_if_null', 'integer', 'min:1', 'remove_if_empty'];
-        $rules['page_size'] = ['remove_if_empty_string', 'remove_if_null', 'integer', 'min:1', 'max:1000', 'remove_if_empty'];
+        $rules['page_size'] = ['remove_if_empty_string', 'remove_if_null', 'integer', 'min:1', sprintf('max:%d', $this->getMaxPageSize()), 'remove_if_empty'];
 
         return $rules;
     }
@@ -68,7 +68,19 @@ trait PaginateQuery
      */
     protected function getPageSize(): ?int
     {
-        return $this->p()->getInt('page_size') ?: 10;
+        $pageSize = $this->p()->getInt('page_size') ?: 10;
+
+        return min($pageSize, $this->getMaxPageSize());
+    }
+
+    /**
+     * 分页大小的硬上限, 防止单次拉取超大分页. 子类可覆盖调整.
+     *
+     * @return int
+     */
+    protected function getMaxPageSize(): int
+    {
+        return 1000;
     }
 
     /**
