@@ -3,9 +3,8 @@
 namespace HughCube\Laravel\Knight\Console\Commands;
 
 use HughCube\Laravel\Knight\Console\Command;
-use Illuminate\Support\Carbon;
+use HughCube\Laravel\Knight\Queue\Jobs\CleanFilesJob;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Finder\Finder;
 
 class LogsPruneCommand extends Command
 {
@@ -28,24 +27,12 @@ class LogsPruneCommand extends Command
             return;
         }
 
-        $cutoff = Carbon::now()->subDays($days);
-        $count = 0;
-        $bytes = 0;
-
-        foreach (Finder::create()->in($dir)->name($pattern)->ignoreUnreadableDirs()->files() as $file) {
-            if (Carbon::createFromTimestamp($file->getMTime())->gt($cutoff)) {
-                continue;
-            }
-
-            $bytes += $file->getSize();
-            File::delete($file->getRealPath());
-            $count++;
-        }
+        $result = CleanFilesJob::pruneFiles($dir, $pattern, [], $days);
 
         $this->info(sprintf(
             'Pruned %d files, freed %s (kept last %d days, dir %s).',
-            $count,
-            $this->formatBytes($bytes),
+            $result['count'],
+            $this->formatBytes($result['bytes']),
             $days,
             $dir
         ));

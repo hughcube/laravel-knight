@@ -33,42 +33,67 @@ class CleanFilesJob extends Job
 
     protected function cleanFiles($job)
     {
-        $maxDays = $job['max_days'] ?: 30;
         $dirs = Collection::wrap($job['dir'])->filter();
         $patterns = Collection::wrap($job['pattern'] ?? '*')->filter()->values();
-        $excludes = Collection::wrap($job['exclude'] ?? null ?: [])->filter()->values();
+
+        $result = static::pruneFiles(
+            $job['dir'],
+            $job['pattern'] ?? '*',
+            $job['exclude'] ?? null ?: [],
+            intval($job['max_days'] ?: 30)
+        );
+
+        $this->info(sprintf(
+            'Delete %s files in directory "%s" that match "%s".',
+            $result['count'],
+            $dirs->implode(', '),
+            $patterns->implode(', ')
+        ));
+    }
+
+    /**
+     * 删除 dirs 下匹配 patterns 且 mtime 早于 maxDays 的文件, 返回 ['count' => int, 'bytes' => int].
+     *
+     * @param string|array|Collection $dirs
+     * @param string|array|Collection $patterns
+     * @param string|array|Collection $excludes
+     */
+    public static function pruneFiles($dirs, $patterns = '*', $excludes = [], int $maxDays = 30): array
+    {
+        $dirs = Collection::wrap($dirs)->filter();
+        $patterns = Collection::wrap($patterns ?: '*')->filter()->values();
+        $excludes = Collection::wrap($excludes ?: [])->filter()->values();
 
         /** @var Collection $existDirs */
         $existDirs = $dirs->filter(function ($dir) {
             return File::exists($dir);
         })->values();
 
-        $files = [];
-        if ($existDirs->isNotEmpty()) {
-            $files = Finder::create()
-                ->in($existDirs->all())
-                ->name($patterns->all())
-                ->notName($excludes->all())
-                ->ignoreUnreadableDirs()
-                ->files();
+        $count = 0;
+        $bytes = 0;
+
+        if ($existDirs->isEmpty()) {
+            return ['count' => $count, 'bytes' => $bytes];
         }
 
-        $count = 0;
+        $files = Finder::create()
+            ->in($existDirs->all())
+            ->name($patterns->all())
+            ->notName($excludes->all())
+            ->ignoreUnreadableDirs()
+            ->files();
+
         foreach ($files as $file) {
             $mDate = Carbon::createFromTimestamp($file->getMTime());
             if (!$mDate->addDays($maxDays)->isPast()) {
                 continue;
             }
 
+            $bytes += $file->getSize();
             $count++;
-            File::delete($file);
+            File::delete($file->getRealPath());
         }
 
-        $this->info(sprintf(
-            'Delete %s files in directory "%s" that match "%s".',
-            $count,
-            $dirs->implode(', '),
-            $patterns->implode(', ')
-        ));
+        return ['count' => $count, 'bytes' => $bytes];
     }
 }
