@@ -170,6 +170,92 @@ class StrTest extends TestCase
         $this->assertSame("\xff张 三", Str::trimEdgeSpaces("\t\xff张 三\t"));
     }
 
+    public function testToHalfWidth()
+    {
+        $this->assertNull(Str::toHalfWidth(null));
+        $this->assertSame('', Str::toHalfWidth(''));
+
+        // 全角数字 → 半角
+        $this->assertSame('123', Str::toHalfWidth('１２３'));
+        // 全角字母 → 半角
+        $this->assertSame('ABc', Str::toHalfWidth('ＡＢｃ'));
+        // 全角符号 → 半角
+        $this->assertSame('@.', Str::toHalfWidth('＠．'));
+        // 半角原样
+        $this->assertSame('abc123', Str::toHalfWidth('abc123'));
+        // 中文不受影响
+        $this->assertSame('张三', Str::toHalfWidth('张三'));
+        // 混合
+        $this->assertSame('410504X', Str::toHalfWidth('４１０５０４Ｘ'));
+    }
+
+    public function testCleanIdCardNo()
+    {
+        $this->assertNull(Str::cleanIdCardNo(null));
+        $this->assertSame('', Str::cleanIdCardNo(''));
+
+        // 尾随换行 / 内嵌零宽被去
+        $this->assertSame('410504198806040032', Str::cleanIdCardNo("410504198806040032\n"));
+        $this->assertSame('410504198806040032', Str::cleanIdCardNo("4105\u{200B}04198806040032"));
+        // 尾位小写 x → 大写 X(不被削掉)
+        $this->assertSame('11010119900307551X', Str::cleanIdCardNo('11010119900307551x'));
+        // Excel 数字单元格前导单引号被去, 尾部 X 保留
+        $this->assertSame('11010119900307551X', Str::cleanIdCardNo("'11010119900307551X"));
+        // 前导单引号 + 小写 x + 空白 组合
+        $this->assertSame('11010119900307551X', Str::cleanIdCardNo(" '11010119900307551x "));
+        // 全角数字字母 → 半角
+        $this->assertSame('410504X', Str::cleanIdCardNo('４１０５０４ｘ'));
+        // 只去前导单引号, 不动中间(证件号本不含 ', 此为防御性断言)
+        $this->assertSame("AB'C", Str::cleanIdCardNo("'AB'C"));
+    }
+
+    public function testCleanMobile()
+    {
+        $this->assertNull(Str::cleanMobile(null));
+        $this->assertSame('', Str::cleanMobile(''));
+
+        // 分隔符 / 空格被去, 只留数字
+        $this->assertSame('13800000000', Str::cleanMobile('138-0000 0000'));
+        $this->assertSame('13800000000', Str::cleanMobile(' 138 0000 0000 '));
+        $this->assertSame('01012345678', Str::cleanMobile('(010)1234-5678'));
+        // 全角数字 → 半角
+        $this->assertSame('13800000000', Str::cleanMobile('１３８００００００００'));
+        // 零宽混入
+        $this->assertSame('13800000000', Str::cleanMobile("138\u{200B}00000000"));
+        // 纯分隔符 → 空串
+        $this->assertSame('', Str::cleanMobile('--- ()'));
+    }
+
+    public function testCleanEmail()
+    {
+        $this->assertNull(Str::cleanEmail(null));
+        $this->assertSame('', Str::cleanEmail(''));
+
+        // 两端空白去掉 + 统一小写
+        $this->assertSame('abc@example.com', Str::cleanEmail(' Abc@Example.COM '));
+        // 内嵌零宽被去
+        $this->assertSame('abc@example.com', Str::cleanEmail("abc@exa\u{200B}mple.com"));
+        // 全角 @ / 字母 → 半角 + 小写
+        $this->assertSame('abc@example.com', Str::cleanEmail('ＡＢＣ＠example．com'));
+        // 已规范值不变
+        $this->assertSame('a@b.com', Str::cleanEmail('a@b.com'));
+    }
+
+    public function testCleanExcelCode()
+    {
+        $this->assertNull(Str::cleanExcelCode(null));
+        $this->assertSame('', Str::cleanExcelCode(''));
+
+        // 前导单引号被去
+        $this->assertSame('00123', Str::cleanExcelCode("'00123"));
+        // 空白 + 全角 → 半角, 不改大小写
+        $this->assertSame('Empa01', Str::cleanExcelCode(" Ｅmpａ01 "));
+        // 中间内容保留(含字母大小写)
+        $this->assertSame('NO.5', Str::cleanExcelCode("'NO.5"));
+        // 零宽被去
+        $this->assertSame('AB12', Str::cleanExcelCode("AB\u{200B}12"));
+    }
+
     public function testCountCommonChars()
     {
         $this->assertSame(Str::countCommonChars('我喜欢编程', '编程让我快乐'), 3);

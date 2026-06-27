@@ -155,6 +155,109 @@ class Str extends \Illuminate\Support\Str
     }
 
     /**
+     * 全角字符转半角(全角字母/数字/符号 → 半角, 全角空格 → 半角空格).
+     *
+     * 用于证件号/手机/邮箱等需要严格 === 匹配的字段: OCR / 中文输入法常产出全角数字字母
+     * (如 "４１０５０４"), 不归一化会让 "４１０..." 与 "410..." 被判为不同, 实名/唯一性比对失败.
+     * 依赖 mbstring 的 mb_convert_kana; 缺失时原样返回(降级不报错).
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public static function toHalfWidth(?string $value): ?string
+    {
+        if (null === $value || '' === $value) {
+            return $value;
+        }
+
+        if (!function_exists('mb_convert_kana')) {
+            return $value;
+        }
+
+        // 'a' 全角字母数字符号→半角; 's' 全角空格→半角空格
+        $result = @mb_convert_kana($value, 'as', 'UTF-8');
+
+        return is_string($result) ? $result : $value;
+    }
+
+    /**
+     * 证件号(身份证/护照/港澳台证件等通用)写入清洗.
+     *
+     * 流水线: 去全部空白/不可见(stripAllSpaces) → 全角转半角 → 转大写(身份证尾位 x→X) → 去【前导】单引号.
+     *   - 前导单引号: Excel 把证件号设成"数字单元格"时, 为防科学计数法(4.1E+17)会在值前加一个 ' .
+     *   - 用 ltrim 只去头部的 ', 不会碰到尾部合法的校验位 X.
+     *   - 与 stripAllSpaces 同源白名单, 兜住导入/OCR/手填所有写入路径, 保证 OCR 实名 === 比对一致.
+     *
+     * 注意: 本方法不校验证件号合法性, 只做规范化清洗; 也不做 Unicode NFC 归一化(证件号为纯 ASCII, 无需).
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public static function cleanIdCardNo(?string $value): ?string
+    {
+        if (null === $value || '' === $value) {
+            return $value;
+        }
+
+        return ltrim(strtoupper(static::toHalfWidth(static::stripAllSpaces($value))), "'");
+    }
+
+    /**
+     * 手机/电话号写入清洗: 去全部空白 → 全角转半角 → 只保留数字(去掉 - 、( 、) 、. 等分隔符).
+     *
+     * 用于参与 === 匹配 / 唯一性反查的号码字段; 国际区号请单独存(见调用方的 idd_code 字段).
+     * "138-0000 0000" → "13800000000".
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public static function cleanMobile(?string $value): ?string
+    {
+        if (null === $value || '' === $value) {
+            return $value;
+        }
+
+        $digits = preg_replace('/[^0-9]+/', '', static::toHalfWidth(static::stripAllSpaces($value)));
+
+        // 极端情况 preg_replace 返回 null 时降级为去空白后的原值
+        return null === $digits ? static::stripAllSpaces($value) : $digits;
+    }
+
+    /**
+     * 邮箱写入清洗: 去全部空白/不可见 → 全角转半角 → 统一小写(邮箱实务上大小写不敏感).
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public static function cleanEmail(?string $value): ?string
+    {
+        if (null === $value || '' === $value) {
+            return $value;
+        }
+
+        $normalized = static::toHalfWidth(static::stripAllSpaces($value));
+
+        return function_exists('mb_strtolower') ? mb_strtolower($normalized, 'UTF-8') : strtolower($normalized);
+    }
+
+    /**
+     * Excel 来源的编码类标识(工号/证书编号等)写入清洗: 去全部空白 → 全角转半角 → 去【前导】单引号.
+     *
+     * 与 cleanIdCardNo 的区别: 不转大写(编码可能区分大小写), 不只留数字(编码可能含字母).
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public static function cleanExcelCode(?string $value): ?string
+    {
+        if (null === $value || '' === $value) {
+            return $value;
+        }
+
+        return ltrim(static::toHalfWidth(static::stripAllSpaces($value)), "'");
+    }
+
+    /**
      * 判断一个字符串的编码是否为UTF-8.
      */
     public static function isUtf8($string): bool
