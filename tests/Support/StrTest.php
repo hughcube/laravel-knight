@@ -111,6 +111,65 @@ class StrTest extends TestCase
         $this->assertSame("\xff张三", Str::stripAllSpaces($invalidWithTab));
     }
 
+    public function testTrimEdgeSpaces()
+    {
+        // null 输入返回 null
+        $this->assertNull(Str::trimEdgeSpaces(null));
+
+        // 空字符串保持空字符串
+        $this->assertSame('', Str::trimEdgeSpaces(''));
+
+        // 半角空格: 只去两端, 中间保留 (与 stripAllSpaces 的核心区别)
+        $this->assertSame('张三', Str::trimEdgeSpaces(' 张三 '));
+        $this->assertSame('张 三', Str::trimEdgeSpaces(' 张 三 '));
+        $this->assertSame('张  三', Str::trimEdgeSpaces('  张  三  '));
+
+        // 全角空格 U+3000: 两端去, 中间留
+        $this->assertSame('张三', Str::trimEdgeSpaces("\u{3000}张三\u{3000}"));
+        $this->assertSame("张\u{3000}三", Str::trimEdgeSpaces("\u{3000}张\u{3000}三\u{3000}"));
+
+        // NBSP U+00A0 (Word/网页复制常见): 两端去, 中间留
+        $this->assertSame('张三', Str::trimEdgeSpaces("\u{00A0}张三\u{00A0}"));
+        $this->assertSame("张\u{00A0}三", Str::trimEdgeSpaces("\u{00A0}张\u{00A0}三\u{00A0}"));
+
+        // ZWSP U+200B / BOM U+FEFF: 两端去, 中间留
+        $this->assertSame('张三', Str::trimEdgeSpaces("\u{200B}张三\u{FEFF}"));
+        $this->assertSame("张\u{200B}三", Str::trimEdgeSpaces("\u{FEFF}张\u{200B}三\u{200B}"));
+
+        // 制表符/换行/回车在两端被清理
+        $this->assertSame('张三', Str::trimEdgeSpaces("\t张三\n"));
+        $this->assertSame('张三', Str::trimEdgeSpaces("\r\n张三\r\n"));
+        $this->assertSame("张\t三", Str::trimEdgeSpaces("\n张\t三\n")); // 中间制表符保留
+
+        // 混合多种不可见字符在两端
+        $this->assertSame('张三', Str::trimEdgeSpaces("\u{3000}\u{00A0}\t张三\u{200B} \u{FEFF}"));
+
+        // 纯空白字符串两端全部被剥离 -> 空串
+        $this->assertSame('', Str::trimEdgeSpaces("   \t\n\u{3000}\u{00A0}"));
+
+        // 不含两端空白的字符串保持不变
+        $this->assertSame('张三', Str::trimEdgeSpaces('张三'));
+        $this->assertSame('某某 科技', Str::trimEdgeSpaces('某某 科技'));
+
+        // 企业/展示文本典型场景: 两端粘贴噪声去掉, 中间合法空格保留
+        $this->assertSame('某某 科技有限公司', Str::trimEdgeSpaces("\u{3000}某某 科技有限公司\u{00A0}"));
+        $this->assertSame('Senior Software Engineer', Str::trimEdgeSpaces(" Senior Software Engineer\u{00A0}"));
+
+        // 保留 ZWNJ (U+200C) / ZWJ (U+200D) (不在白名单, 即使在两端也不动)
+        $this->assertSame("\u{200C}میخواهم\u{200D}", Str::trimEdgeSpaces("\u{200C}میخواهم\u{200D}"));
+
+        // 幂等: 已清洗值再清洗不变
+        $this->assertSame('张三', Str::trimEdgeSpaces(Str::trimEdgeSpaces(' 张三 ')));
+
+        // UTF-8 异常输入不抛异常, 降级路径只清两端 ASCII 空白, 中间保留
+        $invalid = "\xff张 三\t";
+        $result = Str::trimEdgeSpaces($invalid);
+        $this->assertIsString($result);
+        $this->assertNotSame('', $result);
+        // 两端的 \t 被降级路径清掉, 中间半角空格保留
+        $this->assertSame("\xff张 三", Str::trimEdgeSpaces("\t\xff张 三\t"));
+    }
+
     public function testCountCommonChars()
     {
         $this->assertSame(Str::countCommonChars('我喜欢编程', '编程让我快乐'), 3);

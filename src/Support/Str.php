@@ -45,6 +45,31 @@ class Str extends \Illuminate\Support\Str
     }
 
     /**
+     * 无语义空白/不可见字符的 PCRE 字符类内容(不含外层方括号与量词).
+     *
+     * stripAllSpaces(全去) 与 trimEdgeSpaces(仅去两端) 共用同一份白名单, 保证两档清洗口径完全一致 ——
+     * 任何字符的增删只改这一处. 各字符的语义/收录理由见 {@see stripAllSpaces} 的"删除范围"说明.
+     */
+    private const INVISIBLE_CHARS_CLASS =
+        '\x{0009}-\x{000D}'
+        .'\x{0020}'
+        .'\x{0085}'
+        .'\x{00A0}'
+        .'\x{00AD}'
+        .'\x{034F}'
+        .'\x{1680}'
+        .'\x{180E}'
+        .'\x{2000}-\x{200B}'
+        .'\x{2028}\x{2029}'
+        .'\x{202F}'
+        .'\x{205F}'
+        .'\x{2060}'
+        .'\x{2800}'
+        .'\x{3000}'
+        .'\x{3164}'
+        .'\x{FEFF}';
+
+    /**
      * 去除字符串中所有无语义的空白/不可见字符.
      *
      * 删除范围(显式白名单):
@@ -86,31 +111,47 @@ class Str extends \Illuminate\Support\Str
             return '';
         }
 
-        $pattern = '/['
-            .'\x{0009}-\x{000D}'
-            .'\x{0020}'
-            .'\x{0085}'
-            .'\x{00A0}'
-            .'\x{00AD}'
-            .'\x{034F}'
-            .'\x{1680}'
-            .'\x{180E}'
-            .'\x{2000}-\x{200B}'
-            .'\x{2028}\x{2029}'
-            .'\x{202F}'
-            .'\x{205F}'
-            .'\x{2060}'
-            .'\x{2800}'
-            .'\x{3000}'
-            .'\x{3164}'
-            .'\x{FEFF}'
-            .']+/u';
+        $pattern = '/[' . self::INVISIBLE_CHARS_CLASS . ']+/u';
 
         $result = preg_replace($pattern, '', $value);
 
         // UTF-8 异常时 /u 正则会返回 null. 降级到字节级正则, 清理 ASCII 范围空白
         // (HT/LF/VT/FF/CR/SPACE 都是单字节, 不会出现在多字节序列中间, 按字节删除安全)
         return null === $result ? preg_replace('/[\x09-\x0D\x20]+/', '', $value) : $result;
+    }
+
+    /**
+     * 去除字符串【两端】的无语义空白/不可见字符, 中间内容原样保留.
+     *
+     * 与 {@see stripAllSpaces} 共用同一份不可见字符白名单({@see INVISIBLE_CHARS_CLASS}), 区别仅在作用位置:
+     *   - stripAllSpaces : 删除任意位置的不可见字符(用于证件号/手机/邮箱等"内部不该有空白"的标识/匹配字段)
+     *   - trimEdgeSpaces : 只删首尾, 保留中间空格(用于公司名/职位/地址/标题等允许中间空格的展示文本)
+     *
+     * 典型场景: 用户从 Excel/Word 粘贴公司名 "某某 科技\u{00A0}" —— 两端的 NBSP/全角空格应清掉,
+     * 但中间的半角空格是合法分词, 必须保留, 不能像 stripAllSpaces 那样连中间一起删成 "某某科技".
+     *
+     * 注意: 同 stripAllSpaces, 本方法不做 Unicode 规范化(NFC/NFKC).
+     *
+     * @param string|null $value
+     * @return string|null  null/空串原样返回; 否则返回两端清洗后的字符串
+     */
+    public static function trimEdgeSpaces(?string $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if ('' === $value) {
+            return '';
+        }
+
+        $pattern = '/^[' . self::INVISIBLE_CHARS_CLASS . ']+|[' . self::INVISIBLE_CHARS_CLASS . ']+$/u';
+
+        $result = preg_replace($pattern, '', $value);
+
+        // UTF-8 异常时 /u 正则会返回 null. 降级到字节级正则, 仅清理两端的 ASCII 范围空白
+        // (HT/LF/VT/FF/CR/SPACE 都是单字节, 出现在两端时按字节删除安全)
+        return null === $result ? preg_replace('/^[\x09-\x0D\x20]+|[\x09-\x0D\x20]+$/', '', $value) : $result;
     }
 
     /**
