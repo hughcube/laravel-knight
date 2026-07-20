@@ -85,14 +85,14 @@ class StrMixin
     protected function maskMobile(): Closure
     {
         return function ($string): string {
-            return substr_replace($string, '****', 3, 4);
+            return \HughCube\Laravel\Knight\Support\Str::maskMobile($string);
         };
     }
 
     protected function maskChinaIdCode(): Closure
     {
         return function ($string): string {
-            return substr_replace($string, '********', 6, 8);
+            return \HughCube\Laravel\Knight\Support\Str::maskChinaIdCode($string);
         };
     }
 

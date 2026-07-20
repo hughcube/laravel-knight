@@ -31,12 +31,24 @@ class Str extends \Illuminate\Support\Str
 
     public static function maskMobile($string, $offset = 3, $length = 4): string
     {
-        return substr_replace($string, '****', $offset, $length);
+        if (!is_string($string) || empty($string)) {
+            return '';
+        }
+
+        return mb_substr($string, 0, $offset, 'UTF-8')
+            . '****'
+            . mb_substr($string, $offset + $length, null, 'UTF-8');
     }
 
     public static function maskChinaIdCode($string, $offset = 6, $length = 8): string
     {
-        return substr_replace($string, '********', $offset, $length);
+        if (!is_string($string) || empty($string)) {
+            return '';
+        }
+
+        return mb_substr($string, 0, $offset, 'UTF-8')
+            . '********'
+            . mb_substr($string, $offset + $length, null, 'UTF-8');
     }
 
     public static function splitWhitespace($string, int $limit = -1, int $flags = 0): array
@@ -767,24 +779,27 @@ class Str extends \Illuminate\Support\Str
             return '';
         }
 
-        $atPos = strpos($string, '@');
+        $atPos = mb_strpos($string, '@', 0, 'UTF-8');
         if (false === $atPos) {
             return $string;
         }
 
-        $local = substr($string, 0, $atPos);
-        $domain = substr($string, $atPos);
-        $localLen = strlen($local);
+        $local = mb_substr($string, 0, $atPos, 'UTF-8');
+        $domain = mb_substr($string, $atPos, null, 'UTF-8');
+        $localLen = mb_strlen($local, 'UTF-8');
 
         if ($localLen <= 1) {
-            return '*'.$domain;
+            return '*' . $domain;
         }
 
         if ($localLen <= 2) {
-            return $local[0].'*'.$domain;
+            return mb_substr($local, 0, 1, 'UTF-8') . '*' . $domain;
         }
 
-        return $local[0].str_repeat('*', $localLen - 2).$local[$localLen - 1].$domain;
+        return mb_substr($local, 0, 1, 'UTF-8')
+            . str_repeat('*', $localLen - 2)
+            . mb_substr($local, -1, 1, 'UTF-8')
+            . $domain;
     }
 
     /**
@@ -796,12 +811,14 @@ class Str extends \Illuminate\Support\Str
             return '';
         }
 
-        $len = strlen($string);
+        $len = mb_strlen($string, 'UTF-8');
         if ($len <= 8) {
             return $string;
         }
 
-        return substr($string, 0, 4).str_repeat('*', $len - 8).substr($string, -4);
+        return mb_substr($string, 0, 4, 'UTF-8')
+            . str_repeat('*', $len - 8)
+            . mb_substr($string, -4, null, 'UTF-8');
     }
 
     /**

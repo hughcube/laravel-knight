@@ -56,4 +56,67 @@ class StrMaskTest extends TestCase
         $this->assertSame('', Str::maskPlateNumber(null));
         $this->assertSame('京A*5', Str::maskPlateNumber('京A15'));
     }
+
+    /**
+     * 多字节安全: 传入中文人名不应产生非法 UTF-8 导致 json_encode 失败.
+     */
+    public function testMaskMethodsMultiByteSafety()
+    {
+        $methods = [
+            'maskMobile' => ['王从辉'],
+            'maskChinaIdCode' => ['王从辉'],
+            'maskEmail' => ['王从辉@example.com'],
+            'maskBankCard' => ['王从辉'],
+            'maskName' => ['王从辉'],
+            'maskAddress' => ['王从辉'],
+            'maskPlateNumber' => ['王从辉'],
+        ];
+
+        foreach ($methods as $method => $args) {
+            $result = Str::$method(...$args);
+            $this->assertIsString($result, "$method should return a string");
+            $this->assertTrue(
+                mb_check_encoding($result, 'UTF-8'),
+                "$method must return valid UTF-8, got: " . bin2hex($result)
+            );
+
+            // json_encode 不应失败
+            $json = json_encode([$result]);
+            $this->assertNotFalse(
+                $json,
+                "$method result must be json_encode-able, error: " . json_last_error_msg()
+            );
+        }
+    }
+
+    /**
+     * 多字节安全: maskEmail 的 @ 前后都有中文.
+     */
+    public function testMaskEmailWithMultiByte()
+    {
+        $result = Str::maskEmail('欧阳自强@测试.com');
+        $this->assertTrue(mb_check_encoding($result, 'UTF-8'));
+        $this->assertStringContainsString('@', $result);
+        $this->assertStringContainsString('*', $result);
+    }
+
+    /**
+     * 正常输入(maskMobile/maskChinaIdCode)行为不变.
+     */
+    public function testMaskMobileAndIdCodeNormalInput()
+    {
+        $this->assertSame('138****8000', Str::maskMobile('13800138000'));
+        $this->assertSame('123456********5678', Str::maskChinaIdCode('123456789012345678'));
+    }
+
+    /**
+     * 空/null 输入返回空字符串.
+     */
+    public function testMaskMethodsEmptyInput()
+    {
+        foreach (['maskMobile', 'maskChinaIdCode', 'maskEmail', 'maskBankCard'] as $method) {
+            $this->assertSame('', Str::$method(''), "$method('') should return ''");
+            $this->assertSame('', Str::$method(null), "$method(null) should return ''");
+        }
+    }
 }
