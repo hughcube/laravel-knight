@@ -105,14 +105,37 @@ class CompileFilesCommand extends Command
 
         $file = storage_path('opcache_compile_files.json');
         file_put_contents($file, json_encode($scripts));
+        $consecutiveErrors = 0;
+        $lastCount = count($scripts);
+
         while (is_file($file)) {
             $process = new PhpProcess(sprintf('<?php %s ?>', $this->compileProcessCode($file)));
             $process->setTimeout(600); // 设置 10 分钟超时,足够编译大量文件
             $process->start();
-            $process->wait();
-            $remainScripts = json_decode(file_get_contents($file), true);
+
+            try {
+                $process->wait();
+            } catch (Throwable $e) {
+                $this->warn(sprintf('Compilation process interrupted (%s), continuing with remaining files...', $e->getMessage()));
+            }
+
+            $remainScripts = json_decode(file_get_contents($file), true) ?: [];
             if (empty($remainScripts)) {
                 break;
+            }
+
+            $currentCount = count($remainScripts);
+            if ($currentCount >= $lastCount) {
+                $consecutiveErrors++;
+                if ($consecutiveErrors >= 5) {
+                    $this->error('Aborting: compile process failed to make progress after multiple attempts.');
+                    break;
+                }
+                array_pop($remainScripts);
+                file_put_contents($file, json_encode($remainScripts));
+            } else {
+                $consecutiveErrors = 0;
+                $lastCount = $currentCount;
             }
         }
         File::delete($file);
