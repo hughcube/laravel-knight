@@ -13,7 +13,6 @@ use Closure;
 use HughCube\Laravel\Knight\Http\Request as KnightRequest;
 use HughCube\Laravel\Knight\Support\Version;
 use Illuminate\Support\Str;
-use Jenssegers\Agent\Agent;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
 /**
@@ -97,15 +96,22 @@ class RequestMixin
      */
     public function getUserAgentDetect(): Closure
     {
-        return function (): Agent {
+        return function () {
             $key = '__knight_user_agent_detect_2f8a9c3e';
 
-            if (!$this->attributes->has($key) || !$this->attributes->get($key) instanceof Agent) {
-                /** @phpstan-ignore-next-line */
-                $this->attributes->set($key, new Agent($this->headers->all(), $this->userAgent()));
+            if ($this->attributes->has($key)) {
+                return $this->attributes->get($key);
             }
 
-            return $this->attributes->get($key);
+            if (class_exists($class = 'Jenssegers\Agent\Agent')) {
+                $agent = new $class($this->headers->all(), $this->userAgent());
+                $this->attributes->set($key, $agent);
+                return $agent;
+            }
+
+            throw new \BadMethodCallException(
+                'Package "jenssegers/agent" is not installed. Please install it or use lightweight detection methods.'
+            );
         };
     }
 

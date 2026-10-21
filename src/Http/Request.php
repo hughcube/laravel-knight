@@ -12,7 +12,6 @@ namespace HughCube\Laravel\Knight\Http;
 use HughCube\Laravel\Knight\Support\Version;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Str;
-use Jenssegers\Agent\Agent;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
 /**
@@ -20,7 +19,8 @@ use Symfony\Component\HttpFoundation\HeaderBag;
  */
 class Request extends HttpRequest
 {
-    protected ?Agent $userAgentDetect = null;
+    /** @var mixed */
+    protected $userAgentDetect = null;
 
     protected array $methodResultCache = [];
 
@@ -130,10 +130,21 @@ class Request extends HttpRequest
 
     /**
      * 获取agent检测.
+     * @return mixed
      */
-    public function getUserAgentDetect(): Agent
+    public function getUserAgentDetect()
     {
-        return $this->userAgentDetect ??= new Agent($this->headers->all(), $this->userAgent());
+        if (null !== $this->userAgentDetect) {
+            return $this->userAgentDetect;
+        }
+
+        if (class_exists($class = 'Jenssegers\Agent\Agent')) {
+            return $this->userAgentDetect = new $class($this->headers->all(), $this->userAgent());
+        }
+
+        throw new \BadMethodCallException(
+            'Package "jenssegers/agent" is not installed. Please install it or use lightweight detection methods.'
+        );
     }
 
     /**

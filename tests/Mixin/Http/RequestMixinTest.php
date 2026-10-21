@@ -56,8 +56,18 @@ class RequestMixinTest extends TestCase
             'HTTP_USER_AGENT' => 'MicroMessenger miniProgram',
         ]);
 
-        $this->assertInstanceOf(Agent::class, $request->getUserAgentDetect());
-        $this->assertSame($request->getUserAgentDetect(), $request->getUserAgentDetect());
+        if (class_exists(Agent::class)) {
+            $this->assertInstanceOf(Agent::class, $request->getUserAgentDetect());
+            $this->assertSame($request->getUserAgentDetect(), $request->getUserAgentDetect());
+        } else {
+            $hasException = false;
+            try {
+                $request->getUserAgentDetect();
+            } catch (\BadMethodCallException $e) {
+                $hasException = true;
+            }
+            $this->assertTrue($hasException);
+        }
         $this->assertTrue($request->isWeChat());
         $this->assertTrue($request->isWeChatMiniProgram());
         $this->assertFalse($request->isPostmen());
