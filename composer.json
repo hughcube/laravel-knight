@@ -29,7 +29,6 @@
         "ext-zend-opcache": "*",
         "laravel/sanctum": "*",
         "phpstan/phpstan": "*",
-        "jenssegers/agent": "*",
         "laravel/framework": "^13",
         "orchestra/testbench": "*",
         "squizlabs/php_codesniffer": "*",

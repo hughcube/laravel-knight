@@ -42,6 +42,44 @@ class MiscMiddlewareTest extends TestCase
         $this->assertTrue($this->callMethod($middleware, 'hasMatchingPath', [$request]));
     }
 
+    public function testHandleAllPathCorsPreflightAndNormalRequest()
+    {
+        HandleAllPathCors::flushState();
+        $middleware = new HandleAllPathCors();
+
+        // 1. 非跨域请求首行放行
+        $reqNoOrigin = Request::create('/api/ping', 'GET');
+        $resp = $middleware->handle($reqNoOrigin, function () {
+            return new Response('no-origin-ok');
+        });
+        $this->assertSame('no-origin-ok', $resp->getContent());
+        $this->assertFalse($resp->headers->has('Access-Control-Allow-Origin'));
+
+        // 2. 跨域 OPTIONS 预检请求（短路直接返回 204 单例）
+        $reqOptions = Request::create('/api/ping', 'OPTIONS');
+        $reqOptions->headers->set('Origin', 'https://example.com');
+        $reqOptions->headers->set('Access-Control-Request-Method', 'POST');
+
+        $preflightResp = $middleware->handle($reqOptions, function () {
+            $this->fail('Pipeline should be short-circuited on preflight');
+        });
+        $this->assertSame(204, $preflightResp->getStatusCode());
+        $this->assertSame('*', $preflightResp->headers->get('Access-Control-Allow-Origin'));
+
+        // 第二次预检请求应该返回同一单例实例
+        $preflightResp2 = $middleware->handle($reqOptions, function () {});
+        $this->assertSame($preflightResp, $preflightResp2);
+
+        // 3. 正常跨域 GET 请求
+        $reqGet = Request::create('/api/ping', 'GET');
+        $reqGet->headers->set('Origin', 'https://example.com');
+        $respGet = $middleware->handle($reqGet, function () {
+            return new Response('get-ok');
+        });
+        $this->assertSame('get-ok', $respGet->getContent());
+        $this->assertSame('*', $respGet->headers->get('Access-Control-Allow-Origin'));
+    }
+
     public function testLogRequestWritesLog()
     {
         $handler = $this->setupTestLogHandler();
