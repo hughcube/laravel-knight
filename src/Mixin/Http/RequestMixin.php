@@ -103,9 +103,8 @@ class RequestMixin
                 return $this->attributes->get($key);
             }
 
-            if (class_exists('Jenssegers\Agent\Agent')) {
-                /** @phpstan-ignore-next-line */
-                $agent = new \Jenssegers\Agent\Agent($this->headers->all(), $this->userAgent());
+            if (class_exists($class = 'Jenssegers\Agent\Agent')) {
+                $agent = new $class($this->headers->all(), $this->userAgent());
                 $this->attributes->set($key, $agent);
                 return $agent;
             }

@@ -138,9 +138,8 @@ class Request extends HttpRequest
             return $this->userAgentDetect;
         }
 
-        if (class_exists('Jenssegers\Agent\Agent')) {
-            /** @phpstan-ignore-next-line */
-            return $this->userAgentDetect = new \Jenssegers\Agent\Agent($this->headers->all(), $this->userAgent());
+        if (class_exists($class = 'Jenssegers\Agent\Agent')) {
+            return $this->userAgentDetect = new $class($this->headers->all(), $this->userAgent());
         }
 
         throw new \BadMethodCallException(

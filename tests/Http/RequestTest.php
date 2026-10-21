@@ -26,8 +26,13 @@ class RequestTest extends TestCase
     {
         $request = Request::capture();
 
-        $this->assertInstanceOf(Agent::class, $agent = $request->getUserAgentDetect());
-        $this->assertSame($request->getUserAgentDetect(), $agent);
+        if (class_exists(Agent::class)) {
+            $this->assertInstanceOf(Agent::class, $agent = $request->getUserAgentDetect());
+            $this->assertSame($request->getUserAgentDetect(), $agent);
+        } else {
+            $this->expectException(\BadMethodCallException::class);
+            $request->getUserAgentDetect();
+        }
     }
 
     /**
