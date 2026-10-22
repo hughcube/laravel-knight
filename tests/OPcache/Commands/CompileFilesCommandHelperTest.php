@@ -593,6 +593,30 @@ class CompileFilesCommandHelperTest extends TestCase
         @rmdir($path);
     }
 
+    public function testGetProcessTimeoutDefaultIsNull()
+    {
+        $command = $this->makeCommand([]);
+        $this->assertNull($this->callMethod($command, 'getProcessTimeout'));
+
+        $commandEmpty = $this->makeCommand(['timeout' => '']);
+        $this->assertNull($this->callMethod($commandEmpty, 'getProcessTimeout'));
+
+        $commandZero = $this->makeCommand(['timeout' => '0']);
+        $this->assertNull($this->callMethod($commandZero, 'getProcessTimeout'));
+
+        $commandNegative = $this->makeCommand(['timeout' => '-10']);
+        $this->assertNull($this->callMethod($commandNegative, 'getProcessTimeout'));
+    }
+
+    public function testGetProcessTimeoutWithValidValue()
+    {
+        $command = $this->makeCommand(['timeout' => '300']);
+        $this->assertSame(300.0, $this->callMethod($command, 'getProcessTimeout'));
+
+        $commandFloat = $this->makeCommand(['timeout' => '12.5']);
+        $this->assertSame(12.5, $this->callMethod($commandFloat, 'getProcessTimeout'));
+    }
+
     private function makeCommand(array $options = []): CompileFilesCommand
     {
         return new class($options) extends CompileFilesCommand {

@@ -34,7 +34,8 @@ class CompileFilesCommand extends Command
                             {--with-remote-scripts : Fetch file list from remote interface }
                             {--with-app-files=1 : Include app files (default: 1) }
                             {--with-composer-files=1 : Include composer class files (default: 1) }
-                            {--without-vendor : Exclude vendor files when using composer files }';
+                            {--without-vendor : Exclude vendor files when using composer files }
+                            {--timeout= : The process timeout in seconds, or 0/null for no timeout (default: none) }';
 
     /**
      * @inheritdoc
@@ -107,10 +108,11 @@ class CompileFilesCommand extends Command
         file_put_contents($file, json_encode($scripts));
         $consecutiveErrors = 0;
         $lastCount = count($scripts);
+        $timeout = $this->getProcessTimeout();
 
         while (is_file($file)) {
             $process = new PhpProcess(sprintf('<?php %s ?>', $this->compileProcessCode($file)));
-            $process->setTimeout(600); // 设置 10 分钟超时,足够编译大量文件
+            $process->setTimeout($timeout);
             $process->start();
 
             try {
@@ -350,5 +352,28 @@ class CompileFilesCommand extends Command
                 return false;
             })
             ->map(fn ($file) => $file->getRealPath())->unique()->values()->all();
+    }
+
+    /**
+     * 获取子进程超时时间（秒）.
+     * 默认无时长限制(null), 可通过 --timeout 参数显式控制.
+     *
+     * @return float|null
+     */
+    protected function getProcessTimeout(): ?float
+    {
+        try {
+            $timeout = $this->option('timeout');
+        } catch (Throwable) {
+            $timeout = null;
+        }
+
+        if (null === $timeout || '' === $timeout) {
+            return null;
+        }
+
+        $timeout = (float) $timeout;
+
+        return $timeout > 0 ? $timeout : null;
     }
 }
