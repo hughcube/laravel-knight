@@ -1,0 +1,10 @@
+preset: laravel
+risky: false
+
+finder:
+  exclude:
+    - "vendor"
+  name: "*.php"
+  not-name:
+    - "*.blade.php"
+    - "_ide_helper.php"
