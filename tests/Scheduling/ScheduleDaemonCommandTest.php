@@ -11,7 +11,7 @@ use RuntimeException;
 class ScheduleDaemonCommandTest extends TestCase
 {
     /**
-     * 测试命令签名与选项完整性
+     * 测试命令签名与选项完整性.
      */
     public function testCommandSignature()
     {
@@ -32,7 +32,7 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试环境未安装 Swoole 时，强制指定 --driver=swoole 抛出明确异常
+     * 测试环境未安装 Swoole 时，强制指定 --driver=swoole 抛出明确异常.
      */
     public function testDriverResolutionThrowsWhenSwooleMissing()
     {
@@ -49,7 +49,7 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试原生驱动 (NativeDriver) 单轮优雅执行并安全退出
+     * 测试原生驱动 (NativeDriver) 单轮优雅执行并安全退出.
      */
     public function testNativeDriverRunsSingleCycleAndExits()
     {
@@ -59,6 +59,7 @@ class ScheduleDaemonCommandTest extends TestCase
         $executed = false;
         $schedule->call(function () use (&$executed) {
             $executed = true;
+
             return 0;
         })->everyMinute();
 
@@ -73,7 +74,7 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试 auto 模式在无 Swoole 环境下自动降级为 Native 驱动安全运行
+     * 测试 auto 模式在无 Swoole 环境下自动降级为 Native 驱动安全运行.
      */
     public function testAutoDriverRunsSafely()
     {
@@ -88,7 +89,7 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试 NativeDriver 内存阈值平滑退出
+     * 测试 NativeDriver 内存阈值平滑退出.
      */
     public function testNativeDriverMemoryThresholdExit()
     {
@@ -103,7 +104,7 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试 SwooleDriver 驱动单轮执行与平滑退出
+     * 测试 SwooleDriver 驱动单轮执行与平滑退出.
      */
     public function testSwooleDriverRunsSingleCycleAndExits()
     {
@@ -117,6 +118,7 @@ class ScheduleDaemonCommandTest extends TestCase
         $executed = false;
         $schedule->call(function () use (&$executed) {
             $executed = true;
+
             return 0;
         })->everyMinute();
 
@@ -133,7 +135,7 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试 SwooleDriver 多任务受控并发执行
+     * 测试 SwooleDriver 多任务受控并发执行.
      */
     public function testSwooleDriverConcurrentTasks()
     {
@@ -150,12 +152,14 @@ class ScheduleDaemonCommandTest extends TestCase
         $schedule->call(function () use (&$task1Executed) {
             \Swoole\Coroutine::sleep(0.05);
             $task1Executed = true;
+
             return 0;
         })->everyMinute();
 
         $schedule->call(function () use (&$task2Executed) {
             \Swoole\Coroutine::sleep(0.05);
             $task2Executed = true;
+
             return 0;
         })->everyMinute();
 
@@ -173,7 +177,7 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试信号注册在不同驱动下的分支绑定逻辑
+     * 测试信号注册在不同驱动下的分支绑定逻辑.
      */
     public function testSignalHandlerRegistrationBranching()
     {
@@ -193,20 +197,20 @@ class ScheduleDaemonCommandTest extends TestCase
     }
 
     /**
-     * 测试 --run-output-file 选项将控制台输出正确重定向写入日志文件
+     * 测试 --run-output-file 选项将控制台输出正确重定向写入日志文件.
      */
     public function testRunOutputFileRedirection()
     {
-        $logFile = sys_get_temp_dir() . '/schedule_daemon_test_' . uniqid() . '.log';
+        $logFile = sys_get_temp_dir().'/schedule_daemon_test_'.uniqid().'.log';
         if (file_exists($logFile)) {
             @unlink($logFile);
         }
 
         $this->artisan('schedule:daemon', [
-            '--driver'    => 'native',
-            '--immediate' => true,
-            '--max-runs'  => 1,
-            '--whisper'   => false,
+            '--driver'          => 'native',
+            '--immediate'       => true,
+            '--max-runs'        => 1,
+            '--whisper'         => false,
             '--run-output-file' => $logFile,
         ])->assertExitCode(0)->run();
         $this->assertFileExists($logFile);

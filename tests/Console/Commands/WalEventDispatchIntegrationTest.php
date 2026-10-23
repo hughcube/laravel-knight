@@ -6,7 +6,6 @@ use HughCube\Laravel\Knight\Console\Commands\WalEventDispatchCommand;
 use HughCube\Laravel\Knight\Contracts\Database\HasWalHandler;
 use HughCube\Laravel\Knight\Database\Eloquent\Model;
 use HughCube\Laravel\Knight\Database\Eloquent\Traits\HasWalHandlerTrait;
-use HughCube\Laravel\Knight\Database\Wal\WalChangeRecord;
 use HughCube\Laravel\Knight\Tests\TestCase;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Facades\Event;

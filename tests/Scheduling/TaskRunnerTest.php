@@ -11,11 +11,8 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Event as EventFacade;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Throwable;
 
 class TaskRunnerTest extends TestCase
 {
@@ -33,13 +30,14 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 1. 测试常规 Callback 任务的安全执行与退出码处理
+     * 1. 测试常规 Callback 任务的安全执行与退出码处理.
      */
     public function testCallbackEventExecution()
     {
         $executed = false;
         $event = $this->schedule->call(function () use (&$executed) {
             $executed = true;
+
             return 0;
         });
 
@@ -50,7 +48,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 2. 测试任务生命周期事件 (Starting & Finished) 的派发
+     * 2. 测试任务生命周期事件 (Starting & Finished) 的派发.
      */
     public function testLifecycleEventsDispatched()
     {
@@ -79,7 +77,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 3. 测试 withoutOverlapping 互斥锁生命周期与安全释放
+     * 3. 测试 withoutOverlapping 互斥锁生命周期与安全释放.
      */
     public function testWithoutOverlappingLockLifecycle()
     {
@@ -88,6 +86,7 @@ class TaskRunnerTest extends TestCase
         $event = $this->schedule->call(function () use (&$lockExistedDuringRun, &$event) {
             // 在任务运行过程中，互斥锁应当存在于底层 Cache/Mutex 中
             $lockExistedDuringRun = $event->mutex->exists($event);
+
             return 0;
         })->name('test-overlapping-task')->withoutOverlapping(10);
 
@@ -103,7 +102,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 4. 测试 onSuccess 与 onFailure 回调正确隔离触发
+     * 4. 测试 onSuccess 与 onFailure 回调正确隔离触发.
      */
     public function testOnSuccessAndOnFailureCallbacks()
     {
@@ -144,7 +143,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 5. 测试任务异常时派发 ScheduledTaskFailed 并上报异常处理器
+     * 5. 测试任务异常时派发 ScheduledTaskFailed 并上报异常处理器.
      */
     public function testExceptionHandlingAndReporting()
     {
@@ -170,15 +169,16 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 6. 测试输出重定向 (sendOutputTo 与 appendOutputTo)
+     * 6. 测试输出重定向 (sendOutputTo 与 appendOutputTo).
      */
     public function testOutputRedirection()
     {
         $tempDir = sys_get_temp_dir();
-        $outFile = $tempDir . DIRECTORY_SEPARATOR . 'knight_schedule_out_' . uniqid() . '.log';
+        $outFile = $tempDir.DIRECTORY_SEPARATOR.'knight_schedule_out_'.uniqid().'.log';
 
         $event = $this->schedule->call(function () {
             echo "Hello Output Redirection\n";
+
             return 0;
         })->sendOutputTo($outFile);
 
@@ -190,6 +190,7 @@ class TaskRunnerTest extends TestCase
         // 测试追加模式
         $appendEvent = $this->schedule->call(function () {
             echo "Second Line Appended\n";
+
             return 0;
         })->appendOutputTo($outFile);
 
@@ -201,7 +202,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 7. 测试沙箱配置 (Config) 与全局变量快照隔离与回滚
+     * 7. 测试沙箱配置 (Config) 与全局变量快照隔离与回滚.
      */
     public function testConfigAndGlobalVariablesRollback()
     {
@@ -216,6 +217,7 @@ class TaskRunnerTest extends TestCase
             $_SERVER['KNIGHT_TEST_KEY'] = 'mutated_server';
             $_ENV['KNIGHT_TEST_ENV'] = 'mutated_env';
             putenv('KNIGHT_PUTENV_KEY=leak_attempt');
+
             return 0;
         });
 
@@ -232,7 +234,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 8. 测试 Carbon 测试时钟 (Carbon::setTestNow) 自动清洗复位
+     * 8. 测试 Carbon 测试时钟 (Carbon::setTestNow) 自动清洗复位.
      */
     public function testCarbonClockCleanup()
     {
@@ -240,6 +242,7 @@ class TaskRunnerTest extends TestCase
 
         $event = $this->schedule->call(function () {
             Carbon::setTestNow(Carbon::parse('2099-12-31 23:59:59'));
+
             return 0;
         });
 
@@ -249,7 +252,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 9. 测试前置门禁过滤器 (when / skip)
+     * 9. 测试前置门禁过滤器 (when / skip).
      */
     public function testFiltersPassAndSkipEvent()
     {
@@ -275,7 +278,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 10. 测试调度暂停门禁 (illuminate:schedule:paused)
+     * 10. 测试调度暂停门禁 (illuminate:schedule:paused).
      */
     public function testSchedulePausedFilter()
     {
@@ -283,7 +286,7 @@ class TaskRunnerTest extends TestCase
 
         // 未暂停
         $cache->forget('illuminate:schedule:paused');
-        $normalEvent = $this->schedule->call(fn() => 0);
+        $normalEvent = $this->schedule->call(fn () => 0);
         $this->assertTrue($this->runner->shouldRun($normalEvent, $this->schedule));
 
         // 暂停状态
@@ -293,7 +296,7 @@ class TaskRunnerTest extends TestCase
         $this->assertFalse($this->runner->shouldRun($normalEvent, $this->schedule));
 
         // 显式声明 runsWhenPaused 的任务仍可运行
-        $runsWhenPausedEvent = $this->schedule->call(fn() => 0);
+        $runsWhenPausedEvent = $this->schedule->call(fn () => 0);
         if (method_exists($runsWhenPausedEvent, 'evenWhenPaused')) {
             $runsWhenPausedEvent->evenWhenPaused();
             $this->assertTrue($this->runner->shouldRun($runsWhenPausedEvent, $this->schedule));
@@ -303,12 +306,12 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 11. 测试同进程直驱 Artisan 命令行任务 (sendOutputTo 与 appendOutputTo)
+     * 11. 测试同进程直驱 Artisan 命令行任务 (sendOutputTo 与 appendOutputTo).
      */
     public function testArtisanCommandExecutionAndOutputRedirection()
     {
         $tempDir = sys_get_temp_dir();
-        $outFile = $tempDir . DIRECTORY_SEPARATOR . 'knight_artisan_out_' . uniqid() . '.log';
+        $outFile = $tempDir.DIRECTORY_SEPARATOR.'knight_artisan_out_'.uniqid().'.log';
 
         $event = $this->schedule->command('env')->sendOutputTo($outFile);
 
@@ -322,7 +325,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 12. 测试 onOneServer 单机锁缓存清除
+     * 12. 测试 onOneServer 单机锁缓存清除.
      */
     public function testClearScheduleMutexCache()
     {
@@ -333,7 +336,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 13. 测试 extractArtisanCommand 全平台路径与重定向提取
+     * 13. 测试 extractArtisanCommand 全平台路径与重定向提取.
      */
     public function testExtractArtisanCommandVariations()
     {
@@ -373,6 +376,7 @@ class TaskRunnerTest extends TestCase
         $executed = false;
         $event = $this->schedule->call(function () use (&$executed) {
             $executed = true;
+
             return 0;
         })->description('test-mutex-protection')->withoutOverlapping(10);
 
@@ -393,7 +397,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 15. 测试任务带有 description 时的摘要显示
+     * 15. 测试任务带有 description 时的摘要显示.
      */
     public function testEventSummaryWithDescription()
     {
@@ -424,7 +428,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 17. 测试指定操作系统用户 (user) 的命令不走同进程内存直驱
+     * 17. 测试指定操作系统用户 (user) 的命令不走同进程内存直驱.
      */
     public function testCommandWithUserDoesNotDirectCall()
     {
@@ -440,7 +444,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 18. 测试常驻内存下 Event 对象跨轮次 exitCode 复位
+     * 18. 测试常驻内存下 Event 对象跨轮次 exitCode 复位.
      */
     public function testEventExitCodeResetBeforeRun()
     {
@@ -454,7 +458,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 19. 测试秒级任务在暂停时时钟推进
+     * 19. 测试秒级任务在暂停时时钟推进.
      */
     public function testTouchRepeatEventOnPause()
     {
@@ -472,7 +476,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 20. 测试单机锁 (onOneServer) 在当分钟内秒级重复调用时不重复穿透 Redis
+     * 20. 测试单机锁 (onOneServer) 在当分钟内秒级重复调用时不重复穿透 Redis.
      */
     public function testServerShouldRunPreservesCacheWithinSameMinute()
     {
@@ -495,7 +499,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 21. 测试包含管道符或命令连接符的命令不能走内存直驱
+     * 21. 测试包含管道符或命令连接符的命令不能走内存直驱.
      */
     public function testComplexShellCommandsFallbackToNative()
     {
@@ -510,7 +514,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 22. 测试后台任务 (runInBackground) 自动降级为原生后台执行而不走同进程同步阻塞
+     * 22. 测试后台任务 (runInBackground) 自动降级为原生后台执行而不走同进程同步阻塞.
      */
     public function testRunInBackgroundFallsBackToNative()
     {
@@ -555,7 +559,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 24. 测试包含空格的带引号项目路径能精准提取 Artisan 子命令
+     * 24. 测试包含空格的带引号项目路径能精准提取 Artisan 子命令.
      */
     public function testExtractArtisanCommandWithSpacesInPath()
     {
@@ -567,7 +571,7 @@ class TaskRunnerTest extends TestCase
     }
 
     /**
-     * 25. 测试 purgeAllConnections 安全清空长连接
+     * 25. 测试 purgeAllConnections 安全清空长连接.
      */
     public function testPurgeAllConnections()
     {

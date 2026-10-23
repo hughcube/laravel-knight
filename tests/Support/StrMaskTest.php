@@ -63,12 +63,12 @@ class StrMaskTest extends TestCase
     public function testMaskMethodsMultiByteSafety()
     {
         $methods = [
-            'maskMobile' => ['王从辉'],
+            'maskMobile'      => ['王从辉'],
             'maskChinaIdCode' => ['王从辉'],
-            'maskEmail' => ['王从辉@example.com'],
-            'maskBankCard' => ['王从辉'],
-            'maskName' => ['王从辉'],
-            'maskAddress' => ['王从辉'],
+            'maskEmail'       => ['王从辉@example.com'],
+            'maskBankCard'    => ['王从辉'],
+            'maskName'        => ['王从辉'],
+            'maskAddress'     => ['王从辉'],
             'maskPlateNumber' => ['王从辉'],
         ];
 
@@ -77,14 +77,14 @@ class StrMaskTest extends TestCase
             $this->assertIsString($result, "$method should return a string");
             $this->assertTrue(
                 mb_check_encoding($result, 'UTF-8'),
-                "$method must return valid UTF-8, got: " . bin2hex($result)
+                "$method must return valid UTF-8, got: ".bin2hex($result)
             );
 
             // json_encode 不应失败
             $json = json_encode([$result]);
             $this->assertNotFalse(
                 $json,
-                "$method result must be json_encode-able, error: " . json_last_error_msg()
+                "$method result must be json_encode-able, error: ".json_last_error_msg()
             );
         }
     }

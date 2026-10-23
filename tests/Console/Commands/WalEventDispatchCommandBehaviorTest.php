@@ -563,7 +563,7 @@ PHP
             };
 
             $this->initializeCommand($command, [
-                '--mode' => 'advance',
+                '--mode'            => 'advance',
                 '--wal2json-params' => ['format-version=1'],
             ]);
             $command->connection = $connection;
@@ -945,16 +945,16 @@ PHP
 
             $rows = [
                 (object) ['lsn' => '0/10', 'data' => json_encode([
-                    'action' => 'I',
-                    'table' => 'users',
+                    'action'  => 'I',
+                    'table'   => 'users',
                     'columns' => [
                         ['name' => 'id', 'type' => 'integer', 'value' => 1],
                         ['name' => 'name', 'type' => 'text', 'value' => 'alice'],
                     ],
                 ])],
                 (object) ['lsn' => '0/11', 'data' => json_encode([
-                    'action' => 'U',
-                    'table' => 'users',
+                    'action'  => 'U',
+                    'table'   => 'users',
                     'columns' => [
                         ['name' => 'id', 'type' => 'integer', 'value' => 1],
                         ['name' => 'name', 'type' => 'text', 'value' => 'bob'],
@@ -1012,10 +1012,10 @@ PHP
             };
 
             $this->initializeCommand($command, [
-                '--mode' => 'advance',
-                '--format-version' => '1',
+                '--mode'             => 'advance',
+                '--format-version'   => '1',
                 '--queue-connection' => 'redis',
-                '--queue' => 'wal-events',
+                '--queue'            => 'wal-events',
             ]);
             $command->connection = $connection;
 
@@ -1117,8 +1117,8 @@ PHP
 
             $this->initializeCommand($command, [
                 '--interval' => '0.1',
-                '--batch' => '10',
-                '--memory' => '1',
+                '--batch'    => '10',
+                '--memory'   => '1',
             ]);
 
             $command->handle();
@@ -1145,8 +1145,8 @@ PHP
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval' => '0.1',
-                '--batch' => '10',
+                '--interval'          => '0.1',
+                '--batch'             => '10',
                 '--partition-refresh' => '1',
             ]);
 
@@ -1173,8 +1173,8 @@ PHP
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval' => '0.1',
-                '--batch' => '10',
+                '--interval'          => '0.1',
+                '--batch'             => '10',
                 '--slot-lag-critical' => '100',
             ]);
 
@@ -1284,6 +1284,7 @@ PHP
                     if (false !== strpos($query, 'pg_drop_replication_slot')) {
                         throw new \RuntimeException('slot is active');
                     }
+
                     return true;
                 }
             };
@@ -1720,14 +1721,15 @@ PHP
             if (false !== strpos($query, 'pg_current_wal_lsn')) {
                 return (object) ['lsn' => '0/0'];
             }
+
             return null;
         }
 
         public function cursor($query, array $bindings = [], $useReadPdo = true, array $fetchUsing = [])
         {
             $this->cursorCalls[] = [
-                'query' => $query,
-                'bindings' => $bindings,
+                'query'      => $query,
+                'bindings'   => $bindings,
                 'useReadPdo' => $useReadPdo,
                 'fetchUsing' => $fetchUsing,
             ];
@@ -1743,6 +1745,7 @@ PHP
             if ($this->advanceThrows) {
                 throw new \RuntimeException('advance failed');
             }
+
             return true;
         }
     }

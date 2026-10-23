@@ -130,6 +130,7 @@ class Request extends HttpRequest
 
     /**
      * 获取agent检测.
+     *
      * @return mixed
      */
     public function getUserAgentDetect()

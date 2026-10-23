@@ -4,13 +4,11 @@ namespace HughCube\Laravel\Knight\Scheduling;
 
 use Carbon\Carbon;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
-use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Collection;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * 原生 PHP CLI 零依赖顺序循环调度驱动（稳定兜底驱动）
+ * 原生 PHP CLI 零依赖顺序循环调度驱动（稳定兜底驱动）.
  *
  * =========================================================================
  * 【核心设计思路】
@@ -236,7 +234,7 @@ class NativeDriver implements DriverInterface
     }
 
     /**
-     * 接收外部中断退出信号
+     * 接收外部中断退出信号.
      */
     public function stop(): void
     {
@@ -244,7 +242,7 @@ class NativeDriver implements DriverInterface
     }
 
     /**
-     * 当前守护驱动是否已被要求停止
+     * 当前守护驱动是否已被要求停止.
      *
      * @phpstan-impure
      */

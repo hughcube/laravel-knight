@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RequestSignatureValidateTest extends TestCase
 {
     /**
-     * 创建一个禁用签名验证的中间件实例（模拟 disabled 场景）
+     * 创建一个禁用签名验证的中间件实例（模拟 disabled 场景）.
      */
     private function makeDisabledMiddleware(): RequestSignatureValidate
     {
@@ -24,7 +24,7 @@ class RequestSignatureValidateTest extends TestCase
     }
 
     /**
-     * 创建一个签名验证始终失败的中间件实例，可自定义 optional 列表
+     * 创建一个签名验证始终失败的中间件实例，可自定义 optional 列表.
      */
     private function makeMiddleware(array $optional = []): RequestSignatureValidate
     {

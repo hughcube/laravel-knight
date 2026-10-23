@@ -12,7 +12,6 @@ class WalChangeRecord implements JsonSerializable
     const KIND_UPDATE = 'update';
     const KIND_DELETE = 'delete';
 
-
     /** @var string insert|update|delete */
     private $kind;
 
@@ -35,7 +34,7 @@ class WalChangeRecord implements JsonSerializable
      * 旧值列映射。
      * - DELETE: 来自 oldkeys，默认 REPLICA IDENTITY 下只包含主键列
      * - UPDATE: 需 REPLICA IDENTITY FULL 才有旧值
-     * - INSERT: 始终为空数组
+     * - INSERT: 始终为空数组.
      *
      * @var array<string, mixed>
      */
@@ -56,20 +55,19 @@ class WalChangeRecord implements JsonSerializable
      * 自定义 Model 查询回调，用于覆盖 fetchModel 的默认查询逻辑。
      * 不参与序列化——与 context 相同，属于运行时状态。
      *
-     * @var callable|null  签名: function(WalChangeRecord $record): Model|null
+     * @var callable|null 签名: function(WalChangeRecord): Model|null
      */
     private $fetcher;
 
-
     /**
-     * @param string $kind
-     * @param string $table
+     * @param string      $kind
+     * @param string      $table
      * @param string|null $partitionTable
-     * @param int|string $id
-     * @param string $keyName
-     * @param array $columns
-     * @param array $oldColumns
-     * @param string $modelClass
+     * @param int|string  $id
+     * @param string      $keyName
+     * @param array       $columns
+     * @param array       $oldColumns
+     * @param string      $modelClass
      */
     public function __construct($kind, $table, $partitionTable, $id, $keyName, array $columns, array $oldColumns, $modelClass)
     {
@@ -94,11 +92,11 @@ class WalChangeRecord implements JsonSerializable
      * - v1: kind + columnnames/columnvalues 并行数组 + oldkeys.keynames/keyvalues
      * - v2: action + columns[{name,type,value}] + identity[{name,type,value}]
      *
-     * @param array $change wal2json 单条 change 记录
-     * @param string $resolvedTable 解析后的父表名
-     * @param string|null $rawTable 原始表名（分区子表），与 resolvedTable 相同时传 null
-     * @param string $keyName 主键列名
-     * @param string $modelClass Model 类名
+     * @param array       $change        wal2json 单条 change 记录
+     * @param string      $resolvedTable 解析后的父表名
+     * @param string|null $rawTable      原始表名（分区子表），与 resolvedTable 相同时传 null
+     * @param string      $keyName       主键列名
+     * @param string      $modelClass    Model 类名
      *
      * @return self|null 无法提取主键时返回 null
      */
@@ -145,11 +143,11 @@ class WalChangeRecord implements JsonSerializable
      * - columns: [{name, type, value}, ...] （INSERT/UPDATE 的新值）
      * - identity: [{name, type, value}, ...] （UPDATE/DELETE 的旧值/主键）
      *
-     * @param array $change wal2json v2 单条 change 记录
-     * @param string $resolvedTable 解析后的父表名
-     * @param string|null $rawTable 原始表名
-     * @param string $keyName 主键列名
-     * @param string $modelClass Model 类名
+     * @param array       $change        wal2json v2 单条 change 记录
+     * @param string      $resolvedTable 解析后的父表名
+     * @param string|null $rawTable      原始表名
+     * @param string      $keyName       主键列名
+     * @param string      $modelClass    Model 类名
      *
      * @return self|null
      */
@@ -215,6 +213,7 @@ class WalChangeRecord implements JsonSerializable
                 }
             }
         }
+
         return $result;
     }
 
@@ -300,7 +299,7 @@ class WalChangeRecord implements JsonSerializable
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -313,7 +312,7 @@ class WalChangeRecord implements JsonSerializable
 
     /**
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -461,14 +460,14 @@ class WalChangeRecord implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'kind' => $this->kind,
-            'table' => $this->table,
+            'kind'           => $this->kind,
+            'table'          => $this->table,
             'partitionTable' => $this->partitionTable,
-            'id' => $this->id,
-            'keyName' => $this->keyName,
-            'columns' => $this->columns,
-            'oldColumns' => $this->oldColumns,
-            'modelClass' => $this->modelClass,
+            'id'             => $this->id,
+            'keyName'        => $this->keyName,
+            'columns'        => $this->columns,
+            'oldColumns'     => $this->oldColumns,
+            'modelClass'     => $this->modelClass,
         ];
     }
 

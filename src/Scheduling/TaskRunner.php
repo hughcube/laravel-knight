@@ -9,27 +9,26 @@ use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Console\OutputStyle;
 use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Console\OutputStyle;
-use Symfony\Component\Console\Input\ArrayInput;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use ReflectionProperty;
 use RuntimeException;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 /**
- * 调度任务执行器与全量协程沙箱守护器
+ * 调度任务执行器与全量协程沙箱守护器.
  *
  * =========================================================================
  * 【核心设计思路】
@@ -87,7 +86,7 @@ class TaskRunner
     protected string $phpBinary;
 
     /**
-     * 沙箱执行前捕获的环境与配置快照
+     * 沙箱执行前捕获的环境与配置快照.
      */
     protected array $configSnapshot = [];
     protected array $serverSnapshot = [];
@@ -95,9 +94,9 @@ class TaskRunner
     protected array $getenvSnapshot = [];
 
     /**
-     * @param Container $container
+     * @param Container       $container
      * @param OutputInterface $output
-     * @param mixed $components
+     * @param mixed           $components
      */
     public function __construct(Container $container, OutputInterface $output, $components = null)
     {
@@ -116,7 +115,7 @@ class TaskRunner
     }
 
     /**
-     * 获取依赖注入容器
+     * 获取依赖注入容器.
      */
     public function getContainer(): Container
     {
@@ -124,7 +123,7 @@ class TaskRunner
     }
 
     /**
-     * 获取 Application 契约实例（供 Schedule::dueEvents / filtersPass 等方法调用）
+     * 获取 Application 契约实例（供 Schedule::dueEvents / filtersPass 等方法调用）.
      *
      * @return \Illuminate\Contracts\Foundation\Application
      */
@@ -134,7 +133,7 @@ class TaskRunner
     }
 
     /**
-     * 获取 Application 契约实例（供 filtersPass 等必须使用 Application 类型约束的门禁调用）
+     * 获取 Application 契约实例（供 filtersPass 等必须使用 Application 类型约束的门禁调用）.
      *
      * @return \Illuminate\Contracts\Foundation\Application
      */
@@ -147,10 +146,10 @@ class TaskRunner
     }
 
     /**
-     * 判定事件是否满足全套调度前置门禁（暂停、维护模式、过滤条件）
+     * 判定事件是否满足全套调度前置门禁（暂停、维护模式、过滤条件）.
      *
-     * @param Event $event 目标事件
-     * @param Schedule|null $schedule 调度器实例（可选，兼顾旧版单步调用）
+     * @param Event                  $event     目标事件
+     * @param Schedule|null          $schedule  调度器实例（可选，兼顾旧版单步调用）
      * @param DateTimeInterface|null $startedAt 当前轮次整点基准时间戳
      */
     public function shouldRun(Event $event, ?Schedule $schedule = null, ?DateTimeInterface $startedAt = null): bool
@@ -161,6 +160,7 @@ class TaskRunner
         if ($isPaused) {
             $this->touchRepeatEvent($event);
             $this->dispatcher()->dispatch(new ScheduledTaskSkipped($event));
+
             return false;
         }
 
@@ -170,12 +170,14 @@ class TaskRunner
             && !$event->runsInMaintenanceMode();
         if ($isDown) {
             $this->touchRepeatEvent($event);
+
             return false;
         }
 
         // 3. 环境与自定义过滤器检查 (when / skip / inEnvironment)
         if (!$event->filtersPass($this->app())) {
             $this->dispatcher()->dispatch(new ScheduledTaskSkipped($event));
+
             return false;
         }
 
@@ -188,7 +190,7 @@ class TaskRunner
     }
 
     /**
-     * 判定多节点单机唯一认领锁 (onOneServer)
+     * 判定多节点单机唯一认领锁 (onOneServer).
      */
     public function serverShouldRun(Event $event, Schedule $schedule, ?DateTimeInterface $startedAt = null): bool
     {
@@ -198,6 +200,7 @@ class TaskRunner
                 'Skipping [%s] because the command already ran on another server.',
                 $event->getSummaryForDisplay()
             ));
+
             return false;
         }
 
@@ -205,7 +208,7 @@ class TaskRunner
     }
 
     /**
-     * 执行任务并守护全套协程沙箱与终端渲染
+     * 执行任务并守护全套协程沙箱与终端渲染.
      *
      * @return int 任务执行退出码 (0: 成功, 非0: 失败)
      */
@@ -231,7 +234,7 @@ class TaskRunner
     }
 
     /**
-     * 同进程直驱安全执行 Artisan 命令
+     * 同进程直驱安全执行 Artisan 命令.
      */
     protected function runArtisanSafely(Event $event, string $artisanCommand): int
     {
@@ -265,6 +268,7 @@ class TaskRunner
                     $event->skippedBecauseOverlapping = true;
                     $duration = round(microtime(true) - $start, 2);
                     $this->dispatcher()->dispatch(new ScheduledTaskFinished($event, $duration));
+
                     return true;
                 }
 
@@ -284,6 +288,7 @@ class TaskRunner
 
                     $exitCode = 0;
                     ob_start();
+
                     try {
                         $exitCode = (int) $kernel->call($artisanCommand, [], $buffer);
                     } catch (Throwable $e) {
@@ -303,7 +308,7 @@ class TaskRunner
                     // 4. 标准输出拦截与文件重定向写入 (sendOutputTo / appendOutputTo)
                     $output = $buffer->fetch();
                     if (!empty($rawOutput)) {
-                        $output = ($output !== '' ? $output . "\n" : '') . $rawOutput;
+                        $output = ($output !== '' ? $output."\n" : '').$rawOutput;
                     }
                     $this->writeEventOutput($event, $output);
 
@@ -323,7 +328,7 @@ class TaskRunner
 
                     if ($exitCode !== 0 && !$event->runInBackground) {
                         throw new RuntimeException(sprintf(
-                            "Scheduled command [%s] failed with exit code [%d].",
+                            'Scheduled command [%s] failed with exit code [%d].',
                             $event->command,
                             $exitCode
                         ));
@@ -359,7 +364,7 @@ class TaskRunner
     }
 
     /**
-     * 安全执行非 Artisan 命令（原生闭包 CallbackEvent 或 外部系统脚本）
+     * 安全执行非 Artisan 命令（原生闭包 CallbackEvent 或 外部系统脚本）.
      */
     protected function runNativeEventSafely(Event $event): int
     {
@@ -391,6 +396,7 @@ class TaskRunner
                     // 2. 原生方法委派：原生 run() 内部自洽完整处理抢锁、before、执行、after 与解锁
                     // 使用输出缓冲区捕获可能存在的闭包 echo/print 输出并重定向到目标文件
                     ob_start();
+
                     try {
                         $event->run($this->container);
                     } finally {
@@ -407,7 +413,7 @@ class TaskRunner
 
                     if ($nativeExitCode !== 0 && !$event->runInBackground) {
                         throw new RuntimeException(sprintf(
-                            "Scheduled command [%s] failed with exit code [%d].",
+                            'Scheduled command [%s] failed with exit code [%d].',
                             $event->command,
                             $nativeExitCode
                         ));
@@ -439,7 +445,7 @@ class TaskRunner
     }
 
     /**
-     * 写入事件输出文件 (支持 sendOutputTo 与 appendOutputTo)
+     * 写入事件输出文件 (支持 sendOutputTo 与 appendOutputTo).
      */
     protected function writeEventOutput(Event $event, string $output): void
     {
@@ -463,7 +469,7 @@ class TaskRunner
     }
 
     /**
-     * 从完整命令行中提取纯 Artisan 命令
+     * 从完整命令行中提取纯 Artisan 命令.
      */
     public function extractArtisanCommand(?string $command): ?string
     {
@@ -479,10 +485,10 @@ class TaskRunner
         // "/usr/local/bin/php" "/var/www/artisan" cache:gc --cache=ots > /dev/null 2>&1
         // 'C:\php\php.exe' 'C:\Program Files\project\artisan' emails:send --force
         $pattern = '/(?:^|\s)(?:'
-            . '\'[^\']*artisan(?:\.php)?\''
-            . '|"[^"]*artisan(?:\.php)?"'
-            . '|[^\s\'"]*artisan(?:\.php)?'
-            . ')\s+(.+)$/is';
+            .'\'[^\']*artisan(?:\.php)?\''
+            .'|"[^"]*artisan(?:\.php)?"'
+            .'|[^\s\'"]*artisan(?:\.php)?'
+            .')\s+(.+)$/is';
         if (preg_match($pattern, $command, $matches)) {
             $subCommand = trim($matches[1]);
             // 剥离末尾可能存在的标准 shell 重定向 (如 > file, >> file, 2>&1)
@@ -501,7 +507,7 @@ class TaskRunner
     }
 
     /**
-     * 协程沙箱准备：隔离主协程继承的旧句柄，创建配置与超全局变量快照
+     * 协程沙箱准备：隔离主协程继承的旧句柄，创建配置与超全局变量快照.
      *
      * @return array 快照字典
      */
@@ -525,7 +531,7 @@ class TaskRunner
     }
 
     /**
-     * 执行任务沙箱状态清理与状态回滚
+     * 执行任务沙箱状态清理与状态回滚.
      *
      * @param array|null $snapshot 协程调用栈绑定的环境快照（杜绝多协程并发覆盖）
      */
@@ -583,6 +589,7 @@ class TaskRunner
         }
         if (!empty($configSnapshot) && function_exists('config')) {
             $configRepo = config();
+
             try {
                 $reflection = new ReflectionProperty($configRepo, 'items');
                 $reflection->setAccessible(true);
@@ -619,7 +626,7 @@ class TaskRunner
 
     /**
      * 在轮次收尾且无并发任务时，全量断开所有物理数据库与 Redis 连接并解绑底层 PDO
-     * （防止长连接闲置超时 Gone Away，彻底杜绝连接跨轮次泄漏）
+     * （防止长连接闲置超时 Gone Away，彻底杜绝连接跨轮次泄漏）.
      */
     public function purgeAllConnections(): void
     {
@@ -646,6 +653,7 @@ class TaskRunner
                         }
                     } catch (Throwable $e) {
                     }
+
                     try {
                         DB::purge($name);
                     } catch (Throwable $e) {
@@ -661,6 +669,7 @@ class TaskRunner
                     if (method_exists($redisConn, 'disconnect')) {
                         $redisConn->disconnect();
                     }
+
                     try {
                         Redis::purge($name);
                     } catch (Throwable $e) {
@@ -672,7 +681,7 @@ class TaskRunner
     }
 
     /**
-     * 安全释放任务互斥锁 (withoutOverlapping)
+     * 安全释放任务互斥锁 (withoutOverlapping).
      */
     public function releaseMutexSafely(Event $event): void
     {
@@ -685,7 +694,7 @@ class TaskRunner
     }
 
     /**
-     * 在每一轮新分钟开始时，复位 Schedule 对象内部状态（清空上一分钟的单机锁结果缓存）
+     * 在每一轮新分钟开始时，复位 Schedule 对象内部状态（清空上一分钟的单机锁结果缓存）.
      */
     public function resetScheduleForNewMinute(Schedule $schedule): void
     {
@@ -693,7 +702,7 @@ class TaskRunner
     }
 
     /**
-     * 重置 Schedule 对象内部的单机锁结果缓存（防止常驻内存跨分钟缓存污染）
+     * 重置 Schedule 对象内部的单机锁结果缓存（防止常驻内存跨分钟缓存污染）.
      */
     public function clearScheduleMutexCache(Schedule $schedule): void
     {
@@ -706,7 +715,7 @@ class TaskRunner
     }
 
     /**
-     * 推进秒级重复任务时钟（防止因暂停/维护拦截导致 100ms 内疯狂空转）
+     * 推进秒级重复任务时钟（防止因暂停/维护拦截导致 100ms 内疯狂空转）.
      */
     public function touchRepeatEvent(Event $event): void
     {
@@ -750,7 +759,7 @@ class TaskRunner
     }
 
     /**
-     * 获取输出组件工厂（支持优雅降级，兼容低版本 Laravel）
+     * 获取输出组件工厂（支持优雅降级，兼容低版本 Laravel）.
      *
      * @return object
      */
@@ -783,7 +792,7 @@ class TaskRunner
                 $duration = (microtime(true) - $start) * 1000;
                 $dots = str_repeat('.', max(1, 80 - strlen((string) $description) - 20));
                 $this->output->writeln(sprintf(
-                    "  %s %s <fg=gray>%.2fms</> <fg=green;options=bold>DONE</>",
+                    '  %s %s <fg=gray>%.2fms</> <fg=green;options=bold>DONE</>',
                     $description,
                     $dots,
                     $duration

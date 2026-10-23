@@ -165,7 +165,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1'],
-            '--no-add-tables' => true,
+            '--no-add-tables'   => true,
         ]);
 
         $result = self::callMethod($command, 'collectAutoWal2jsonParams');
@@ -178,7 +178,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['add-tables=custom.table'],
-            '--no-add-tables' => true,
+            '--no-add-tables'   => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
@@ -192,8 +192,8 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['filter-tables=custom.table'],
-            '--filter-tables' => ['telescope_entries'],
-            '--no-add-tables' => true,
+            '--filter-tables'   => ['telescope_entries'],
+            '--no-add-tables'   => true,
         ]);
 
         $result = self::callMethod($command, 'collectAutoWal2jsonParams');
@@ -206,8 +206,8 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1', 'add-tables=foo', 'filter-tables=bar'],
-            '--filter-tables' => ['telescope_entries'],
-            '--no-add-tables' => true,
+            '--filter-tables'   => ['telescope_entries'],
+            '--no-add-tables'   => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
@@ -234,7 +234,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1'],
-            '--no-add-tables' => true,
+            '--no-add-tables'   => true,
         ]);
 
         list($placeholders) = self::callMethod($command, 'buildWal2jsonParams');
@@ -246,7 +246,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1'],
-            '--no-add-tables' => true,
+            '--no-add-tables'   => true,
         ]);
 
         list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
@@ -258,7 +258,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['add-tables=custom.foo'],
-            '--no-add-tables' => true,
+            '--no-add-tables'   => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
@@ -271,7 +271,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['add-tables=custom.foo'],
-            '--no-add-tables' => true,
+            '--no-add-tables'   => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
@@ -284,8 +284,8 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['filter-tables=custom.bar'],
-            '--filter-tables' => ['telescope_entries'],
-            '--no-add-tables' => true,
+            '--filter-tables'   => ['telescope_entries'],
+            '--no-add-tables'   => true,
         ]);
 
         list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
@@ -317,7 +317,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand();
 
         $counts = [
-            'users' => ['insert' => 3, 'update' => 1],
+            'users'  => ['insert' => 3, 'update' => 1],
             'orders' => ['delete' => 2],
         ];
         $result = self::callMethod($command, 'formatChangeSummary', [$counts]);
@@ -820,7 +820,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand();
 
         $handlers = [
-            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users'  => [['handler' => new \stdClass(), 'keyName' => 'id']],
             'orders' => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
@@ -842,7 +842,7 @@ class WalEventDispatchCommandTest extends TestCase
 
         $handlers = [
             'audit.logs' => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users'      => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
         $result = self::callMethod($command, 'buildAutoAddTables', [$handlers, []]);
@@ -883,7 +883,7 @@ class WalEventDispatchCommandTest extends TestCase
 
         $handlers = [
             'orders' => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users'  => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
         /** orders 有两个分区子表 */
@@ -903,8 +903,8 @@ class WalEventDispatchCommandTest extends TestCase
 
         $handlers = [
             'orders' => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'logs' => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'logs'   => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users'  => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
         $partitionMap = [
@@ -1039,7 +1039,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         /**
          * handle() 中 batch = max(1, intval($this->option('batch')))
-         * 确保至少为 1，避免 SQL 查询传入 0
+         * 确保至少为 1，避免 SQL 查询传入 0.
          */
         $this->assertSame(1, max(1, intval('0')));
         $this->assertSame(1, max(1, intval('-5')));
@@ -1082,7 +1082,7 @@ class WalEventDispatchCommandTest extends TestCase
      */
     protected function makeNoDispatchCommand(array $options = [])
     {
-        $command = new class extends WalEventDispatchCommand {
+        $command = new class() extends WalEventDispatchCommand {
             /** @var int */
             public $testDispatchCount = 0;
 
@@ -1141,12 +1141,15 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_500k_ins_' . getmypid();
-        $tableName = 'knight_500k_ins_' . getmypid();
+        $slotName = 'knight_500k_ins_'.getmypid();
+        $tableName = 'knight_500k_ins_'.getmypid();
         $total = 500000;
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT, value INT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1164,8 +1167,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->getPdo()->commit();
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1200,8 +1203,15 @@ class WalEventDispatchCommandTest extends TestCase
             /** 验证所有 record 的 kind 均为 insert */
             $this->assertSame(['insert' => $total], $command->testKindCounts);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1214,12 +1224,15 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_500k_upd_' . getmypid();
-        $tableName = 'knight_500k_upd_' . getmypid();
+        $slotName = 'knight_500k_upd_'.getmypid();
+        $tableName = 'knight_500k_upd_'.getmypid();
         $total = 500000;
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT, value INT)', $tableName));
 
@@ -1239,8 +1252,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("UPDATE %s SET name = 'updated', value = value + 1", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1270,8 +1283,15 @@ class WalEventDispatchCommandTest extends TestCase
             /** 验证所有 record 的 kind 均为 update */
             $this->assertSame(['update' => $total], $command->testKindCounts);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1284,12 +1304,15 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_500k_del_' . getmypid();
-        $tableName = 'knight_500k_del_' . getmypid();
+        $slotName = 'knight_500k_del_'.getmypid();
+        $tableName = 'knight_500k_del_'.getmypid();
         $total = 500000;
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
 
@@ -1309,8 +1332,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf('DELETE FROM %s', $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1344,8 +1367,15 @@ class WalEventDispatchCommandTest extends TestCase
             $uniqueIds = array_unique($command->testCollectedIds);
             $this->assertCount(count($command->testCollectedIds), $uniqueIds, 'DELETE 的 ID 应唯一');
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1358,11 +1388,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_adv_test_' . getmypid();
-        $tableName = 'knight_adv_test_' . getmypid();
+        $slotName = 'knight_adv_test_'.getmypid();
+        $tableName = 'knight_adv_test_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1370,8 +1403,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) SELECT 'row_' || g FROM generate_series(1, 1000) g", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'advance',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'advance',
                 '--no-add-tables' => true,
             ]);
 
@@ -1400,8 +1433,15 @@ class WalEventDispatchCommandTest extends TestCase
             );
             $this->assertEquals(0, $remaining[0]->cnt, 'advance 模式处理后 slot 应已推进');
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1414,22 +1454,28 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_empty_test_' . getmypid();
+        $slotName = 'knight_empty_test_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'advance',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'advance',
                 '--no-add-tables' => true,
             ]);
 
             $hasChanges = self::callMethod($command, 'pollChanges', [$slotName, [], 1000, []]);
             $this->assertFalse($hasChanges, '无变更时应返回 false');
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1444,11 +1490,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_bc_test_' . getmypid();
-        $tableName = 'knight_bc_test_' . getmypid();
+        $slotName = 'knight_bc_test_'.getmypid();
+        $tableName = 'knight_bc_test_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1457,8 +1506,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('a'), ('b'), ('c')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1471,8 +1520,15 @@ class WalEventDispatchCommandTest extends TestCase
             /** 只有 3 条 I 被 dispatch，B/C 被跳过 */
             $this->assertSame(3, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1485,11 +1541,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_unhandled_' . getmypid();
-        $tableName = 'knight_unhandled_' . getmypid();
+        $slotName = 'knight_unhandled_'.getmypid();
+        $tableName = 'knight_unhandled_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1497,8 +1556,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('a'), ('b')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1513,8 +1572,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertFalse($hasChanges);
             $this->assertSame(0, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1527,11 +1593,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_multi_h_' . getmypid();
-        $tableName = 'knight_multi_h_' . getmypid();
+        $slotName = 'knight_multi_h_'.getmypid();
+        $tableName = 'knight_multi_h_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1539,8 +1608,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('x')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1557,8 +1626,15 @@ class WalEventDispatchCommandTest extends TestCase
             /** 1 条 INSERT × 2 个 handler = 2 次 dispatch */
             $this->assertSame(2, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1571,12 +1647,15 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_part_' . getmypid();
-        $parentTable = 'knight_part_parent_' . getmypid();
-        $childTable = $parentTable . '_p0';
+        $slotName = 'knight_part_'.getmypid();
+        $parentTable = 'knight_part_parent_'.getmypid();
+        $childTable = $parentTable.'_p0';
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $parentTable));
 
             // 创建分区表
@@ -1586,7 +1665,8 @@ class WalEventDispatchCommandTest extends TestCase
             ));
             $connection->statement(sprintf(
                 'CREATE TABLE %s PARTITION OF %s FOR VALUES FROM (0) TO (1000000)',
-                $childTable, $parentTable
+                $childTable,
+                $parentTable
             ));
 
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1595,8 +1675,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name, part_key) VALUES ('part_row', 1)", $parentTable));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1613,8 +1693,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $parentTable)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $parentTable));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1627,11 +1714,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_peek_' . getmypid();
-        $tableName = 'knight_peek_' . getmypid();
+        $slotName = 'knight_peek_'.getmypid();
+        $tableName = 'knight_peek_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1639,8 +1729,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('peek1'), ('peek2')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'peek',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'peek',
                 '--no-add-tables' => true,
             ]);
 
@@ -1658,8 +1748,15 @@ class WalEventDispatchCommandTest extends TestCase
             self::callMethod($command, 'pollChanges', [$slotName, $handlers, 100, []]);
             $this->assertSame(2, $command->testDispatchCount, 'peek 模式不消费，第二次应看到相同数据');
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1672,11 +1769,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_auto_cons_' . getmypid();
-        $tableName = 'knight_auto_cons_' . getmypid();
+        $slotName = 'knight_auto_cons_'.getmypid();
+        $tableName = 'knight_auto_cons_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1684,8 +1784,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('auto1')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1704,8 +1804,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertFalse($has2);
             $this->assertSame(0, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1718,11 +1825,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_v1_' . getmypid();
-        $tableName = 'knight_v1_' . getmypid();
+        $slotName = 'knight_v1_'.getmypid();
+        $tableName = 'knight_v1_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1731,10 +1841,10 @@ class WalEventDispatchCommandTest extends TestCase
 
             /** 使用 format-version=1 */
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'     => 'pgsql',
+                '--mode'           => 'auto',
                 '--format-version' => '1',
-                '--no-add-tables' => true,
+                '--no-add-tables'  => true,
             ]);
 
             $handlers = [
@@ -1746,8 +1856,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(2, $command->testDispatchCount, 'v1 格式应正确解析 2 条 INSERT');
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1759,8 +1876,8 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfPgsqlNotConfigured();
 
         $command = $this->makeNoDispatchCommand([
-            '--connection' => 'pgsql',
-            '--mode' => 'auto',
+            '--connection'    => 'pgsql',
+            '--mode'          => 'auto',
             '--no-add-tables' => true,
         ]);
 
@@ -1777,11 +1894,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_mix_tx_' . getmypid();
-        $tableName = 'knight_mix_tx_' . getmypid();
+        $slotName = 'knight_mix_tx_'.getmypid();
+        $tableName = 'knight_mix_tx_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1792,8 +1912,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("DELETE FROM %s WHERE name = 'b'", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1807,8 +1927,15 @@ class WalEventDispatchCommandTest extends TestCase
             /** 3 INSERT + 1 UPDATE + 1 DELETE = 5 */
             $this->assertSame(5, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1821,12 +1948,15 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_partial_' . getmypid();
-        $table1 = 'knight_partial_a_' . getmypid();
-        $table2 = 'knight_partial_b_' . getmypid();
+        $slotName = 'knight_partial_'.getmypid();
+        $table1 = 'knight_partial_a_'.getmypid();
+        $table2 = 'knight_partial_b_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $table1));
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $table2));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $table1));
@@ -1838,8 +1968,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('b1'), ('b2'), ('b3')", $table2));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1853,9 +1983,20 @@ class WalEventDispatchCommandTest extends TestCase
             /** 只有 table1 的 2 条 INSERT 被 dispatch */
             $this->assertSame(2, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $table1)); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $table2)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $table1));
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $table2));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1868,10 +2009,13 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_phantom_' . getmypid();
+        $slotName = 'knight_phantom_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             // 记录 slot 创建时的 confirmed_flush_lsn
@@ -1886,8 +2030,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement('DROP TABLE knight_phantom_push');
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'advance',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'advance',
                 '--no-add-tables' => true,
             ]);
 
@@ -1907,7 +2051,10 @@ class WalEventDispatchCommandTest extends TestCase
                 '幻影滞后推进应更新 confirmed_flush_lsn'
             );
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1920,11 +2067,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_trunc_' . getmypid();
-        $tableName = 'knight_trunc_' . getmypid();
+        $slotName = 'knight_trunc_'.getmypid();
+        $tableName = 'knight_trunc_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -1934,8 +2084,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('after_trunc')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1948,8 +2098,15 @@ class WalEventDispatchCommandTest extends TestCase
             /** INSERT + TRUNCATE + INSERT → 只有 2 条 INSERT 被 dispatch，TRUNCATE 跳过 */
             $this->assertSame(2, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1962,15 +2119,18 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_empty_tx_' . getmypid();
+        $slotName = 'knight_empty_tx_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1978,7 +2138,10 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertFalse($hasChanges);
             $this->assertSame(0, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -1993,11 +2156,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_null_col_' . getmypid();
-        $tableName = 'knight_null_col_' . getmypid();
+        $slotName = 'knight_null_col_'.getmypid();
+        $tableName = 'knight_null_col_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT, nullable_col TEXT, num INT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2006,8 +2172,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name, nullable_col, num) VALUES ('has_nulls', NULL, NULL)", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2019,8 +2185,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2033,22 +2206,25 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_toast_' . getmypid();
-        $tableName = 'knight_toast_' . getmypid();
+        $slotName = 'knight_toast_'.getmypid();
+        $tableName = 'knight_toast_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, content TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             /** 插入 100KB 文本（远超 TOAST 阈值） */
             $bigText = str_repeat('abcdefghij', 10000);
-            $connection->statement(sprintf("INSERT INTO %s (content) VALUES (?)", $tableName), [$bigText]);
+            $connection->statement(sprintf('INSERT INTO %s (content) VALUES (?)', $tableName), [$bigText]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2060,8 +2236,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2074,11 +2257,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_jsonb_' . getmypid();
-        $tableName = 'knight_jsonb_' . getmypid();
+        $slotName = 'knight_jsonb_'.getmypid();
+        $tableName = 'knight_jsonb_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, meta JSONB)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2089,8 +2275,8 @@ class WalEventDispatchCommandTest extends TestCase
             ));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2102,8 +2288,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2116,11 +2309,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_uuid_' . getmypid();
-        $tableName = 'knight_uuid_' . getmypid();
+        $slotName = 'knight_uuid_'.getmypid();
+        $tableName = 'knight_uuid_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2128,8 +2324,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('uuid_row')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2142,8 +2338,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2158,12 +2361,15 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_schema_' . getmypid();
-        $schemaName = 'knight_test_schema_' . getmypid();
+        $slotName = 'knight_schema_'.getmypid();
+        $schemaName = 'knight_test_schema_'.getmypid();
         $tableName = 'schema_test_table';
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP SCHEMA IF EXISTS %s CASCADE', $schemaName));
             $connection->statement(sprintf('CREATE SCHEMA %s', $schemaName));
             $connection->statement(sprintf('CREATE TABLE %s.%s (id SERIAL PRIMARY KEY, name TEXT)', $schemaName, $tableName));
@@ -2172,8 +2378,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s.%s (name) VALUES ('schema_row')", $schemaName, $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2186,8 +2392,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP SCHEMA IF EXISTS %s CASCADE', $schemaName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP SCHEMA IF EXISTS %s CASCADE', $schemaName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2201,11 +2414,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_ri_del_' . getmypid();
-        $tableName = 'knight_ri_del_' . getmypid();
+        $slotName = 'knight_ri_del_'.getmypid();
+        $tableName = 'knight_ri_del_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT, value INT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2221,8 +2437,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf('DELETE FROM %s WHERE name = ?', $tableName), ['del_test']);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2234,8 +2450,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges, 'DELETE 应产生变更');
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2248,11 +2471,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_comp_key_' . getmypid();
-        $tableName = 'knight_comp_key_' . getmypid();
+        $slotName = 'knight_comp_key_'.getmypid();
+        $tableName = 'knight_comp_key_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf(
                 'CREATE TABLE %s (user_id INT, item_id INT, name TEXT, PRIMARY KEY (user_id, item_id))',
@@ -2263,8 +2489,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (user_id, item_id, name) VALUES (100, 200, 'composite')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2277,8 +2503,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2293,11 +2526,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_special_' . getmypid();
-        $tableName = 'knight_special_' . getmypid();
+        $slotName = 'knight_special_'.getmypid();
+        $tableName = 'knight_special_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, content TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2314,8 +2550,8 @@ class WalEventDispatchCommandTest extends TestCase
             }
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2327,8 +2563,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(count($specialValues), $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2341,11 +2584,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_bytea_' . getmypid();
-        $tableName = 'knight_bytea_' . getmypid();
+        $slotName = 'knight_bytea_'.getmypid();
+        $tableName = 'knight_bytea_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, data BYTEA)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2354,8 +2600,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (data) VALUES (decode('deadbeef', 'hex'))", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2368,8 +2614,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertTrue($hasChanges);
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2385,11 +2638,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_exc_' . getmypid();
-        $tableName = 'knight_exc_' . getmypid();
+        $slotName = 'knight_exc_'.getmypid();
+        $tableName = 'knight_exc_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2397,8 +2653,9 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('a'), ('b'), ('c')", $tableName));
 
             /** 构造一个第 2 次 dispatch 时抛异常的 command */
-            $command = new class extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand {
                 public $testDispatchCount = 0;
+
                 protected function dispatchWalChange(\HughCube\Laravel\Knight\Database\Wal\WalChangeRecord $record): void
                 {
                     $this->testDispatchCount++;
@@ -2409,8 +2666,8 @@ class WalEventDispatchCommandTest extends TestCase
             };
             $command->setLaravel($this->app);
             $input = new ArrayInput([
-                '--connection' => 'pgsql',
-                '--mode' => 'advance',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'advance',
                 '--no-add-tables' => true,
             ], $command->getDefinition());
             self::setProperty($command, 'input', $input);
@@ -2423,6 +2680,7 @@ class WalEventDispatchCommandTest extends TestCase
 
             /** pollChanges 应抛出异常 */
             $threw = false;
+
             try {
                 self::callMethod($command, 'pollChanges', [$slotName, $handlers, 100, []]);
             } catch (\RuntimeException $e) {
@@ -2438,8 +2696,15 @@ class WalEventDispatchCommandTest extends TestCase
             );
             $this->assertGreaterThan(0, $remaining[0]->cnt, '异常后 slot 未推进，WAL 数据仍在');
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2453,11 +2718,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_badkey_' . getmypid();
-        $tableName = 'knight_badkey_' . getmypid();
+        $slotName = 'knight_badkey_'.getmypid();
+        $tableName = 'knight_badkey_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2465,8 +2733,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('mismatch')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2481,8 +2749,15 @@ class WalEventDispatchCommandTest extends TestCase
             $this->assertFalse($hasChanges);
             $this->assertSame(0, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2495,11 +2770,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_diffkey_' . getmypid();
-        $tableName = 'knight_diffkey_' . getmypid();
+        $slotName = 'knight_diffkey_'.getmypid();
+        $tableName = 'knight_diffkey_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2507,8 +2785,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('diffkey')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2525,14 +2803,21 @@ class WalEventDispatchCommandTest extends TestCase
             /** 只有第一个 handler 成功 dispatch */
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
     /**
      * 【架构师】slot 在 poll 中间被外部进程删除 → 游标 FETCH 应抛出异常，事务回滚。
-     * （模拟 DBA 意外删除 slot 的场景）
+     * （模拟 DBA 意外删除 slot 的场景）.
      */
     public function testPollChangesHandlesSlotDroppedDuringPoll()
     {
@@ -2540,17 +2825,20 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_drop_mid_' . getmypid();
+        $slotName = 'knight_drop_mid_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
 
             /** 创建 slot 但不插入数据 → poll 应无异常返回 false */
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2562,6 +2850,7 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
 
             $threw = false;
+
             try {
                 self::callMethod($command, 'pollChanges', [$slotName, [], 100, []]);
             } catch (\Throwable $e) {
@@ -2569,7 +2858,10 @@ class WalEventDispatchCommandTest extends TestCase
             }
             $this->assertTrue($threw, 'slot 被删除后 poll 应抛出异常');
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2582,11 +2874,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_rollback_' . getmypid();
-        $tableName = 'knight_rollback_' . getmypid();
+        $slotName = 'knight_rollback_'.getmypid();
+        $tableName = 'knight_rollback_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2601,8 +2896,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('committed')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'auto',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2615,8 +2910,15 @@ class WalEventDispatchCommandTest extends TestCase
             /** 只有 committed 的 1 条被 dispatch */
             $this->assertSame(1, $command->testDispatchCount);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2676,11 +2978,14 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfWal2jsonNotAvailable();
 
         $connection = $this->app['db']->connection('pgsql');
-        $slotName = 'knight_adv_fail_' . getmypid();
-        $tableName = 'knight_adv_fail_' . getmypid();
+        $slotName = 'knight_adv_fail_'.getmypid();
+        $tableName = 'knight_adv_fail_'.getmypid();
 
         try {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
             $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
             $connection->statement(sprintf('CREATE TABLE %s (id SERIAL PRIMARY KEY, name TEXT)', $tableName));
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
@@ -2688,8 +2993,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('adv_fail_test')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection' => 'pgsql',
-                '--mode' => 'advance',
+                '--connection'    => 'pgsql',
+                '--mode'          => 'advance',
                 '--no-add-tables' => true,
             ]);
 
@@ -2713,8 +3018,15 @@ class WalEventDispatchCommandTest extends TestCase
             );
             $this->assertEquals(0, $remaining[0]->cnt);
         } finally {
-            try { $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]); } catch (\Throwable $e) {}
-            try { $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName)); } catch (\Throwable $e) {}
+            try {
+                $connection->statement('SELECT pg_drop_replication_slot(?)', [$slotName]);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                $connection->statement(sprintf('DROP TABLE IF EXISTS %s', $tableName));
+            } catch (\Throwable $e) {
+            }
         }
     }
 
@@ -2766,6 +3078,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand(['--connection' => 'pgsql']);
 
         $slotName = 'knight_test_health_'.time();
+
         try {
             self::callMethod($command, 'ensureSlotExists', [$slotName]);
 
