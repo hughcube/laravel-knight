@@ -70,7 +70,11 @@ class SwooleDriver implements DriverInterface
      */
     public function run(Schedule $schedule, TaskRunner $runner, array $options): int
     {
-        // 启用全链路协程 Hook（保留 PDO / Redis / Socket / TCP / Stream，显式排除所有 cURL Hook 保证 libcURL 原生稳定性）
+        $previousHookFlags = class_exists(Runtime::class) && method_exists(Runtime::class, 'getHookFlags')
+            ? Runtime::getHookFlags()
+            : 0;
+
+        // 启用全链路协程 Hook（保留 PDO / Redis / Socket / TCP / Stream，显式排除 cURL 与 PROC Hook 保证原生稳定性）
         $hookFlags = defined('SWOOLE_HOOK_ALL') ? constant('SWOOLE_HOOK_ALL') : true;
         if (is_int($hookFlags)) {
             if (defined('SWOOLE_HOOK_CURL')) {
@@ -79,10 +83,15 @@ class SwooleDriver implements DriverInterface
             if (defined('SWOOLE_HOOK_NATIVE_CURL')) {
                 $hookFlags &= ~constant('SWOOLE_HOOK_NATIVE_CURL');
             }
+            if (defined('SWOOLE_HOOK_PROC')) {
+                $hookFlags &= ~constant('SWOOLE_HOOK_PROC');
+            }
         }
 
         try {
-            Runtime::enableCoroutine($hookFlags);
+            if (class_exists(Runtime::class)) {
+                Runtime::enableCoroutine($hookFlags);
+            }
         } catch (Throwable $e) {
         }
 
@@ -339,10 +348,19 @@ class SwooleDriver implements DriverInterface
             $exitCode = 0;
         };
 
-        if (class_exists(Coroutine::class) && Coroutine::getCid() > 0) {
-            $handler();
-        } else {
-            \Swoole\Coroutine\run($handler);
+        try {
+            if (class_exists(Coroutine::class) && Coroutine::getCid() > 0) {
+                $handler();
+            } else {
+                \Swoole\Coroutine\run($handler);
+            }
+        } finally {
+            if (class_exists(Runtime::class)) {
+                try {
+                    Runtime::enableCoroutine($previousHookFlags);
+                } catch (Throwable $e) {
+                }
+            }
         }
 
         return $exitCode;

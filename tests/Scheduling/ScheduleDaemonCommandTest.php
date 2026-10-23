@@ -10,6 +10,18 @@ use RuntimeException;
 
 class ScheduleDaemonCommandTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        if (class_exists('Swoole\Runtime')) {
+            try {
+                \Swoole\Runtime::enableCoroutine(false);
+            } catch (\Throwable $e) {
+            }
+        }
+
+        parent::tearDown();
+    }
+
     /**
      * 测试命令签名与选项完整性.
      */
