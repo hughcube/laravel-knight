@@ -558,15 +558,7 @@ class TaskRunner
             }
         }
 
-        // 2. 全量清洗所有 Facade 的静态实例缓存（强制下次调用时重新从容器生成干净的服务实例）
-        if (class_exists(Facade::class)) {
-            try {
-                Facade::clearResolvedInstances();
-            } catch (Throwable $e) {
-            }
-        }
-
-        // 3. 清理容器 Scoped 实例
+        // 2. 清理容器 Scoped 实例
         if (method_exists($this->container, 'forgetScopedInstances')) {
             try {
                 $this->container->forgetScopedInstances();

@@ -476,6 +476,10 @@ class TaskRunnerTest extends TestCase
      */
     public function testServerShouldRunPreservesCacheWithinSameMinute()
     {
+        if (!property_exists($this->schedule, 'mutexCache')) {
+            $this->markTestSkipped('Schedule::$mutexCache is only supported in Laravel 10+.');
+        }
+
         $event = $this->schedule->command('env')->onOneServer();
         $baseTime = Carbon::now()->startOfMinute();
 
