@@ -106,6 +106,17 @@ class SwooleDriver implements DriverInterface
             $immediate = (bool) ($options['immediate'] ?? false);
             $whisper = (bool) ($options['whisper'] ?? false);
 
+            // 在协程生命周期内注册进程退出信号（必须在协程内注册，防止提前创建 EventLoop 导致 Scheduler 启动失败）
+            if (class_exists(\Swoole\Process::class) && method_exists(\Swoole\Process::class, 'signal')) {
+                foreach (['SIGTERM', 'SIGINT', 'SIGQUIT'] as $sigName) {
+                    if (defined($sigName)) {
+                        \Swoole\Process::signal(constant($sigName), function () {
+                            $this->stop();
+                        });
+                    }
+                }
+            }
+
             $lastExecutedMinuteTimestamp = null;
             $runs = 0;
             /** @var Collection<int, Event> $repeatableEvents */

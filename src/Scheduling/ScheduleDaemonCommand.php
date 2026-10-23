@@ -148,21 +148,12 @@ class ScheduleDaemonCommand extends Command
      */
     protected function registerSignalHandler(DriverInterface $driver, string $driverName): void
     {
-        // Swoole 协程驱动优先接入 Swoole 原生进程信号处理器
-        $isSwooleSignal = $driverName === 'swoole'
-            && class_exists(\Swoole\Process::class)
-            && method_exists(\Swoole\Process::class, 'signal');
-        if ($isSwooleSignal) {
-            foreach (['SIGTERM', 'SIGINT', 'SIGQUIT'] as $sigName) {
-                if (defined($sigName)) {
-                    \Swoole\Process::signal(constant($sigName), function () use ($driver) {
-                        if (method_exists($driver, 'stop')) {
-                            $driver->stop();
-                        }
-                    });
-                }
-            }
-        } elseif (function_exists('pcntl_async_signals') && function_exists('pcntl_signal')) {
+        // Swoole 协程驱动由其自身在协程生命周期内精准管理信号与注销，避免在协程外注册提前初始化 EventLoop
+        if ($driverName === 'swoole') {
+            return;
+        }
+
+        if (function_exists('pcntl_async_signals') && function_exists('pcntl_signal')) {
             // 原生 CLI 驱动严格接入 PCNTL 原生信号监听，彻底避免因存在 Swoole 扩展但未启动 EventLoop 导致的信号丢失
             pcntl_async_signals(true);
             foreach (['SIGTERM', 'SIGINT', 'SIGQUIT'] as $sigName) {

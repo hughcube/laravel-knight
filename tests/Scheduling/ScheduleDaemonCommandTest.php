@@ -12,6 +12,17 @@ class ScheduleDaemonCommandTest extends TestCase
 {
     protected function tearDown(): void
     {
+        if (class_exists('Swoole\Process') && method_exists('Swoole\Process', 'signal')) {
+            foreach (['SIGTERM', 'SIGINT', 'SIGQUIT'] as $sigName) {
+                if (defined($sigName)) {
+                    try {
+                        \Swoole\Process::signal(constant($sigName), null);
+                    } catch (\Throwable $e) {
+                    }
+                }
+            }
+        }
+
         if (class_exists('Swoole\Runtime')) {
             try {
                 \Swoole\Runtime::enableCoroutine(false);
