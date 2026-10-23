@@ -19,4 +19,12 @@ return [
     'phpinfo' => [
         'route_prefix' => false,
     ],
+
+    'devops' => [
+        'route_prefix' => null,
+    ],
+
+    'schedule' => [
+        'heavy_commands' => [],
+    ],
 ];

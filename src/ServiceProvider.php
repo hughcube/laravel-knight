@@ -34,6 +34,7 @@ use HughCube\Laravel\Knight\Http\Actions\PingAction;
 use HughCube\Laravel\Knight\Http\Actions\RequestLogAction;
 use HughCube\Laravel\Knight\Http\Actions\RequestShowAction;
 use HughCube\Laravel\Knight\Mixin\Console\Scheduling\EventMixin as ScheduleEventMixin;
+use HughCube\Laravel\Knight\Scheduling\DevopsScheduleAction;
 use HughCube\Laravel\Knight\Mixin\Database\Query\BuilderMixin;
 use HughCube\Laravel\Knight\Mixin\Database\Query\Grammars\GrammarMixin;
 use HughCube\Laravel\Knight\Mixin\Http\RequestMixin;
@@ -88,9 +89,13 @@ class ServiceProvider extends IlluminateServiceProvider
         /** Carbon */
         Carbon::mixin(new CarbonMixin());
 
-        /** Console Scheduling - 仅在 CLI 模式下注册 */
-        if ($this->app->runningInConsole()) {
-            ScheduleEvent::mixin(new ScheduleEventMixin(), false);
+        /** Console Scheduling */
+        ScheduleEvent::mixin(new ScheduleEventMixin(), false);
+        if (!$this->app->bound(\Illuminate\Console\Scheduling\EventMutex::class)) {
+            $this->app->bind(
+                \Illuminate\Console\Scheduling\EventMutex::class,
+                \Illuminate\Console\Scheduling\CacheEventMutex::class
+            );
         }
 
         /** Migration Schema - 仅在 ide-helper 命令时注册 */
@@ -216,6 +221,10 @@ class ServiceProvider extends IlluminateServiceProvider
             Route::group(['prefix' => $prefix], function () use ($config) {
                 if (false !== ($action = $config->get('knight.devops.action.system'))) {
                     Route::any('/devops/system', $action ?: DevopsSystemAction::class)->name('knight.devops.system');
+                }
+
+                if (false !== ($action = $config->get('knight.devops.action.schedule'))) {
+                    Route::any('/devops/schedule', $action ?: DevopsScheduleAction::class)->name('knight.devops.schedule');
                 }
             });
         }
