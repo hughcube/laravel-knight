@@ -99,6 +99,9 @@ class TaskRunnerTest extends TestCase
         $this->assertTrue($lockExistedDuringRun, '互斥锁在任务执行期间应当处于持有状态');
         // 运行后锁已被安全释放
         $this->assertFalse($event->mutex->exists($event), '互斥锁在任务结束后应当被释放');
+
+        $event->withoutOverlapping = false;
+        $event->description = null;
     }
 
     /**
@@ -399,6 +402,9 @@ class TaskRunnerTest extends TestCase
 
         // 清理锁
         $event->mutex->forget($event);
+
+        $event->withoutOverlapping = false;
+        $event->description = null;
     }
 
     /**
