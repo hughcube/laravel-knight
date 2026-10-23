@@ -5,6 +5,7 @@ namespace HughCube\Laravel\Knight\Scheduling;
 use HughCube\Laravel\Knight\Queue\Job;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Carbon;
+use ReflectionMethod;
 use Throwable;
 
 /**
@@ -31,8 +32,7 @@ class ScheduleJob extends Job
      */
     protected function action(): void
     {
-        /** @var Schedule $schedule */
-        $schedule = $this->getContainer()->make(Schedule::class);
+        $schedule = $this->resolveSchedule();
 
         $now = Carbon::now()->startOfMinute();
         /** @phpstan-ignore-next-line */
@@ -92,5 +92,47 @@ class ScheduleJob extends Job
     public function getReport(): array
     {
         return $this->report;
+    }
+
+    /**
+     * 解析并确保 Schedule 实例已装载应用定义的调度任务.
+     *
+     * @return Schedule
+     */
+    protected function resolveSchedule(): Schedule
+    {
+        /** @var Schedule $schedule */
+        $schedule = $this->getContainer()->make(Schedule::class);
+
+        if (empty($schedule->events())) {
+            $this->loadEventsIntoSchedule($schedule);
+        }
+
+        return $schedule;
+    }
+
+    /**
+     * 在非 CLI 模式下主动加载 routes/console.php 或 Kernel::schedule 定义的任务.
+     *
+     * @param Schedule $schedule
+     * @return void
+     */
+    protected function loadEventsIntoSchedule(Schedule $schedule): void
+    {
+        $consoleRoutes = function_exists('base_path')
+            ? base_path('routes/console.php')
+            : (method_exists($this->getContainer(), 'basePath') ? $this->getContainer()->basePath('routes/console.php') : null);
+
+        if (!empty($consoleRoutes) && file_exists($consoleRoutes)) {
+            require $consoleRoutes;
+        }
+
+        if ($this->getContainer()->bound(\Illuminate\Contracts\Console\Kernel::class)) {
+            $kernel = $this->getContainer()->make(\Illuminate\Contracts\Console\Kernel::class);
+            if (method_exists($kernel, 'schedule')) {
+                $reflection = new ReflectionMethod($kernel, 'schedule');
+                $reflection->invoke($kernel, $schedule);
+            }
+        }
     }
 }
