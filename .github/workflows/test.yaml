@@ -32,7 +32,8 @@ jobs:
         uses: shivammathur/setup-php@master
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, xdebug, opcache, fileinfo, pdo, pdo_mysql, pdo_pgsql, redis, pdo_sqlite, sqlite3${{ runner.os != 'Windows' && ', swoole' || '' }} #optional, setup extensions
+          extensions: mbstring, opcache, fileinfo, pdo, pdo_mysql, pdo_pgsql, redis, pdo_sqlite, sqlite3${{ runner.os != 'Windows' && ', swoole' || '' }} #optional, setup extensions
+          coverage: none
           tools: composer:v2
           ini-values: post_max_size=256M, short_open_tag=On, opcache.enable_cli=1 #optional, setup php.ini configuration
 

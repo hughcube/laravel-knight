@@ -363,7 +363,7 @@ class SwooleDriver implements DriverInterface
             if (class_exists(Coroutine::class) && Coroutine::getCid() > 0) {
                 $handler();
             } else {
-                \Swoole\Coroutine\run($handler);
+                @\Swoole\Coroutine\run($handler);
             }
         } finally {
             if (class_exists(Runtime::class)) {
