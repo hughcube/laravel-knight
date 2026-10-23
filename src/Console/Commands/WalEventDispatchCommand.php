@@ -191,7 +191,7 @@ class WalEventDispatchCommand extends Command
     /**
      * 缓存的 wal2json 参数（占位符 + 绑定值），分区刷新时失效。
      *
-     * @var array|null [string $placeholders, array $bindings]
+     * @var array|null [string, array]
      */
     protected $cachedWal2jsonParams;
 
@@ -300,9 +300,10 @@ class WalEventDispatchCommand extends Command
                 if ($this->isWalSegmentRemovedError($e)) {
                     $this->warn(sprintf(
                         'WAL segment removed for slot [%s], dropping and recreating from current LSN. '
-                        . 'WAL events between old restart_lsn and now are lost.',
+                        .'WAL events between old restart_lsn and now are lost.',
                         $slot
                     ));
+
                     try {
                         $this->getConnection()->statement('SELECT pg_drop_replication_slot(?)', [$slot]);
                         $this->info(sprintf('Slot [%s] dropped due to WAL segment removal', $slot));
@@ -404,7 +405,7 @@ class WalEventDispatchCommand extends Command
                 $pathname = str_replace('\\', '/', $file->getPathname());
                 $baseDir = str_replace('\\', '/', $dir);
                 $relativePath = substr($pathname, strlen($baseDir) + 1);
-                $className = $namespace . str_replace('/', '\\', substr($relativePath, 0, -4));
+                $className = $namespace.str_replace('/', '\\', substr($relativePath, 0, -4));
 
                 if (!class_exists($className)) {
                     continue;
@@ -462,7 +463,7 @@ class WalEventDispatchCommand extends Command
             }
 
             $absDir = base_path($dir);
-            $result[$absDir] = rtrim($ns, '\\') . '\\';
+            $result[$absDir] = rtrim($ns, '\\').'\\';
         }
 
         return $result;
@@ -566,13 +567,14 @@ class WalEventDispatchCommand extends Command
      * 3. 对每条记录 dispatch WalChangesDispatchJob，Job 内 dispatch 字符串事件
      * 4. auto/advance 模式下，推进槽位到最后处理的 LSN
      *
-     * @param string $slot 复制槽名称
-     * @param array $handlers Handler 映射 [table => [{handler, keyName}, ...]]
-     * @param int $batch 单次最大变更数
-     * @param array $partitionMap 分区表映射 [child => parent]
+     * @param string $slot         复制槽名称
+     * @param array  $handlers     Handler 映射 [table => [{handler, keyName}, ...]]
+     * @param int    $batch        单次最大变更数
+     * @param array  $partitionMap 分区表映射 [child => parent]
+     *
+     * @throws Throwable
      *
      * @return bool 是否有变更
-     * @throws Throwable
      */
     protected function pollChanges(string $slot, array $handlers, int $batch, array $partitionMap): bool
     {
@@ -808,6 +810,7 @@ class WalEventDispatchCommand extends Command
         foreach ($this->option('wal2json-params') ?: [] as $param) {
             $keys[] = self::parseWal2jsonParam($param)[0];
         }
+
         return $keys;
     }
 
@@ -832,7 +835,7 @@ class WalEventDispatchCommand extends Command
      * WAL 中分区表使用子表名（如 user_syllabuses_p056），不是父表名，
      * 因此需要把被监听的父表展开为所有分区子表名。
      *
-     * @param array $handlers Handler 映射 [table => [{handler, keyName}, ...]]
+     * @param array $handlers     Handler 映射 [table => [{handler, keyName}, ...]]
      * @param array $partitionMap 分区表映射 [child => parent]
      *
      * @return string|null add-tables 值，无被监听表时返回 null
@@ -874,8 +877,8 @@ class WalEventDispatchCommand extends Command
      * 推进复制槽到指定 LSN，失败时仅记录警告不中断流程。
      *
      * @param Connection $connection
-     * @param string $slot
-     * @param string $lsn
+     * @param string     $slot
+     * @param string     $lsn
      */
     protected function advanceSlot($connection, $slot, $lsn): void
     {
@@ -939,10 +942,10 @@ class WalEventDispatchCommand extends Command
         $appName = config('app.name') ?: 'app';
         $appEnv = config('app.env') ?: 'production';
 
-        $slug = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $appName . '_' . $appEnv));
+        $slug = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $appName.'_'.$appEnv));
         $slug = preg_replace('/_+/', '_', trim($slug, '_'));
 
-        return $slug . '_wal_event';
+        return $slug.'_wal_event';
     }
 
     /**
@@ -1000,7 +1003,7 @@ class WalEventDispatchCommand extends Command
      */
     protected function qualifyTableName($table)
     {
-        return false === strpos($table, '.') ? 'public.' . $table : $table;
+        return false === strpos($table, '.') ? 'public.'.$table : $table;
     }
 
     /**
@@ -1076,9 +1079,9 @@ class WalEventDispatchCommand extends Command
     /**
      * 检查复制槽健康状态，检测 WAL 堆积和 slot 失效。
      *
-     * @param string $slot 复制槽名称
-     * @param int $warningMB 警告阈值（MB），0 表示不检查
-     * @param int $criticalMB 严重阈值（MB），0 表示不检查，超过时返回 true
+     * @param string $slot       复制槽名称
+     * @param int    $warningMB  警告阈值（MB），0 表示不检查
+     * @param int    $criticalMB 严重阈值（MB），0 表示不检查，超过时返回 true
      *
      * @return bool true 表示应停止进程
      */
@@ -1086,9 +1089,9 @@ class WalEventDispatchCommand extends Command
     {
         try {
             $row = $this->getConnection()->selectOne(
-                "SELECT pg_wal_lsn_diff(pg_current_wal_lsn(), confirmed_flush_lsn) AS lag_bytes
+                'SELECT pg_wal_lsn_diff(pg_current_wal_lsn(), confirmed_flush_lsn) AS lag_bytes
                  FROM pg_replication_slots
-                 WHERE slot_name = ?",
+                 WHERE slot_name = ?',
                 [$slot],
                 false
             );
@@ -1174,11 +1177,12 @@ class WalEventDispatchCommand extends Command
             if ($exists->active) {
                 throw new \RuntimeException(sprintf(
                     'Slot [%s] is currently active (PID %s), another consumer is running. '
-                    . 'Only one consumer can use a replication slot at a time.',
+                    .'Only one consumer can use a replication slot at a time.',
                     $slot,
                     $exists->active_pid
                 ));
             }
+
             return;
         }
 
@@ -1199,8 +1203,10 @@ class WalEventDispatchCommand extends Command
             );
             if (null !== $exists) {
                 $this->info(sprintf('Slot [%s] already exists (created by another process)', $slot));
+
                 return;
             }
+
             throw $e;
         }
     }

@@ -42,6 +42,7 @@ class Runtime
                 if (strncmp($argv[$i], '-', 1) === 0) {
                     continue;
                 }
+
                 return $argv[$i];
             }
 

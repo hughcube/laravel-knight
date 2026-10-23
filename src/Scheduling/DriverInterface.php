@@ -5,7 +5,7 @@ namespace HughCube\Laravel\Knight\Scheduling;
 use Illuminate\Console\Scheduling\Schedule;
 
 /**
- * 常驻内存调度循环驱动契约接口
+ * 常驻内存调度循环驱动契约接口.
  *
  * 【设计思路】
  * 1. 策略模式解耦：将底层常驻事件循环与上层调度任务执行逻辑（TaskRunner）完全解耦；
@@ -23,17 +23,18 @@ use Illuminate\Console\Scheduling\Schedule;
 interface DriverInterface
 {
     /**
-     * 启动调度常驻事件循环
+     * 启动调度常驻事件循环.
      *
-     * @param Schedule $schedule Laravel 原生调度器实例
-     * @param TaskRunner $runner 调度任务沙箱执行器
-     * @param array $options 运行参数选项（包含并发度、超时熔断、内存阈值、最大轮数等）
+     * @param Schedule   $schedule Laravel 原生调度器实例
+     * @param TaskRunner $runner   调度任务沙箱执行器
+     * @param array      $options  运行参数选项（包含并发度、超时熔断、内存阈值、最大轮数等）
+     *
      * @return int 退出状态码 (0: SUCCESS)
      */
     public function run(Schedule $schedule, TaskRunner $runner, array $options): int;
 
     /**
-     * 接收外部中断信号，触发平滑停止
+     * 接收外部中断信号，触发平滑停止.
      */
     public function stop(): void;
 }

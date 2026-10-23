@@ -29,7 +29,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * 正常执行: php artisan wal:event-dispatch --batch=200
+     * 正常执行: php artisan wal:event-dispatch --batch=200.
      */
     public function testGetCommandNormal()
     {
@@ -38,7 +38,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * 带完整路径: php /var/www/html/artisan queue:work
+     * 带完整路径: php /var/www/html/artisan queue:work.
      */
     public function testGetCommandWithFullPath()
     {
@@ -47,7 +47,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * stdin 执行场景: argv[0] = "Standard input code"
+     * stdin 执行场景: argv[0] = "Standard input code".
      */
     public function testGetCommandFromStdin()
     {
@@ -56,7 +56,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * stdin 执行场景, artisan 带完整路径
+     * stdin 执行场景, artisan 带完整路径.
      */
     public function testGetCommandFromStdinWithFullPath()
     {
@@ -65,7 +65,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * 只有 artisan，没有命令参数
+     * 只有 artisan，没有命令参数.
      */
     public function testGetCommandWithNoCommand()
     {
@@ -74,7 +74,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * argv 为空
+     * argv 为空.
      */
     public function testGetCommandWithEmptyArgv()
     {
@@ -83,7 +83,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * isRunningCommand 通配符匹配
+     * isRunningCommand 通配符匹配.
      */
     public function testIsRunningCommandWithWildcard()
     {
@@ -93,7 +93,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * isRunningCommand 在 stdin 场景下正确匹配
+     * isRunningCommand 在 stdin 场景下正确匹配.
      */
     public function testIsRunningCommandFromStdin()
     {
@@ -104,7 +104,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * isQueueWorker 在 stdin 场景下正确识别
+     * isQueueWorker 在 stdin 场景下正确识别.
      */
     public function testIsQueueWorkerFromStdin()
     {
@@ -113,7 +113,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * 全局选项出现在命令名之前: php artisan --env=testing -v migrate
+     * 全局选项出现在命令名之前: php artisan --env=testing -v migrate.
      */
     public function testGetCommandSkipsOptionsBeforeCommand()
     {
@@ -122,7 +122,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * stdin + 全局选项在前
+     * stdin + 全局选项在前.
      */
     public function testGetCommandSkipsOptionsFromStdin()
     {
@@ -131,7 +131,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * 只有选项没有命令: php artisan --version
+     * 只有选项没有命令: php artisan --version.
      */
     public function testGetCommandOnlyOptions()
     {
@@ -140,7 +140,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * 无 artisan 的 CLI 场景 (如 phpunit)
+     * 无 artisan 的 CLI 场景 (如 phpunit).
      */
     public function testGetCommandWithoutArtisan()
     {
@@ -149,7 +149,7 @@ class RuntimeTest extends TestCase
     }
 
     /**
-     * isRunningCommand 在有前置选项时正确匹配
+     * isRunningCommand 在有前置选项时正确匹配.
      */
     public function testIsRunningCommandWithLeadingOptions()
     {

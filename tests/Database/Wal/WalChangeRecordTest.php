@@ -622,6 +622,7 @@ class WalChangeRecordTest extends TestCase
         $fetcherCalled = false;
         $record->setFetcher(function (WalChangeRecord $r) use (&$fetcherCalled) {
             $fetcherCalled = true;
+
             return WalRecordTestModel::query()->where('email', 'custom@example.com')->first();
         });
 
@@ -663,6 +664,7 @@ class WalChangeRecordTest extends TestCase
 
         $record->setFetcher(function () use (&$callCount, $fakeModel) {
             $callCount++;
+
             return $fakeModel;
         });
 
@@ -693,6 +695,7 @@ class WalChangeRecordTest extends TestCase
         $fetcherCalled = false;
         $record->setFetcher(function () use (&$fetcherCalled) {
             $fetcherCalled = true;
+
             return null;
         });
 
@@ -710,8 +713,8 @@ class WalChangeRecordTest extends TestCase
     public function testFromWal2jsonV2ToastUnchangedReplacedWithNull()
     {
         $change = [
-            'action' => 'U',
-            'table' => 'wal_record_test_items',
+            'action'  => 'U',
+            'table'   => 'wal_record_test_items',
             'columns' => [
                 ['name' => 'id', 'type' => 'integer', 'value' => 1],
                 ['name' => 'name', 'type' => 'text', 'value' => 'updated'],
@@ -737,8 +740,8 @@ class WalChangeRecordTest extends TestCase
     public function testToModelDoesNotContainToastSentinel()
     {
         $change = [
-            'action' => 'U',
-            'table' => 'wal_record_test_items',
+            'action'  => 'U',
+            'table'   => 'wal_record_test_items',
             'columns' => [
                 ['name' => 'id', 'type' => 'integer', 'value' => 42],
                 ['name' => 'name', 'type' => 'text', 'value' => 'hello'],
@@ -780,8 +783,8 @@ class WalChangeRecordTest extends TestCase
     {
         /** 通过 fromWal2json 实际路径构建 record，验证 isToastUnchanged 正确性 */
         $change = [
-            'action' => 'U',
-            'table' => 'wal_record_test_items',
+            'action'  => 'U',
+            'table'   => 'wal_record_test_items',
             'columns' => [
                 ['name' => 'id', 'type' => 'integer', 'value' => 1],
                 ['name' => 'name', 'type' => 'text', 'value' => 'updated'],

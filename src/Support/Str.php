@@ -36,8 +36,8 @@ class Str extends \Illuminate\Support\Str
         }
 
         return mb_substr($string, 0, $offset, 'UTF-8')
-            . '****'
-            . mb_substr($string, $offset + $length, null, 'UTF-8');
+            .'****'
+            .mb_substr($string, $offset + $length, null, 'UTF-8');
     }
 
     public static function maskChinaIdCode($string, $offset = 6, $length = 8): string
@@ -47,8 +47,8 @@ class Str extends \Illuminate\Support\Str
         }
 
         return mb_substr($string, 0, $offset, 'UTF-8')
-            . '********'
-            . mb_substr($string, $offset + $length, null, 'UTF-8');
+            .'********'
+            .mb_substr($string, $offset + $length, null, 'UTF-8');
     }
 
     public static function splitWhitespace($string, int $limit = -1, int $flags = 0): array
@@ -111,6 +111,7 @@ class Str extends \Illuminate\Support\Str
      * 否则 "é" (U+00E9) 与 "é" (U+0065 U+0301) 会被判为不等.
      *
      * @param string|null $value
+     *
      * @return string|null
      */
     public static function stripAllSpaces(?string $value): ?string
@@ -123,7 +124,7 @@ class Str extends \Illuminate\Support\Str
             return '';
         }
 
-        $pattern = '/[' . self::INVISIBLE_CHARS_CLASS . ']+/u';
+        $pattern = '/['.self::INVISIBLE_CHARS_CLASS.']+/u';
 
         $result = preg_replace($pattern, '', $value);
 
@@ -145,7 +146,8 @@ class Str extends \Illuminate\Support\Str
      * 注意: 同 stripAllSpaces, 本方法不做 Unicode 规范化(NFC/NFKC).
      *
      * @param string|null $value
-     * @return string|null  null/空串原样返回; 否则返回两端清洗后的字符串
+     *
+     * @return string|null null/空串原样返回; 否则返回两端清洗后的字符串
      */
     public static function trimEdgeSpaces(?string $value): ?string
     {
@@ -157,7 +159,7 @@ class Str extends \Illuminate\Support\Str
             return '';
         }
 
-        $pattern = '/^[' . self::INVISIBLE_CHARS_CLASS . ']+|[' . self::INVISIBLE_CHARS_CLASS . ']+$/u';
+        $pattern = '/^['.self::INVISIBLE_CHARS_CLASS.']+|['.self::INVISIBLE_CHARS_CLASS.']+$/u';
 
         $result = preg_replace($pattern, '', $value);
 
@@ -174,6 +176,7 @@ class Str extends \Illuminate\Support\Str
      * 依赖 mbstring 的 mb_convert_kana; 缺失时原样返回(降级不报错).
      *
      * @param string|null $value
+     *
      * @return string|null
      */
     public static function toHalfWidth(?string $value): ?string
@@ -203,6 +206,7 @@ class Str extends \Illuminate\Support\Str
      * 注意: 本方法不校验证件号合法性, 只做规范化清洗; 也不做 Unicode NFC 归一化(证件号为纯 ASCII, 无需).
      *
      * @param string|null $value
+     *
      * @return string|null
      */
     public static function cleanIdCardNo(?string $value): ?string
@@ -221,6 +225,7 @@ class Str extends \Illuminate\Support\Str
      * "138-0000 0000" → "13800000000".
      *
      * @param string|null $value
+     *
      * @return string|null
      */
     public static function cleanMobile(?string $value): ?string
@@ -239,6 +244,7 @@ class Str extends \Illuminate\Support\Str
      * 邮箱写入清洗: 去全部空白/不可见 → 全角转半角 → 统一小写(邮箱实务上大小写不敏感).
      *
      * @param string|null $value
+     *
      * @return string|null
      */
     public static function cleanEmail(?string $value): ?string
@@ -258,6 +264,7 @@ class Str extends \Illuminate\Support\Str
      * 与 cleanIdCardNo 的区别: 不转大写(编码可能区分大小写), 不只留数字(编码可能含字母).
      *
      * @param string|null $value
+     *
      * @return string|null
      */
     public static function cleanExcelCode(?string $value): ?string
@@ -789,17 +796,17 @@ class Str extends \Illuminate\Support\Str
         $localLen = mb_strlen($local, 'UTF-8');
 
         if ($localLen <= 1) {
-            return '*' . $domain;
+            return '*'.$domain;
         }
 
         if ($localLen <= 2) {
-            return mb_substr($local, 0, 1, 'UTF-8') . '*' . $domain;
+            return mb_substr($local, 0, 1, 'UTF-8').'*'.$domain;
         }
 
         return mb_substr($local, 0, 1, 'UTF-8')
-            . str_repeat('*', $localLen - 2)
-            . mb_substr($local, -1, 1, 'UTF-8')
-            . $domain;
+            .str_repeat('*', $localLen - 2)
+            .mb_substr($local, -1, 1, 'UTF-8')
+            .$domain;
     }
 
     /**
@@ -817,8 +824,8 @@ class Str extends \Illuminate\Support\Str
         }
 
         return mb_substr($string, 0, 4, 'UTF-8')
-            . str_repeat('*', $len - 8)
-            . mb_substr($string, -4, null, 'UTF-8');
+            .str_repeat('*', $len - 8)
+            .mb_substr($string, -4, null, 'UTF-8');
     }
 
     /**

@@ -61,6 +61,7 @@ class RequestMixinTest extends TestCase
             $this->assertSame($request->getUserAgentDetect(), $request->getUserAgentDetect());
         } else {
             $hasException = false;
+
             try {
                 $request->getUserAgentDetect();
             } catch (\BadMethodCallException $e) {

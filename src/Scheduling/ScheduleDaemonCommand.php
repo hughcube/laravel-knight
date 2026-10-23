@@ -5,7 +5,6 @@ namespace HughCube\Laravel\Knight\Scheduling;
 use HughCube\Laravel\Knight\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Console\View\Components\Factory as ComponentFactory;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Runtime;
@@ -14,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 
 /**
- * 常驻内存调度守护命令
+ * 常驻内存调度守护命令.
  *
  * =========================================================================
  * 【核心设计思路】
@@ -51,7 +50,7 @@ class ScheduleDaemonCommand extends Command
     protected $description = '常驻内存调度守护进程（100% 官方视觉体验，消除 CPU 锯齿冷启动毛刺，支持 Swoole 协程受控并发与原生零依赖顺序双模式）';
 
     /**
-     * 执行命令
+     * 执行命令.
      */
     public function handle(Schedule $schedule): int
     {
@@ -87,19 +86,19 @@ class ScheduleDaemonCommand extends Command
         $this->registerSignalHandler($driver, $driverName);
 
         return $driver->run($schedule, $runner, [
-            'concurrency' => $this->option('concurrency'),
-            'timeout'    => $this->option('timeout'),
-            'max_memory' => $this->option('max-memory'),
-            'max_runs'   => $this->option('max-runs'),
-            'interval'   => $this->option('interval'),
-            'immediate'  => (bool) $this->option('immediate'),
-            'whisper'    => (bool) $this->option('whisper'),
+            'concurrency'     => $this->option('concurrency'),
+            'timeout'         => $this->option('timeout'),
+            'max_memory'      => $this->option('max-memory'),
+            'max_runs'        => $this->option('max-runs'),
+            'interval'        => $this->option('interval'),
+            'immediate'       => (bool) $this->option('immediate'),
+            'whisper'         => (bool) $this->option('whisper'),
             'run_output_file' => $outputFile,
         ]);
     }
 
     /**
-     * 解析驱动名称 (auto | swoole | native)
+     * 解析驱动名称 (auto | swoole | native).
      */
     protected function resolveDriverName(): string
     {
@@ -109,6 +108,7 @@ class ScheduleDaemonCommand extends Command
             if (!$this->isSwooleAvailable()) {
                 throw new RuntimeException('Swoole extension is not loaded or Coroutine is not available.');
             }
+
             return 'swoole';
         }
 
@@ -121,7 +121,7 @@ class ScheduleDaemonCommand extends Command
     }
 
     /**
-     * 当前环境是否支持 Swoole 协程
+     * 当前环境是否支持 Swoole 协程.
      */
     protected function isSwooleAvailable(): bool
     {
@@ -132,7 +132,7 @@ class ScheduleDaemonCommand extends Command
     }
 
     /**
-     * 工厂方法创建驱动实例
+     * 工厂方法创建驱动实例.
      */
     protected function createDriver(string $driverName): DriverInterface
     {
@@ -144,7 +144,7 @@ class ScheduleDaemonCommand extends Command
     }
 
     /**
-     * 注册系统信号监听
+     * 注册系统信号监听.
      */
     protected function registerSignalHandler(DriverInterface $driver, string $driverName): void
     {

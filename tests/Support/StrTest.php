@@ -249,7 +249,7 @@ class StrTest extends TestCase
         // 前导单引号被去
         $this->assertSame('00123', Str::cleanExcelCode("'00123"));
         // 空白 + 全角 → 半角, 不改大小写
-        $this->assertSame('Empa01', Str::cleanExcelCode(" Ｅmpａ01 "));
+        $this->assertSame('Empa01', Str::cleanExcelCode(' Ｅmpａ01 '));
         // 中间内容保留(含字母大小写)
         $this->assertSame('NO.5', Str::cleanExcelCode("'NO.5"));
         // 零宽被去

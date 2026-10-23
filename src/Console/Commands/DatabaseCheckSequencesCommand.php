@@ -254,12 +254,12 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
         $sequenceValue = $this->getSequenceCurrentValue($connection, $sequenceName);
 
         return [
-            'table' => $table,
-            'primary_key' => $primaryKey,
-            'sequence_name' => $sequenceName,
-            'max_id' => $maxId,
+            'table'          => $table,
+            'primary_key'    => $primaryKey,
+            'sequence_name'  => $sequenceName,
+            'max_id'         => $maxId,
             'sequence_value' => $sequenceValue,
-            'is_anomaly' => $maxId > $sequenceValue,
+            'is_anomaly'     => $maxId > $sequenceValue,
         ];
     }
 

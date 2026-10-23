@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 /**
- * Swoole 协程受控高并发调度驱动
+ * Swoole 协程受控高并发调度驱动.
  *
  * =========================================================================
  * 【核心设计思路】
@@ -80,6 +80,7 @@ class SwooleDriver implements DriverInterface
                 $hookFlags &= ~constant('SWOOLE_HOOK_NATIVE_CURL');
             }
         }
+
         try {
             Runtime::enableCoroutine($hookFlags);
         } catch (Throwable $e) {
@@ -291,7 +292,7 @@ class SwooleDriver implements DriverInterface
                     if ($maxMemory > 0 && $memMB >= $maxMemory) {
                         $this->output->writeln(sprintf(
                             '  <fg=yellow>Memory usage (%.2fMB) exceeded threshold (%dMB). '
-                            . 'Scheduling graceful exit...</>',
+                            .'Scheduling graceful exit...</>',
                             $memMB,
                             $maxMemory
                         ));
@@ -348,7 +349,7 @@ class SwooleDriver implements DriverInterface
     }
 
     /**
-     * 通过信号量池受控派发任务到独立协程
+     * 通过信号量池受控派发任务到独立协程.
      */
     protected function dispatchTaskWithSemaphore(
         Event $event,
@@ -371,6 +372,7 @@ class SwooleDriver implements DriverInterface
                         } finally {
                             $semaphore->pop();
                         }
+
                         return;
                     }
                 }
@@ -381,7 +383,7 @@ class SwooleDriver implements DriverInterface
     }
 
     /**
-     * 单任务受控超时执行与僵尸协程强制熔断 (Watcher + Worker 双协程监听模型)
+     * 单任务受控超时执行与僵尸协程强制熔断 (Watcher + Worker 双协程监听模型).
      */
     protected function executeWithTimeout(Event $event, TaskRunner $runner, float $timeout): void
     {
@@ -392,6 +394,7 @@ class SwooleDriver implements DriverInterface
         $cid = Coroutine::create(function () use ($event, $runner, $doneChannel, &$workerCid) {
             $workerCid = Coroutine::getCid();
             $exception = null;
+
             try {
                 $runner->runSafely($event);
             } catch (Throwable $e) {
@@ -407,6 +410,7 @@ class SwooleDriver implements DriverInterface
                 '  <fg=red>Failed to create coroutine for task [%s]</>',
                 $runner->getEventSummary($event)
             ));
+
             return;
         }
 
@@ -441,6 +445,7 @@ class SwooleDriver implements DriverInterface
                 $timeout
             );
             $this->output->writeln(sprintf('  <fg=red;options=bold>%s</>', $msg));
+
             try {
                 Log::channel('schedule')->error($msg);
             } catch (Throwable $e) {
@@ -457,7 +462,7 @@ class SwooleDriver implements DriverInterface
     }
 
     /**
-     * 接收外部中断退出信号
+     * 接收外部中断退出信号.
      */
     public function stop(): void
     {
