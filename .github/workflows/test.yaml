@@ -15,12 +15,10 @@ jobs:
           # Laravel 9 不支持 PHP 7.4
           - php: 7.4
             laravel: 9
-          # Laravel 10 不支持 PHP 7.4, 8.0 以及未发布的 PHP 8.5
+          # Laravel 10 不支持 PHP 7.4, 8.0
           - php: 7.4
             laravel: 10
           - php: 8.0
-            laravel: 10
-          - php: 8.5
             laravel: 10
           # Laravel 11 & 12 不支持 PHP 7.4, 8.0, 8.1
           - php: 7.4
