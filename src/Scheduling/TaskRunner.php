@@ -85,13 +85,7 @@ class TaskRunner
     protected $components;
     protected string $phpBinary;
 
-    /**
-     * 沙箱执行前捕获的环境与配置快照.
-     */
-    protected array $configSnapshot = [];
-    protected array $serverSnapshot = [];
-    protected array $envSnapshot = [];
-    protected array $getenvSnapshot = [];
+
 
     /**
      * @param Container       $container
@@ -276,13 +270,10 @@ class TaskRunner
                 $acquiredMutex = (bool) $event->withoutOverlapping;
 
                 try {
-                    // 1. 协程沙箱准备：建立配置与环境变量快照，斩断主协程旧连接继承
-                    $snapshot = $this->prepareSandboxForTask();
-
-                    // 2. 执行前回调钩子 (before)
+                    // 1. 执行前回调钩子 (before)
                     $event->callBeforeCallbacks($this->container);
 
-                    // 3. 同进程直驱执行 ConsoleKernel (零子进程 fork，纯内存方法调用)
+                    // 2. 同进程直驱执行 ConsoleKernel (零子进程 fork，纯内存方法调用)
                     $kernel = $this->container->make(ConsoleKernel::class);
                     $buffer = new BufferedOutput();
 
@@ -343,8 +334,7 @@ class TaskRunner
 
                     return false;
                 } finally {
-                    // 7. 协程沙箱全量物理清理、状态回滚与连接断开
-                    $this->cleanUpSandbox($snapshot);
+                    $this->cleanUpSandbox();
                 }
             };
             $this->components()->task($description, $taskCallback);
@@ -387,13 +377,9 @@ class TaskRunner
                 $this->dispatcher()->dispatch(new ScheduledTaskStarting($event));
 
                 $start = microtime(true);
-                $snapshot = null;
 
                 try {
-                    // 1. 协程沙箱准备
-                    $snapshot = $this->prepareSandboxForTask();
-
-                    // 2. 原生方法委派：原生 run() 内部自洽完整处理抢锁、before、执行、after 与解锁
+                    // 原生方法委派：原生 run() 内部自洽完整处理抢锁、before、执行、after 与解锁
                     // 使用输出缓冲区捕获可能存在的闭包 echo/print 输出并重定向到目标文件
                     ob_start();
 
@@ -428,7 +414,7 @@ class TaskRunner
 
                     return false;
                 } finally {
-                    $this->cleanUpSandbox($snapshot);
+                    $this->cleanUpSandbox();
                 }
             });
 
@@ -507,64 +493,23 @@ class TaskRunner
     }
 
     /**
-     * 协程沙箱准备：隔离主协程继承的旧句柄，创建配置与超全局变量快照.
+     * 协程沙箱准备钩子（保留方法以保持向下兼容）.
      *
-     * @return array 快照字典
+     * @return array
      */
     public function prepareSandboxForTask(): array
     {
-        // 备份超全局环境变量与动态配置，防止任务内部篡改造成全局变量污染
-        $this->serverSnapshot = $_SERVER;
-        $this->envSnapshot = $_ENV;
-        $envVars = function_exists('getenv') ? getenv() : [];
-        $this->getenvSnapshot = is_array($envVars) ? $envVars : [];
-        if (function_exists('config')) {
-            $this->configSnapshot = config()->all();
-        }
-
-        return [
-            'server' => $this->serverSnapshot,
-            'env'    => $this->envSnapshot,
-            'getenv' => $this->getenvSnapshot,
-            'config' => $this->configSnapshot,
-        ];
+        return [];
     }
 
     /**
-     * 执行任务沙箱状态清理与状态回滚.
+     * 执行任务后的轻量状态复位（对齐 Laravel Queue Worker 标准：释放 Scoped 实例、清空查询日志与复位模拟时钟）.
      *
-     * @param array|null $snapshot 协程调用栈绑定的环境快照（杜绝多协程并发覆盖）
+     * @param array|null $snapshot
      */
     public function cleanUpSandbox(?array $snapshot = null): void
     {
-        $serverSnapshot = $snapshot['server'] ?? $this->serverSnapshot;
-        $envSnapshot = $snapshot['env'] ?? $this->envSnapshot;
-        $getenvSnapshot = $snapshot['getenv'] ?? $this->getenvSnapshot;
-        $configSnapshot = $snapshot['config'] ?? $this->configSnapshot;
-
-        // 1. 防御性事务回滚与日志清空：回滚当前任务遗留的未提交事务，杜绝数据库行锁挂起
-        if (class_exists(DB::class)) {
-            try {
-                $connections = DB::getConnections();
-                foreach ($connections as $connection) {
-                    try {
-                        $isUncommitted = $connection instanceof \Illuminate\Database\Connection
-                            && $connection->transactionLevel() > 0;
-                        if ($isUncommitted) {
-                            try {
-                                $connection->rollBack(0);
-                            } catch (Throwable $e) {
-                            }
-                        }
-                        $connection->flushQueryLog();
-                    } catch (Throwable $e) {
-                    }
-                }
-            } catch (Throwable $e) {
-            }
-        }
-
-        // 2. 清理容器 Scoped 实例
+        // 1. 清理容器 Scoped 实例（防止任务级单例跨任务状态污染）
         if (method_exists($this->container, 'forgetScopedInstances')) {
             try {
                 $this->container->forgetScopedInstances();
@@ -572,47 +517,19 @@ class TaskRunner
             }
         }
 
-        // 4. 100% 还原超全局变量与 Config 配置快照，消灭全局状态污染
-        if (!empty($serverSnapshot)) {
-            $_SERVER = $serverSnapshot;
-        }
-        if (!empty($envSnapshot)) {
-            $_ENV = $envSnapshot;
-        }
-        if (!empty($configSnapshot) && function_exists('config')) {
-            $configRepo = config();
-
+        // 2. 清空数据库查询日志，防止内存泄漏
+        if (class_exists(DB::class)) {
             try {
-                $reflection = new ReflectionProperty($configRepo, 'items');
-                $reflection->setAccessible(true);
-                $reflection->setValue($configRepo, $configSnapshot);
+                foreach (DB::getConnections() as $connection) {
+                    $connection->flushQueryLog();
+                }
             } catch (Throwable $e) {
-                $configRepo->set($configSnapshot);
             }
         }
 
-        if (function_exists('getenv') && function_exists('putenv') && !empty($getenvSnapshot)) {
-            $currentEnv = getenv();
-            if (is_array($currentEnv)) {
-                foreach (array_diff_key($currentEnv, $getenvSnapshot) as $key => $val) {
-                    putenv($key);
-                }
-                foreach ($getenvSnapshot as $key => $val) {
-                    if (!isset($currentEnv[$key]) || $currentEnv[$key] !== $val) {
-                        putenv("{$key}={$val}");
-                    }
-                }
-            }
-        }
-
-        // 5. 复位 Carbon 模拟时间（防止业务任务内调用 setTestNow 污染全局守护进程时钟）
-        if (class_exists(Carbon::class)) {
+        // 3. 仅当任务内异常 mock 了系统时钟时，复位 Carbon 模拟时间
+        if (class_exists(Carbon::class) && method_exists(Carbon::class, 'hasTestNow') && Carbon::hasTestNow()) {
             Carbon::setTestNow();
-        }
-
-        // 6. 触发垃圾回收
-        if (function_exists('gc_collect_cycles')) {
-            gc_collect_cycles();
         }
     }
 
@@ -712,7 +629,9 @@ class TaskRunner
     {
         try {
             $prop = new ReflectionProperty($schedule, 'mutexCache');
-            $prop->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $prop->setAccessible(true);
+            }
             $prop->setValue($schedule, []);
         } catch (Throwable $e) {
         }
@@ -726,7 +645,9 @@ class TaskRunner
         if (method_exists($event, 'isRepeatable') && $event->isRepeatable()) {
             try {
                 $prop = new ReflectionProperty($event, 'lastChecked');
-                $prop->setAccessible(true);
+                if (PHP_VERSION_ID < 80100) {
+                    $prop->setAccessible(true);
+                }
                 $prop->setValue($event, Carbon::now());
             } catch (Throwable $e) {
             }

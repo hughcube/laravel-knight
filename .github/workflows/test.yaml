@@ -8,7 +8,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       max-parallel: 15
-      matrix:
+      matrix: &matrix
         php: [ 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5 ]
         laravel: [ 8, 9, 10, 11, 12, 13 ]
         exclude:
@@ -151,15 +151,8 @@ jobs:
     runs-on: macOS-latest
     timeout-minutes: 10
     strategy:
-      max-parallel: 5
-      matrix:
-        include:
-          - php: 7.4
-            laravel: 8
-          - php: 8.2
-            laravel: 11
-          - php: 8.4
-            laravel: 12
+      max-parallel: 15
+      matrix: *matrix
     name: PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} Test on macOS-latest
     steps: *common_steps
 
@@ -170,14 +163,7 @@ jobs:
       run:
         shell: bash
     strategy:
-      max-parallel: 5
-      matrix:
-        include:
-          - php: 7.4
-            laravel: 8
-          - php: 8.2
-            laravel: 11
-          - php: 8.4
-            laravel: 12
+      max-parallel: 15
+      matrix: *matrix
     name: PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} Test on windows-latest
     steps: *common_steps
