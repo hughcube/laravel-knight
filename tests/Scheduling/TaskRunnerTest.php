@@ -99,6 +99,9 @@ class TaskRunnerTest extends TestCase
         $this->assertTrue($lockExistedDuringRun, '互斥锁在任务执行期间应当处于持有状态');
         // 运行后锁已被安全释放
         $this->assertFalse($event->mutex->exists($event), '互斥锁在任务结束后应当被释放');
+
+        $event->withoutOverlapping = false;
+        $event->description = null;
     }
 
     /**
@@ -164,7 +167,7 @@ class TaskRunnerTest extends TestCase
 
         EventFacade::assertDispatched(ScheduledTaskFailed::class, function ($e) use ($exceptionMessage) {
             return str_contains($e->exception->getMessage(), $exceptionMessage)
-                && is_float($e->runtime);
+                && (!property_exists($e, 'runtime') || is_float($e->runtime));
         });
     }
 
@@ -330,6 +333,11 @@ class TaskRunnerTest extends TestCase
     public function testClearScheduleMutexCache()
     {
         $this->runner->clearScheduleMutexCache($this->schedule);
+
+        if (!property_exists($this->schedule, 'mutexCache')) {
+            $this->markTestSkipped('Schedule::$mutexCache is only supported in Laravel 10+.');
+        }
+
         $reflection = new \ReflectionProperty($this->schedule, 'mutexCache');
         $reflection->setAccessible(true);
         $this->assertSame([], $reflection->getValue($this->schedule));
@@ -394,6 +402,9 @@ class TaskRunnerTest extends TestCase
 
         // 清理锁
         $event->mutex->forget($event);
+
+        $event->withoutOverlapping = false;
+        $event->description = null;
     }
 
     /**
@@ -464,7 +475,13 @@ class TaskRunnerTest extends TestCase
     {
         $event = $this->schedule->call(function () {
             return 0;
-        })->everyMinute()->everyTenSeconds();
+        });
+
+        if (!method_exists($event, 'everyTenSeconds')) {
+            $this->markTestSkipped('Sub-minute repeating tasks are not supported in this Laravel version.');
+        }
+
+        $event->everyMinute()->everyTenSeconds();
 
         $this->runner->touchRepeatEvent($event);
 
