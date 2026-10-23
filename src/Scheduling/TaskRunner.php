@@ -264,7 +264,7 @@ class TaskRunner
 
                 // 官方对齐：防重叠检测与互斥锁抢占（发生在 task 内部）
                 $event->skippedBecauseOverlapping = false;
-                if ($event->shouldSkipDueToOverlapping()) {
+                if ($this->shouldSkipDueToOverlapping($event)) {
                     $event->skippedBecauseOverlapping = true;
                     $duration = round(microtime(true) - $start, 2);
                     $this->dispatcher()->dispatch(new ScheduledTaskFinished($event, $duration));
@@ -670,6 +670,18 @@ class TaskRunner
             } catch (Throwable $e) {
             }
         }
+    }
+
+    /**
+     * 判断事件是否因重叠而应当跳过.
+     */
+    public function shouldSkipDueToOverlapping(Event $event): bool
+    {
+        if (method_exists($event, 'shouldSkipDueToOverlapping')) {
+            return $event->shouldSkipDueToOverlapping();
+        }
+
+        return (bool) $event->withoutOverlapping && ! $event->mutex->create($event);
     }
 
     /**
