@@ -27,6 +27,7 @@
         "ext-pdo": "*",
         "ext-bcmath": "*",
         "ext-zend-opcache": "*",
+        "swoole/ide-helper": "*",
         "laravel/sanctum": "*",
         "phpstan/phpstan": "*",
         "laravel/framework": "^13",

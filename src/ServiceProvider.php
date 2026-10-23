@@ -45,6 +45,7 @@ use HughCube\Laravel\Knight\OPcache\Actions\StatesAction as OPcacheStatesAction;
 use HughCube\Laravel\Knight\OPcache\Commands\ClearCliCacheCommand as OPcacheClearCliCacheCommand;
 use HughCube\Laravel\Knight\OPcache\Commands\CompileFilesCommand as OPcacheCompileFilesCommand;
 use HughCube\Laravel\Knight\OPcache\Commands\CreatePreloadCommand as OPcacheCreatePreloadCommand;
+use HughCube\Laravel\Knight\Scheduling\ScheduleDaemonCommand;
 use HughCube\Laravel\Knight\Support\Runtime;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Scheduling\Event as ScheduleEvent;
@@ -120,6 +121,7 @@ class ServiceProvider extends IlluminateServiceProvider
                 WalEventDispatchCommand::class,
                 WalDropSlotCommand::class,
                 WalMonitorSlotsCommand::class,
+                ScheduleDaemonCommand::class,
             ]);
         }
 

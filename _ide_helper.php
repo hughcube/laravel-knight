@@ -1766,7 +1766,7 @@ namespace Illuminate\Http {
          * 获取agent检测.
          * @see \HughCube\Laravel\Knight\Mixin\Http\RequestMixin::getUserAgentDetect()
          */
-        public function getUserAgentDetect(): \Jenssegers\Agent\Agent
+        public function getUserAgentDetect(): mixed
         {
         }
 
