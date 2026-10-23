@@ -373,7 +373,9 @@ class TestCase extends OrchestraTestCase
 
         /** @var ReflectionMethod $method */
         $method = $class->getMethod($method);
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         return $method->invokeArgs(is_object($object) ? $object : null, $args);
     }
@@ -391,7 +393,9 @@ class TestCase extends OrchestraTestCase
         $class = new ReflectionClass($object);
 
         $property = $class->getProperty($name);
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         return $property->getValue($object);
     }
@@ -408,7 +412,9 @@ class TestCase extends OrchestraTestCase
         $class = new ReflectionClass($object);
 
         $property = $class->getProperty($name);
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $property->setValue($object, $value);
     }

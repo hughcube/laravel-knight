@@ -584,7 +584,9 @@ class TaskRunner
 
             try {
                 $reflection = new ReflectionProperty($configRepo, 'items');
-                $reflection->setAccessible(true);
+                if (PHP_VERSION_ID < 80100) {
+                    $reflection->setAccessible(true);
+                }
                 $reflection->setValue($configRepo, $configSnapshot);
             } catch (Throwable $e) {
                 $configRepo->set($configSnapshot);
@@ -712,7 +714,9 @@ class TaskRunner
     {
         try {
             $prop = new ReflectionProperty($schedule, 'mutexCache');
-            $prop->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $prop->setAccessible(true);
+            }
             $prop->setValue($schedule, []);
         } catch (Throwable $e) {
         }
@@ -726,7 +730,9 @@ class TaskRunner
         if (method_exists($event, 'isRepeatable') && $event->isRepeatable()) {
             try {
                 $prop = new ReflectionProperty($event, 'lastChecked');
-                $prop->setAccessible(true);
+                if (PHP_VERSION_ID < 80100) {
+                    $prop->setAccessible(true);
+                }
                 $prop->setValue($event, Carbon::now());
             } catch (Throwable $e) {
             }

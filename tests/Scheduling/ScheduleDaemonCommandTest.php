@@ -208,7 +208,9 @@ class ScheduleDaemonCommandTest extends TestCase
         $command = $this->app->make(ScheduleDaemonCommand::class);
 
         $reflection = new \ReflectionMethod($command, 'registerSignalHandler');
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
 
         $output = new \Symfony\Component\Console\Output\NullOutput();
         $driver = new \HughCube\Laravel\Knight\Scheduling\NativeDriver($output);

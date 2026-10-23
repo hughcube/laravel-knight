@@ -339,7 +339,9 @@ class TaskRunnerTest extends TestCase
         }
 
         $reflection = new \ReflectionProperty($this->schedule, 'mutexCache');
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
         $this->assertSame([], $reflection->getValue($this->schedule));
     }
 
@@ -486,7 +488,9 @@ class TaskRunnerTest extends TestCase
         $this->runner->touchRepeatEvent($event);
 
         $reflection = new \ReflectionProperty($event, 'lastChecked');
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
         $lastChecked = $reflection->getValue($event);
 
         $this->assertInstanceOf(\DateTimeInterface::class, $lastChecked);
