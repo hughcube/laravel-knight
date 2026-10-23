@@ -5,11 +5,43 @@ on: [ push, pull_request ]
 jobs:
   run-linux:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       max-parallel: 15
-      matrix: &matrix
+      matrix:
         php: [ 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5 ]
         laravel: [ 8, 9, 10, 11, 12, 13 ]
+        exclude:
+          # Laravel 9 不支持 PHP 7.4
+          - php: 7.4
+            laravel: 9
+          # Laravel 10 不支持 PHP 7.4, 8.0
+          - php: 7.4
+            laravel: 10
+          - php: 8.0
+            laravel: 10
+          # Laravel 11 & 12 不支持 PHP 7.4, 8.0, 8.1
+          - php: 7.4
+            laravel: 11
+          - php: 8.0
+            laravel: 11
+          - php: 8.1
+            laravel: 11
+          - php: 7.4
+            laravel: 12
+          - php: 8.0
+            laravel: 12
+          - php: 8.1
+            laravel: 12
+          # Laravel 13 不支持 PHP 7.4, 8.0, 8.1, 8.2
+          - php: 7.4
+            laravel: 13
+          - php: 8.0
+            laravel: 13
+          - php: 8.1
+            laravel: 13
+          - php: 8.2
+            laravel: 13
     name: PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} Test on ubuntu-latest
     env:
       TEST_PGSQL_HOST: 127.0.0.1
@@ -105,36 +137,47 @@ jobs:
 
       - name: Install dependencies
         run: |
-          echo "has_deps=false" >> "$GITHUB_ENV"
           composer config --no-plugins audit.block-insecure false
           composer require laravel/framework:^${{ matrix.laravel }} --dev --no-update --prefer-stable
           composer update --prefer-stable --prefer-dist --no-interaction --no-progress
-          echo "has_deps=true" >> "$GITHUB_ENV"
-        continue-on-error: true
 
       - name: Composer Info
-        if: ${{ 'true' == env.has_deps }}
         run: composer info
 
       - name: Run PHPUnit
-        if: ${{ 'true' == env.has_deps }}
         run: composer run-script test -- -c phpunit.xml.dist --testdox
 
   run-macos:
     runs-on: macOS-latest
+    timeout-minutes: 10
     strategy:
-      max-parallel: 15
-      matrix: *matrix
+      max-parallel: 5
+      matrix:
+        include:
+          - php: 7.4
+            laravel: 8
+          - php: 8.2
+            laravel: 11
+          - php: 8.4
+            laravel: 12
     name: PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} Test on macOS-latest
     steps: *common_steps
 
   run-windows:
     runs-on: windows-latest
+    timeout-minutes: 10
     defaults:
       run:
         shell: bash
     strategy:
-      max-parallel: 15
-      matrix: *matrix
+      max-parallel: 5
+      matrix:
+        include:
+          - php: 7.4
+            laravel: 8
+          - php: 8.2
+            laravel: 11
+          - php: 8.4
+            laravel: 12
     name: PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} Test on windows-latest
     steps: *common_steps
