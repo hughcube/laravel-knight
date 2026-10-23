@@ -364,7 +364,7 @@ class CompileFilesCommand extends Command
     {
         try {
             $timeout = $this->option('timeout');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
             $timeout = null;
         }
 

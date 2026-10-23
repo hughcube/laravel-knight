@@ -65,18 +65,23 @@ class ScheduleDaemonCommand extends Command
             if ($stream !== false) {
                 $streamOutput = new StreamOutput($stream);
                 $this->output = new OutputStyle(new ArrayInput([]), $streamOutput);
-                $this->components = new ComponentFactory($this->output);
+                if (class_exists('Illuminate\Console\View\Components\Factory')) {
+                    $componentsClass = 'Illuminate\Console\View\Components\Factory';
+                    $this->components = new $componentsClass($this->output);
+                }
             }
         }
+
+        $components = property_exists($this, 'components') ? $this->components : null;
+        $runner = new TaskRunner($this->laravel, $this->output, $components);
 
         $verbosity = $this->getLaravel()->environment('local')
             ? OutputInterface::VERBOSITY_NORMAL
             : OutputInterface::VERBOSITY_VERBOSE;
-        $this->components->info('Running scheduled tasks.', $verbosity);
+        $runner->components()->info('Running scheduled tasks.', $verbosity);
 
         $driverName = $this->resolveDriverName();
         $driver = $this->createDriver($driverName);
-        $runner = new TaskRunner($this->laravel, $this->output, $this->components);
 
         // 统一注册操作系统信号平滑停机（根据实际驱动精准接入，防 Native 模式下 Swoole 信号监听失效）
         $this->registerSignalHandler($driver, $driverName);
@@ -144,11 +149,10 @@ class ScheduleDaemonCommand extends Command
     protected function registerSignalHandler(DriverInterface $driver, string $driverName): void
     {
         // Swoole 协程驱动优先接入 Swoole 原生进程信号处理器
-        if (
-            $driverName === 'swoole'
+        $isSwooleSignal = $driverName === 'swoole'
             && class_exists(\Swoole\Process::class)
-            && method_exists(\Swoole\Process::class, 'signal')
-        ) {
+            && method_exists(\Swoole\Process::class, 'signal');
+        if ($isSwooleSignal) {
             foreach (['SIGTERM', 'SIGINT', 'SIGQUIT'] as $sigName) {
                 if (defined($sigName)) {
                     \Swoole\Process::signal(constant($sigName), function () use ($driver) {

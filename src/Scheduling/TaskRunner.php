@@ -12,7 +12,6 @@ use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Console\View\Components\Factory as ComponentFactory;
 use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
@@ -80,7 +79,11 @@ class TaskRunner
 {
     protected Container $container;
     protected OutputInterface $output;
-    protected ComponentFactory $components;
+
+    /**
+     * @var mixed
+     */
+    protected $components;
     protected string $phpBinary;
 
     /**
@@ -91,12 +94,24 @@ class TaskRunner
     protected array $envSnapshot = [];
     protected array $getenvSnapshot = [];
 
-    public function __construct(Container $container, OutputInterface $output, ?ComponentFactory $components = null)
+    /**
+     * @param Container $container
+     * @param OutputInterface $output
+     * @param mixed $components
+     */
+    public function __construct(Container $container, OutputInterface $output, $components = null)
     {
         $this->container = $container;
         $this->output = $output;
         $style = $output instanceof OutputStyle ? $output : new OutputStyle(new ArrayInput([]), $output);
-        $this->components = $components ?? new ComponentFactory($style);
+        if ($components !== null) {
+            $this->components = $components;
+        } elseif (class_exists('Illuminate\Console\View\Components\Factory')) {
+            $factoryClass = 'Illuminate\Console\View\Components\Factory';
+            $this->components = new $factoryClass($style);
+        } else {
+            $this->components = null;
+        }
         $this->phpBinary = Application::phpBinary();
     }
 
@@ -141,21 +156,19 @@ class TaskRunner
     public function shouldRun(Event $event, ?Schedule $schedule = null, ?DateTimeInterface $startedAt = null): bool
     {
         // 1. 调度暂停状态检查 (illuminate:schedule:paused)
-        if (
-            $this->isSchedulePaused()
-            && !(method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused())
-        ) {
+        $isPaused = $this->isSchedulePaused()
+            && !(method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused());
+        if ($isPaused) {
             $this->touchRepeatEvent($event);
             $this->dispatcher()->dispatch(new ScheduledTaskSkipped($event));
             return false;
         }
 
         // 2. 维护模式检查 (isDownForMaintenance)
-        if (
-            method_exists($this->container, 'isDownForMaintenance')
+        $isDown = method_exists($this->container, 'isDownForMaintenance')
             && $this->container->isDownForMaintenance()
-            && !$event->runsInMaintenanceMode()
-        ) {
+            && !$event->runsInMaintenanceMode();
+        if ($isDown) {
             $this->touchRepeatEvent($event);
             return false;
         }
@@ -181,7 +194,7 @@ class TaskRunner
     {
         $baseTime = $startedAt ?? Carbon::now()->startOfMinute();
         if (!$schedule->serverShouldRun($event, $baseTime)) {
-            $this->components->info(sprintf(
+            $this->components()->info(sprintf(
                 'Skipping [%s] because the command already ran on another server.',
                 $event->getSummaryForDisplay()
             ));
@@ -329,7 +342,7 @@ class TaskRunner
                     $this->cleanUpSandbox($snapshot);
                 }
             };
-            $this->components->task($description, $taskCallback);
+            $this->components()->task($description, $taskCallback);
         } finally {
             // 8. 仅在自身成功抢占到锁的前提下，才执行生命周期闭环释放（严禁误删其他在途进程的锁）
             if ($acquiredMutex) {
@@ -338,7 +351,7 @@ class TaskRunner
         }
 
         // 下挂完整执行命令行描述（与官方一致）
-        $this->components->bulletList([
+        $this->components()->bulletList([
             $event->getSummaryForDisplay(),
         ]);
 
@@ -365,7 +378,7 @@ class TaskRunner
         $nativeExitCode = 0;
 
         try {
-            $this->components->task($description, function () use ($event, &$nativeExitCode) {
+            $this->components()->task($description, function () use ($event, &$nativeExitCode) {
                 $this->dispatcher()->dispatch(new ScheduledTaskStarting($event));
 
                 $start = microtime(true);
@@ -414,7 +427,7 @@ class TaskRunner
             });
 
             if (!$event instanceof CallbackEvent) {
-                $this->components->bulletList([
+                $this->components()->bulletList([
                     $event->getSummaryForDisplay(),
                 ]);
             }
@@ -529,10 +542,9 @@ class TaskRunner
                 $connections = DB::getConnections();
                 foreach ($connections as $connection) {
                     try {
-                        if (
-                            $connection instanceof \Illuminate\Database\Connection
-                            && $connection->transactionLevel() > 0
-                        ) {
+                        $isUncommitted = $connection instanceof \Illuminate\Database\Connection
+                            && $connection->transactionLevel() > 0;
+                        if ($isUncommitted) {
                             try {
                                 $connection->rollBack(0);
                             } catch (Throwable $e) {
@@ -616,10 +628,9 @@ class TaskRunner
                 $connections = DB::getConnections();
                 foreach ($connections as $name => $connection) {
                     try {
-                        if (
-                            $connection instanceof \Illuminate\Database\Connection
-                            && $connection->transactionLevel() > 0
-                        ) {
+                        $isUncommitted = $connection instanceof \Illuminate\Database\Connection
+                            && $connection->transactionLevel() > 0;
+                        if ($isUncommitted) {
                             try {
                                 $connection->rollBack(0);
                             } catch (Throwable $e) {
@@ -738,9 +749,54 @@ class TaskRunner
         }
     }
 
-    public function components(): ComponentFactory
+    /**
+     * 获取输出组件工厂（支持优雅降级，兼容低版本 Laravel）
+     *
+     * @return object
+     */
+    public function components()
     {
-        return $this->components;
+        if ($this->components !== null) {
+            return $this->components;
+        }
+
+        return new class($this->output) {
+            /** @var OutputInterface */
+            protected $output;
+
+            public function __construct(OutputInterface $output)
+            {
+                $this->output = $output;
+            }
+
+            public function info($message, $verbosity = OutputInterface::OUTPUT_NORMAL)
+            {
+                $this->output->writeln("  <fg=cyan;options=bold>INFO</> {$message}", $verbosity);
+            }
+
+            public function task($description, $task = null)
+            {
+                $start = microtime(true);
+                if (is_callable($task)) {
+                    $task();
+                }
+                $duration = (microtime(true) - $start) * 1000;
+                $dots = str_repeat('.', max(1, 80 - strlen((string) $description) - 20));
+                $this->output->writeln(sprintf(
+                    "  %s %s <fg=gray>%.2fms</> <fg=green;options=bold>DONE</>",
+                    $description,
+                    $dots,
+                    $duration
+                ));
+            }
+
+            public function bulletList(array $elements, $verbosity = OutputInterface::OUTPUT_NORMAL)
+            {
+                foreach ($elements as $element) {
+                    $this->output->writeln("  ⇂ <fg=gray>{$element}</>", $verbosity);
+                }
+            }
+        };
     }
 
     public function dispatcher(): Dispatcher

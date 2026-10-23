@@ -128,10 +128,9 @@ class NativeDriver implements DriverInterface
                     $hasEnteredMaintenanceMode = false;
 
                     while (!$this->isStopped() && Carbon::now()->lte($endOfMinute)) {
-                        if (
-                            method_exists($schedule, 'hasBeenInterruptedSince')
-                            && $schedule->hasBeenInterruptedSince($startedAt)
-                        ) {
+                        $isInterrupted = method_exists($schedule, 'hasBeenInterruptedSince')
+                            && $schedule->hasBeenInterruptedSince($startedAt);
+                        if ($isInterrupted) {
                             break;
                         }
 
@@ -159,10 +158,9 @@ class NativeDriver implements DriverInterface
                                 continue;
                             }
 
-                            if (
-                                $paused
-                                && !(method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused())
-                            ) {
+                            $isPausedSkipped = $paused
+                                && !(method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused());
+                            if ($isPausedSkipped) {
                                 $runner->dispatcher()->dispatch(new ScheduledTaskSkipped($event));
                                 $runner->touchRepeatEvent($event);
                                 continue;
