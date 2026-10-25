@@ -31,7 +31,7 @@ class Command extends \Illuminate\Console\Command
     protected function getOrAskOption($name, $question, $default = null)
     {
         $value = $this->option($name);
-        if (!empty($value)) {
+        if (! empty($value)) {
             return $value;
         }
 
