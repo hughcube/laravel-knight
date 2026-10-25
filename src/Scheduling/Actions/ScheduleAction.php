@@ -3,7 +3,7 @@
 namespace HughCube\Laravel\Knight\Scheduling\Actions;
 
 use HughCube\Laravel\Knight\Routing\Controller;
-use HughCube\Laravel\Knight\Scheduling\Jobs\ScheduleJob;
+use HughCube\Laravel\Knight\Scheduling\ScheduleRunner;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -22,14 +22,9 @@ class ScheduleAction extends Controller
      */
     protected function action(): Response
     {
-        try {
-            $job = new ScheduleJob();
-            $this->getDispatcher()->dispatchSync($job);
-            $report = $job->getReport();
+        $runner = new ScheduleRunner($this->getContainer());
+        $report = $runner->run(true);
 
-            return $this->asSuccess($report);
-        } finally {
-            ScheduleJob::clearLastReport();
-        }
+        return $this->asSuccess($report);
     }
 }
