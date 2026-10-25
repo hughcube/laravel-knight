@@ -42,7 +42,7 @@ parameters:
                 - src/Mixin/Support/CollectionMixin.php
                 - src/Mixin/Support/CarbonMixin.php
                 - src/Mixin/Http/RequestMixin.php
-                - src/Mixin/Console/Scheduling/EventMixin.php
+                - src/Scheduling/Mixin/EventMixin.php
         -
             identifier: staticMethod.notFound
             paths:
@@ -64,7 +64,7 @@ parameters:
             paths:
                 - src/Database/Migrations/Mixin/BlueprintMixin.php
                 - src/Database/Migrations/Mixin/PostgresGrammarMixin.php
-                - src/Mixin/Console/Scheduling/EventMixin.php
+                - src/Scheduling/Mixin/EventMixin.php
         -
             identifier: phpDoc.parseError
             paths:

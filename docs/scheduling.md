@@ -34,49 +34,39 @@ HTTP /devops/schedule          FC 统一 /invoke          crontab / daemon      
                                         │                                              │
                       ┌─────────────────┴─────────────────┐                            │
                       ▼                                   ▼                            ▼
-              【简单任务 (未染色)】              【复杂任务 (runInQueue)】             TaskRunner
-            QueuedCommandJob 就地同步           QueuedCommandJob 异步队列            (CLI 独立沙箱)
-              (耗时 < 50ms, 留存连接)             (Redis / FC / DB 削峰)
+              【简单短任务 (无标记)】            【复杂耗时任务 (runInBackground)】       ScheduleRunner
+            CommandJob 就地同步                 CommandJob 异步队列 (Action环境下)       (CLI 进程极速直驱)
+              (耗时 < 50ms, 留存连接)             (Redis / FC / 队列削峰防 HTTP 超时)
 ```
 
 ---
 
 ## 二、四大核心设计支柱
 
-### 1. DSL 流式“染色”机制 (`EventMixin` & `EventDyeManager`)
+### 1. 100% 官方原生语法与双端自适应 (`runInBackground`)
 
-业务开发者 100% 使用 Laravel 原生的 `routes/console.php` 语法定义任务，通过流畅的链式方法对需要异步消费的复杂任务进行“染色”：
+业务开发者 100% 使用 Laravel 原生的 `routes/console.php` 语法定义任务，无需记忆任何私有方言：
 
 ```php
 use Illuminate\Support\Facades\Schedule;
 
-// A. 简单任务（未染色）：就地同步执行，毫秒级跑完，不卡 Web 请求
+// A. 简单短任务（未标记）：就地同步执行，毫秒级跑完，不卡 Web 请求
 Schedule::command('proxy:ping')->everyMinute()->withoutOverlapping();
 
-// B. 复杂任务（染色 runInQueue）：自动推入异步队列，由队列 Worker 削峰
-Schedule::command('order:sync')->everyFiveMinutes()->withoutOverlapping()->runInQueue();
-
-// C. 复杂任务精细化分配（指定队列与连接）
-Schedule::command('report:generate')->dailyAt('02:00')->withoutOverlapping()->runInQueue('reports', 'redis');
+// B. 复杂耗时任务（官方原生 runInBackground）：
+//    1. 在原生 CLI / 守护进程模式下：本地后台独立运行，零队列开销；
+//    2. 在 HTTP Action / 网关模式下：自动升阶为推入异步队列 (To Queue)，100% 免疫 HTTP 超时！
+Schedule::command('order:sync')->everyFiveMinutes()->withoutOverlapping()->runInBackground();
 ```
 
-* **WeakMap 内存安全**：底层通过 PHP 8 的 `WeakMap` 实现对象级动态属性绑定，随 Event 对象析构自动释放，**绝对零内存泄漏**；
-* **老项目零代码侵入兼容**：如果不想改动历史老项目代码，直接在 `config/knight.php` 中配置通配符即可：
-  ```php
-  'schedule' => [
-      'heavy_commands' => [
-          'order:*',
-          'sync:*',
-          'report:generate',
-      ],
-  ],
-  ```
+* **零侵入与零心智负担**：完全采用 Laravel 官方自带的 `$event->runInBackground` 属性，彻底告别额外的弱引用与元数据开销；
+* **双端环境自适应**：原生守护下直驱后台进程，HTTP 网关下自动入队削峰。
 
 ---
 
-### 2. 唯一执行内核 (`QueuedCommandJob`)
+### 2. 唯一执行内核 (`CommandJob`)
 
-`QueuedCommandJob` 作为调度任务在全平台的**唯一执行单元**：无论是同步直驱、还是队列消费，所有执行逻辑 100% 收拢在此。
+`CommandJob` 作为调度任务在全平台的**唯一执行单元**：无论是同步直驱、还是队列消费，所有执行逻辑 100% 收拢在此。
 
 * **互斥锁完整自闭环**：
   * 执行前通过 `$event->mutex->exists($event)` 检查；若已锁定，派发 `ScheduledTaskSkipped` 并安全退出；
@@ -95,19 +85,19 @@ Schedule::command('report:generate')->dailyAt('02:00')->withoutOverlapping()->ru
 
 * **无环境感知**：`ScheduleJob` 没有任何 `isAliFC()` 或 `isSwooleTask()` 之类的特化分支代码；
 * **纯粹的分发器职责**：
-  * 遍历到期任务并包装为 `QueuedCommandJob`；
-  * 染了 `runInQueue` 的任务执行 `dispatch($job)`；
-  * 未染色的简单任务直接调用 `$job->action()` 就地同步执行。
+  * 遍历到期任务；
+  * 耗时任务（`runInBackground`）执行 `dispatch(new CommandJob($event))`；
+  * 未标的简单任务直接调用 `$job->action()` 就地同步执行。
 
 ---
 
-### 4. 触发网关与全链路安全防御 (`DevopsScheduleAction`)
+### 4. 触发网关与职责解耦 (`ScheduleAction`)
 
-对外挂载的 HTTP 触发端点 `/devops/schedule` 拥有 3 重硬核防线：
+对外挂载的 HTTP/路由触发端点 `ScheduleAction` 坚持极简与单一职责原则：
 
-1. **随机 Token 校验**：比对环境变量 `KNIGHT_DEVOPS_SCHEDULE_TOKEN`，支持 `X-Devops-Token`、Bearer Token、或 Query 参数；
-2. **内网 IP 白名单**：仅放行 `127.0.0.1` 及 Docker 内网网段（`172.x`、`10.x`、`192.168.x`）；
-3. **分钟级幂等锁**：使用 Cache 锁定当前分钟 `YmdHi`（TTL 55 秒），任意一分钟内无论受到多少次心跳打入，绝对只执行一次，彻底免疫重放与并发攻击。
+1. **标准总线驱动**：内部统一采用 `$this->getDispatcher()->dispatchSync(new ScheduleJob())` 驱动调度，与框架标准总线/事件系统无缝契合；
+2. **纯粹执行职责**：移除内置鉴权与内置分钟幂等锁，将安全鉴权（Token/HMAC）、IP 白名单防护与时序幂等控制彻底解耦，完整交由业务 HTTP 中间件流水线灵活管控；
+3. **结构化轻量响应**：执行完毕后返回包含状态与毫秒耗时的结构化 JSON 响应。
 
 ---
 
@@ -154,8 +144,8 @@ services:
 
 ## 四、全运行环境表现一致性矩阵
 
-| 运行环境 | 触发方式 | 简单任务（未染色） | 复杂任务（`runInQueue`） | 业务代码改动 |
+| 运行环境 | 触发方式 | 简单短任务（未标记） | 耗时任务（`runInBackground`） | 业务代码改动 |
 | :--- | :--- | :--- | :--- | :--- |
-| **Docker Compose** | 伴生 `pulse` 请求 `POST /devops/schedule` | Web 进程内毫秒级同步执行 | 推入标准 Laravel 队列消费 | 0 改动 |
-| **阿里云 FC** | FC 定时触发器调用 `/invoke` | FC 实例内就地执行 | 推入 `alifc` 队列异步并发削峰 | 0 改动 |
-| **独立 CLI 容器** | 容器常驻 `schedule:daemon` 运行 | CLI 进程直驱执行 | 推入标准 Laravel 队列消费 | 0 改动 |
+| **Docker Compose** | 伴生 `pulse` 请求 `POST /devops/schedule` | Web 进程内毫秒级同步执行 | 自动推入标准 Laravel 队列消费 (防 HTTP 超时) | 0 改动 |
+| **阿里云 FC** | FC 定时触发器调用 `/invoke` | FC 实例内就地执行 | 自动推入队列异步并发削峰 | 0 改动 |
+| **独立 CLI 容器** | 容器常驻 `schedule:daemon` 运行 | CLI 进程直驱执行 | 本地后台独立运行 (子进程) | 0 改动 |

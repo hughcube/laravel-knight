@@ -1,6 +1,6 @@
 <?php
 
-namespace HughCube\Laravel\Knight\Scheduling;
+namespace HughCube\Laravel\Knight\Scheduling\Jobs;
 
 use HughCube\Laravel\Knight\Queue\Job;
 use HughCube\Laravel\Knight\Scheduling\Concerns\ManagesEventLifecycle;
@@ -8,8 +8,10 @@ use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Throwable;
 
@@ -23,7 +25,7 @@ use Throwable;
  * 3. 任务安全执行与输出捕获
  * 4. 退出时的互斥锁安全释放与事务安全兜底 (保留长连接复用)
  */
-class QueuedCommandJob extends Job implements ShouldQueue
+class CommandJob extends Job implements ShouldQueue
 {
     use ManagesEventLifecycle;
 
@@ -36,6 +38,8 @@ class QueuedCommandJob extends Job implements ShouldQueue
     public bool $shouldAppendOutput;
     public ?string $description;
     public ?string $timezone;
+    public ?string $user;
+    public bool $mutexAcquired = false;
 
     /**
      * @var Event|null 运行时瞬态 Event 对象（不参与序列化）
@@ -55,8 +59,10 @@ class QueuedCommandJob extends Job implements ShouldQueue
         $this->output = $event->output;
         $this->shouldAppendOutput = (bool) $event->shouldAppendOutput;
         $this->description = $event->description;
-        $this->timezone = $event->timezone instanceof \DateTimeZone ? $event->timezone->getName() : (string) $event->timezone;
-
+        $this->timezone = $event->timezone instanceof \DateTimeZone
+            ? $event->timezone->getName()
+            : (string) $event->timezone;
+        $this->user = !empty($event->user) ? (string) $event->user : null;
         $this->runtimeEvent = $event;
     }
 
@@ -68,16 +74,56 @@ class QueuedCommandJob extends Job implements ShouldQueue
     protected function action(): void
     {
         $event = $this->resolveEvent();
+        $event->skippedBecauseOverlapping = false;
+        $event->exitCode = null;
 
-        // 1. 互斥排他判定：如果配置了 withoutOverlapping 且锁已被占
-        if ($this->shouldSkipDueToOverlapping($event)) {
-            $this->getEventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+        // 1. 闭包事件：由 Laravel 原生 run() 自洽处理抢锁、before、执行、after 与解锁
+        if ($event instanceof CallbackEvent) {
+            // 排他互斥门禁检查：若互斥锁已存在，直接派发 Skipped 事件并退出，绝不误派发 Starting
+            if ($event->withoutOverlapping && $event->mutex->exists($event)) {
+                $this->getEventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+                return;
+            }
+
+            $start = microtime(true);
+            $this->getEventsDispatcher()->dispatch(new ScheduledTaskStarting($event));
+
+            try {
+                $exitCode = $this->runCommandSafely($event, $this->getContainer());
+
+                if (!empty($event->skippedBecauseOverlapping)) {
+                    $this->getEventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+                    return;
+                }
+
+                if ($exitCode !== 0) {
+                    throw new \RuntimeException(sprintf(
+                        'Scheduled callback [%s] failed with exit code [%d].',
+                        $event->getSummaryForDisplay(),
+                        $exitCode
+                    ));
+                }
+
+                $duration = round(microtime(true) - $start, 2);
+                $this->getEventsDispatcher()->dispatch(new ScheduledTaskFinished($event, $duration));
+            } catch (Throwable $e) {
+                $duration = round(microtime(true) - $start, 2);
+                $this->getEventsDispatcher()->dispatch(new ScheduledTaskFailed($event, $e, $duration));
+                throw $e;
+            } finally {
+                if ($event->withoutOverlapping) {
+                    $this->releaseMutexSafely($event);
+                }
+                $this->resetRuntimeState($this->getContainer());
+            }
+
             return;
         }
 
-        // 2. 抢占互斥锁
-        if ($event->withoutOverlapping) {
-            $event->mutex->create($event);
+        // 2. 非闭包命令（Artisan / Shell）：由本调度内核统一管控生命周期与排他互斥
+        if (!$this->mutexAcquired && $this->shouldSkipDueToOverlapping($event)) {
+            $this->getEventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+            return;
         }
 
         $start = microtime(true);
@@ -85,24 +131,28 @@ class QueuedCommandJob extends Job implements ShouldQueue
 
         $exitCode = 0;
         try {
-            // 3. 执行任务
             $exitCode = $this->runCommandSafely($event, $this->getContainer());
 
-            // 4. 派发 Finished 事件
+            if ($exitCode !== 0) {
+                throw new \RuntimeException(sprintf(
+                    'Scheduled command [%s] failed with exit code [%d].',
+                    $event->command ?: $event->getSummaryForDisplay(),
+                    $exitCode
+                ));
+            }
+
             $duration = round(microtime(true) - $start, 2);
             $this->getEventsDispatcher()->dispatch(new ScheduledTaskFinished($event, $duration));
         } catch (Throwable $e) {
+            $duration = round(microtime(true) - $start, 2);
             $exitCode = 1;
-            // 5. 异常上报与未提交事务兜底回滚 (不断开长连接)
-            $this->rollbackUncommittedTransactions($this->getContainer());
-            $this->getEventsDispatcher()->dispatch(new ScheduledTaskFailed($event, $e));
-            $this->getExceptionHandler()->report($e);
+            $this->getEventsDispatcher()->dispatch(new ScheduledTaskFailed($event, $e, $duration));
             throw $e;
         } finally {
-            // 6. 100% 确保在 finally 中释放互斥锁
             if ($event->withoutOverlapping) {
                 $this->releaseMutexSafely($event);
             }
+            $this->resetRuntimeState($this->getContainer());
         }
     }
 
@@ -110,6 +160,7 @@ class QueuedCommandJob extends Job implements ShouldQueue
      * 解析/重建 Event 实例.
      *
      * @return Event
+     * @throws BindingResolutionException
      */
     public function resolveEvent(): Event
     {
@@ -125,6 +176,7 @@ class QueuedCommandJob extends Job implements ShouldQueue
         $event->output = $this->output;
         $event->shouldAppendOutput = $this->shouldAppendOutput;
         $event->description = $this->description;
+        $event->user = $this->user;
 
         return $this->runtimeEvent = $event;
     }
@@ -133,6 +185,7 @@ class QueuedCommandJob extends Job implements ShouldQueue
      * 获取 EventMutex 实例 (兼容非 CLI 容器绑定).
      *
      * @return EventMutex
+     * @throws BindingResolutionException
      */
     public function getEventMutex(): EventMutex
     {
@@ -145,26 +198,16 @@ class QueuedCommandJob extends Job implements ShouldQueue
     }
 
     /**
-     * 自定义序列化属性，避开 Event 内闭包引发的序列化异常.
+     * 自定义序列化属性列表，动态剔除包含闭包的瞬态 runtimeEvent 对象.
+     *
+     * 完整保留当前 Job、父类以及队列所需的所有元数据属性 (queue, connection, data 等).
      *
      * @return array<string>
      */
     public function __sleep(): array
     {
-        return [
-            'command',
-            'expression',
-            'withoutOverlapping',
-            'expiresAt',
-            'mutexName',
-            'output',
-            'shouldAppendOutput',
-            'description',
-            'timezone',
-            'job',
-            'data',
-            'queue',
-            'connection',
-        ];
+        $properties = array_keys(get_object_vars($this));
+
+        return array_values(array_diff($properties, ['runtimeEvent']));
     }
 }

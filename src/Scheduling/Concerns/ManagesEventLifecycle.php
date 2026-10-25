@@ -13,6 +13,7 @@ use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 use Throwable;
@@ -20,7 +21,7 @@ use Throwable;
 /**
  * 调度事件生命周期与排他互斥核心能力 Trait.
  *
- * 为 QueuedCommandJob 与 TaskRunner 提供统一的：
+ * 为 CommandJob 与 TaskRunner 提供统一的：
  * 1. 互斥排他锁检测与安全释放 (withoutOverlapping)
  * 2. 官方调度生命周期 4 大事件派发 (Starting/Finished/Failed/Skipped)
  * 3. 前后置钩子触发 (callBeforeCallbacks / callAfterCallbacks)
@@ -101,7 +102,31 @@ trait ManagesEventLifecycle
      */
     protected function runCommandSafely(Event $event, Container $container): int
     {
-        // 1. 触发前置钩子 (before)
+        if ($event instanceof CallbackEvent) {
+            // A. 原生闭包回调：原生 run() 内部自洽处理抢锁、before、执行、after 与解锁
+            ob_start();
+            $failedException = null;
+            try {
+                $event->run($container);
+            } catch (Throwable $e) {
+                $failedException = $e;
+            } finally {
+                $rawOutput = ob_get_clean() ?: '';
+            }
+
+            if (!empty($rawOutput)) {
+                $this->writeEventOutput($event, $rawOutput);
+            }
+
+            if ($failedException !== null) {
+                throw $failedException;
+            }
+
+            // 官方原生 CallbackEvent 在 finish() 中已根据 ($result === false ? 1 : 0) 正确赋值 exitCode
+            return isset($event->exitCode) ? (int) $event->exitCode : 0;
+        }
+
+        // B & C. Artisan 命令与外部 Shell 命令由我们统一管控生命周期
         $event->callBeforeCallbacks($container);
 
         $exitCode = 0;
@@ -109,11 +134,8 @@ trait ManagesEventLifecycle
         $failedException = null;
 
         try {
-            if ($event instanceof CallbackEvent) {
-                // A. 原生闭包回调
-                $exitCode = (int) $event->run($container);
-            } elseif (!empty($event->command) && $this->isArtisanCommand($event->command)) {
-                // B. Artisan 命令：内存直接调用，零子进程开销
+            if ($this->shouldRunInCurrentProcess($event)) {
+                // B. 纯正 Artisan 命令：在当前进程内存直驱，零进程开销
                 $artisanCommand = $this->extractArtisanCommand($event->command);
                 $kernel = $container->make(ConsoleKernel::class);
                 $buffer = new BufferedOutput();
@@ -162,49 +184,106 @@ trait ManagesEventLifecycle
     }
 
     /**
+     * 判断是否可以在当前进程中内存直驱执行.
+     *
+     * 仅当命令为纯正 Artisan 命令且不包含任何 Shell 管道 (|)、重定向 (><) 或后台符号 (&) 时，
+     * 才能在当前进程内存调用；否则必须降级为 Symfony Process 启动子进程交由系统 Shell 处理。
+     */
+    protected function shouldRunInCurrentProcess(Event $event): bool
+    {
+        if (empty($event->command) || !$this->isArtisanCommand((string) $event->command)) {
+            return false;
+        }
+
+        return preg_match('/[|><&;`]|(?:\$\()/', (string) $event->command) !== 1;
+    }
+
+    /**
      * 判断是否为 Artisan 命令.
      */
     protected function isArtisanCommand(string $command): bool
     {
-        return str_contains($command, 'artisan');
+        return preg_match(
+            '/(?:(?:"[^"]*artisan[^"]*"|\'[^\']*artisan[^\']*\'|\S*artisan\S*))/i',
+            $command
+        ) === 1;
     }
 
     /**
      * 从完整命令行中提取纯净的 artisan 命令名与参数.
+     *
+     * 严谨移除非命令开头的 php 与 artisan 二进制路径，绝不误伤参数内部包含的同名词汇.
      */
     protected function extractArtisanCommand(string $command): string
     {
-        $phpBinary = Application::phpBinary();
-        $cleaned = trim(str_replace([$phpBinary, "'artisan'", '"artisan"', 'artisan'], '', $command));
+        $prefix = sprintf('%s %s ', Application::phpBinary(), Application::artisanBinary());
+        if (str_starts_with($command, $prefix)) {
+            return trim(substr($command, strlen($prefix)));
+        }
 
-        return trim($cleaned, " '\"");
+        $cleaned = preg_replace(
+            '/^(?:(?:"[^"]*php[^"]*"|\'[^\']*php[^\']*\'|\S*php\S*)\s+)?'
+            .'(?:"[^"]*artisan[^"]*"|\'[^\']*artisan[^\']*\'|\S*artisan\S*)\s+/i',
+            '',
+            trim($command)
+        );
+
+        return trim((string) $cleaned);
     }
 
     /**
-     * 仅当任务发生异常退出且残留了未提交事务时，执行安全回滚，避免锁表。
-     * 绝不调用 disconnect()，完整保留长连接供后续复用。
+     * 重置与清理常驻内存环境状态 (不断开长连接，保护 Octane / Swoole 连接池).
+     *
+     * 1. 回滚未提交的事务至 Level 0；
+     * 2. 清空数据库查询日志，防止常驻内存下无限增长导致 OOM；
+     * 3. 忘记残留的用户身份认证态 (forgetGuards)，防止跨任务身份串扰。
      *
      * @param Container $container
      */
-    protected function rollbackUncommittedTransactions(Container $container): void
+    public function resetRuntimeState(Container $container): void
     {
-        if (!$container->bound('db')) {
-            return;
-        }
-
-        try {
-            $db = $container->make('db');
-            if (method_exists($db, 'getConnections')) {
-                foreach ($db->getConnections() as $connection) {
-                    try {
-                        while ($connection->transactionLevel() > 0) {
-                            $connection->rollBack();
+        // 1. 回滚事务与清空 QueryLog
+        if (class_exists(DB::class)) {
+            try {
+                /** @var array<string, mixed> $connections */
+                $connections = DB::getConnections();
+                foreach ($connections as $connection) {
+                    if ($connection instanceof \Illuminate\Database\Connection) {
+                        if ($connection->transactionLevel() > 0) {
+                            try {
+                                $connection->rollBack(0);
+                            } catch (Throwable $e) {
+                            }
                         }
-                    } catch (Throwable $e) {
+                        try {
+                            $connection->flushQueryLog();
+                        } catch (Throwable $e) {
+                        }
                     }
                 }
+            } catch (Throwable $e) {
             }
-        } catch (Throwable $e) {
         }
+
+        // 2. 清理残留认证 Guard，防止跨任务身份污染
+        if ($container->bound('auth')) {
+            try {
+                $auth = $container->make('auth');
+                if (method_exists($auth, 'forgetGuards')) {
+                    $auth->forgetGuards();
+                }
+            } catch (Throwable $e) {
+            }
+        }
+    }
+
+    /**
+     * 回滚所有连接上未提交的事务 (兼容旧方法名).
+     *
+     * @param Container $container
+     */
+    public function rollbackUncommittedTransactions(Container $container): void
+    {
+        $this->resetRuntimeState($container);
     }
 }

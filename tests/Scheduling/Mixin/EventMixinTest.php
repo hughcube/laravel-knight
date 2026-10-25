@@ -1,9 +1,9 @@
 <?php
 
-namespace HughCube\Laravel\Knight\Tests\Mixin\Console\Scheduling;
+namespace HughCube\Laravel\Knight\Tests\Scheduling\Mixin;
 
 use Closure;
-use HughCube\Laravel\Knight\Mixin\Console\Scheduling\EventMixin;
+use HughCube\Laravel\Knight\Scheduling\Mixin\EventMixin;
 use HughCube\Laravel\Knight\Tests\TestCase;
 
 class EventMixinTest extends TestCase

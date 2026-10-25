@@ -23,8 +23,4 @@ return [
     'devops' => [
         'route_prefix' => null,
     ],
-
-    'schedule' => [
-        'heavy_commands' => [],
-    ],
 ];
