@@ -34,7 +34,7 @@ class JobPayloadCommandTest extends TestCase
     public function testWithCustomJobAndData()
     {
         $exitCode = Artisan::call('queue:job-payload', [
-            'job'    => ScheduleJob::class,
+            'job' => ScheduleJob::class,
             '--data' => json_encode(['custom_key' => 'custom_val']),
         ]);
 

@@ -33,7 +33,6 @@ use HughCube\Laravel\Knight\Http\Actions\PhpInfoAction;
 use HughCube\Laravel\Knight\Http\Actions\PingAction;
 use HughCube\Laravel\Knight\Http\Actions\RequestLogAction;
 use HughCube\Laravel\Knight\Http\Actions\RequestShowAction;
-use HughCube\Laravel\Knight\Scheduling\Mixin\EventMixin as ScheduleEventMixin;
 use HughCube\Laravel\Knight\Mixin\Database\Query\BuilderMixin;
 use HughCube\Laravel\Knight\Mixin\Database\Query\Grammars\GrammarMixin;
 use HughCube\Laravel\Knight\Mixin\Http\RequestMixin;
@@ -48,6 +47,7 @@ use HughCube\Laravel\Knight\OPcache\Commands\CreatePreloadCommand as OPcacheCrea
 use HughCube\Laravel\Knight\Scheduling\Actions\ScheduleAction;
 use HughCube\Laravel\Knight\Scheduling\Commands\DaemonCommand;
 use HughCube\Laravel\Knight\Scheduling\Commands\JobPayloadCommand;
+use HughCube\Laravel\Knight\Scheduling\Mixin\EventMixin as ScheduleEventMixin;
 use HughCube\Laravel\Knight\Support\Runtime;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Scheduling\Event as ScheduleEvent;
@@ -92,13 +92,13 @@ class ServiceProvider extends IlluminateServiceProvider
 
         /** Console Scheduling */
         ScheduleEvent::mixin(new ScheduleEventMixin(), false);
-        if (!$this->app->bound(\Illuminate\Console\Scheduling\EventMutex::class)) {
+        if (! $this->app->bound(\Illuminate\Console\Scheduling\EventMutex::class)) {
             $this->app->bind(
                 \Illuminate\Console\Scheduling\EventMutex::class,
                 \Illuminate\Console\Scheduling\CacheEventMutex::class
             );
         }
-        if (!$this->app->bound(\Illuminate\Console\Scheduling\SchedulingMutex::class)) {
+        if (! $this->app->bound(\Illuminate\Console\Scheduling\SchedulingMutex::class)) {
             $this->app->bind(
                 \Illuminate\Console\Scheduling\SchedulingMutex::class,
                 \Illuminate\Console\Scheduling\CacheSchedulingMutex::class
@@ -161,7 +161,7 @@ class ServiceProvider extends IlluminateServiceProvider
 
         /** @var Repository $config */
         $config = $this->app->make('config');
-        if (!$this->app->routesAreCached() && false !== ($prefix = $config->get('knight.opcache.route_prefix', false))) {
+        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.opcache.route_prefix', false))) {
             Route::group(['prefix' => $prefix], function () use ($config) {
                 if (false !== ($action = $config->get('knight.opcache.action.scripts'))) {
                     Route::any('/opcache/scripts', $action ?: OPcacheScriptsAction::class)->name('knight.opcache.scripts');
@@ -182,7 +182,7 @@ class ServiceProvider extends IlluminateServiceProvider
     {
         /** @var Repository $config */
         $config = $this->app->make('config');
-        if (!$this->app->routesAreCached() && false !== ($prefix = $config->get('knight.request.route_prefix', false))) {
+        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.request.route_prefix', false))) {
             Route::group(['prefix' => $prefix], function () use ($config) {
                 if (false !== ($action = $config->get('knight.request.action.log'))) {
                     Route::any('/request/log', $action ?: RequestLogAction::class)->name('knight.request.log');
@@ -199,7 +199,7 @@ class ServiceProvider extends IlluminateServiceProvider
     {
         /** @var Repository $config */
         $config = $this->app->make('config');
-        if (!$this->app->routesAreCached() && false !== ($prefix = $config->get('knight.healthcheck.route_prefix'))) {
+        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.healthcheck.route_prefix'))) {
             Route::group(['prefix' => $prefix], function () use ($config) {
                 if (false !== ($action = $config->get('knight.healthcheck.action.healthcheck'))) {
                     Route::any('/healthcheck', $action ?: PingAction::class)->name('knight.healthcheck');
@@ -212,7 +212,7 @@ class ServiceProvider extends IlluminateServiceProvider
     {
         /** @var Repository $config */
         $config = $this->app->make('config');
-        if (!$this->app->routesAreCached() && false !== ($prefix = $config->get('knight.phpinfo.route_prefix', false))) {
+        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.phpinfo.route_prefix', false))) {
             Route::group(['prefix' => $prefix], function () use ($config) {
                 if (false !== ($action = $config->get('knight.phpinfo.action.phpinfo'))) {
                     Route::any('/phpinfo', $action ?: PhpInfoAction::class)->name('knight.phpinfo');
@@ -225,7 +225,7 @@ class ServiceProvider extends IlluminateServiceProvider
     {
         /** @var Repository $config */
         $config = $this->app->make('config');
-        if (!$this->app->routesAreCached() && false !== ($prefix = $config->get('knight.devops.route_prefix', false))) {
+        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.devops.route_prefix', false))) {
             Route::group(['prefix' => $prefix], function () use ($config) {
                 if (false !== ($action = $config->get('knight.devops.action.system'))) {
                     Route::any('/devops/system', $action ?: DevopsSystemAction::class)->name('knight.devops.system');

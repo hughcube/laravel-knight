@@ -99,6 +99,7 @@ class CommandJobTest extends TestCase
         $executed = false;
         $event = $schedule->call(function () use (&$executed) {
             $executed = true;
+
             return 0;
         })->name('test-closure-task')->withoutOverlapping();
 

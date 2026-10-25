@@ -89,7 +89,7 @@ class DaemonCommand extends Command
         $maxMemory = (int) $this->option('max-memory');
         $interval = max(10, (int) ($this->option('interval') ?: 100));
 
-        while (!$this->shouldQuit) {
+        while (! $this->shouldQuit) {
             $now = Carbon::now();
             $isDue = ($immediate && $this->runs === 0)
                 || $now->startOfMinute()->greaterThan($lastExecutionStartedAt);
@@ -153,16 +153,16 @@ class DaemonCommand extends Command
 
             if ($components !== null) {
                 $statusText = match ($mode) {
-                    'error'   => '<fg=red;options=bold>FAIL</>',
+                    'error' => '<fg=red;options=bold>FAIL</>',
                     'skipped' => '<fg=yellow;options=bold>SKIPPED</>',
-                    default   => sprintf('%.2fs DONE', $duration),
+                    default => sprintf('%.2fs DONE', $duration),
                 };
                 $components->twoColumnDetail($description, $statusText);
             } else {
                 $statusText = match ($mode) {
-                    'error'   => 'FAIL',
+                    'error' => 'FAIL',
                     'skipped' => 'SKIPPED',
-                    default   => sprintf('%.2fs DONE', $duration),
+                    default => sprintf('%.2fs DONE', $duration),
                 };
                 $this->line(sprintf('%s (%s)', strip_tags($description), $statusText));
             }
@@ -171,7 +171,7 @@ class DaemonCommand extends Command
         try {
             $report = $runner->run(false, $outputCallback, true, fn () => $this->shouldQuit);
 
-            if ($report['count'] === 0 && !$whisper) {
+            if ($report['count'] === 0 && ! $whisper) {
                 if ($components !== null) {
                     $components->info('No scheduled commands are ready to run.');
                 } else {
@@ -210,7 +210,7 @@ class DaemonCommand extends Command
         }
 
         $dir = dirname((string) $outputFile);
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             @mkdir($dir, 0755, true);
         }
 

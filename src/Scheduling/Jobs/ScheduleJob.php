@@ -26,6 +26,7 @@ class ScheduleJob extends Job
 
     /**
      * @return void
+     *
      * @throws Throwable
      */
     protected function action(): void
@@ -52,7 +53,7 @@ class ScheduleJob extends Job
      */
     public function getReport(): array
     {
-        return !empty($this->report) ? $this->report : static::$lastReport;
+        return ! empty($this->report) ? $this->report : static::$lastReport;
     }
 
     /**

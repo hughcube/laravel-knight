@@ -7,7 +7,7 @@ return [
 
     'request' => [
         'route_prefix' => false,
-        'signature'    => [
+        'signature' => [
             'disabled' => env('KNIGHT_REQUEST_SIGNATURE_DISABLED', false),
         ],
     ],

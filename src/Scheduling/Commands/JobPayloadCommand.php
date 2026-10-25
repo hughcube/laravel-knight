@@ -4,7 +4,6 @@ namespace HughCube\Laravel\Knight\Scheduling\Commands;
 
 use Exception;
 use HughCube\Laravel\Knight\Console\Command;
-use HughCube\Laravel\Knight\Scheduling\Jobs\ScheduleJob;
 use Illuminate\Queue\Queue;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Queue\SyncQueue;
@@ -37,6 +36,7 @@ class JobPayloadCommand extends Command
      * Execute the console command.
      *
      * @return int
+     *
      * @throws Exception
      */
     public function handle(): int
@@ -58,13 +58,14 @@ class JobPayloadCommand extends Command
 
     /**
      * @return object
+     *
      * @throws Exception
      */
     protected function makeJob(): object
     {
         $class = ltrim((string) $this->argument('job'), '\\');
 
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             throw new InvalidArgumentException(sprintf('Job class "%s" does not exist.', $class));
         }
 
@@ -100,6 +101,7 @@ class JobPayloadCommand extends Command
 
     /**
      * @return array|null
+     *
      * @throws Exception
      */
     protected function getData(): ?array

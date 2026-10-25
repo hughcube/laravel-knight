@@ -10,7 +10,6 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -91,7 +90,7 @@ class ScheduleRunnerTest extends TestCase
     /**
      * 测试双端自适应模型：
      * 1. 在 Action 模式 ($asyncToQueue = true)：runInBackground 任务推入异步队列
-     * 2. 在 Daemon 模式 ($asyncToQueue = false)：runInBackground 任务在本地后台跑
+     * 2. 在 Daemon 模式 ($asyncToQueue = false)：runInBackground 任务在本地后台跑.
      */
     public function testRunInBackgroundAdaptiveModel()
     {
@@ -294,6 +293,7 @@ class ScheduleRunnerTest extends TestCase
         $executed = false;
         $schedule->call(function () use (&$executed) {
             $executed = true;
+
             return 100; // 模拟返回处理记录数
         })->everyMinute();
 
@@ -432,6 +432,7 @@ class ScheduleRunnerTest extends TestCase
         $executed = false;
         $event = $schedule->call(function () use (&$executed) {
             $executed = true;
+
             return 0;
         })->everyMinute();
 

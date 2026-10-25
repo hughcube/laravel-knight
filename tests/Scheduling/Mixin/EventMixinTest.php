@@ -51,7 +51,8 @@ class EventMixinTest extends TestCase
 
     private function newFakeEvent()
     {
-        return new class() {
+        return new class()
+        {
             public $beforeCallback;
             public $outputPath;
             public $appendMode;

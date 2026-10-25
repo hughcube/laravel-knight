@@ -3,16 +3,10 @@
 namespace HughCube\Laravel\Knight\Scheduling\Concerns;
 
 use Illuminate\Console\Application;
-use Illuminate\Console\Events\ScheduledTaskFailed;
-use Illuminate\Console\Events\ScheduledTaskFinished;
-use Illuminate\Console\Events\ScheduledTaskSkipped;
-use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
@@ -33,7 +27,7 @@ trait ManagesEventLifecycle
     /**
      * 判断事件是否因重叠而应当跳过 (防并发踩踏).
      *
-     * @param Event $event
+     * @param  Event  $event
      * @return bool
      */
     public function shouldSkipDueToOverlapping(Event $event): bool
@@ -42,17 +36,17 @@ trait ManagesEventLifecycle
             return $event->shouldSkipDueToOverlapping();
         }
 
-        return (bool) $event->withoutOverlapping && !$event->mutex->create($event);
+        return (bool) $event->withoutOverlapping && ! $event->mutex->create($event);
     }
 
     /**
      * 安全释放任务互斥锁 (withoutOverlapping).
      *
-     * @param Event $event
+     * @param  Event  $event
      */
     public function releaseMutexSafely(Event $event): void
     {
-        if (!empty($event->withoutOverlapping)) {
+        if (! empty($event->withoutOverlapping)) {
             try {
                 $event->mutex->forget($event);
             } catch (Throwable $e) {
@@ -63,8 +57,8 @@ trait ManagesEventLifecycle
     /**
      * 写入任务标准输出与日志文件 (sendOutputTo / appendOutputTo).
      *
-     * @param Event  $event
-     * @param string $output
+     * @param  Event  $event
+     * @param  string  $output
      */
     public function writeEventOutput(Event $event, string $output): void
     {
@@ -74,7 +68,7 @@ trait ManagesEventLifecycle
 
         try {
             $dir = dirname($event->output);
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 @mkdir($dir, 0755, true);
             }
 
@@ -95,9 +89,10 @@ trait ManagesEventLifecycle
      * B. Artisan 命令 (同进程内存直驱调用，免 Fork 进程)
      * C. 外部 Shell 系统命令 (通过 Symfony Process 运行)
      *
-     * @param Event     $event
-     * @param Container $container
+     * @param  Event  $event
+     * @param  Container  $container
      * @return int 退出码 (0: 成功, 非0: 失败)
+     *
      * @throws Throwable
      */
     protected function runCommandSafely(Event $event, Container $container): int
@@ -114,7 +109,7 @@ trait ManagesEventLifecycle
                 $rawOutput = ob_get_clean() ?: '';
             }
 
-            if (!empty($rawOutput)) {
+            if (! empty($rawOutput)) {
                 $this->writeEventOutput($event, $rawOutput);
             }
 
@@ -151,7 +146,7 @@ trait ManagesEventLifecycle
                 }
 
                 $capturedOutput = $buffer->fetch();
-                if (!empty($rawOutput)) {
+                if (! empty($rawOutput)) {
                     $capturedOutput = ($capturedOutput !== '' ? $capturedOutput."\n" : '').$rawOutput;
                 }
             } else {
@@ -166,7 +161,7 @@ trait ManagesEventLifecycle
         }
 
         // 2. 写入重定向文件
-        if (!empty($capturedOutput)) {
+        if (! empty($capturedOutput)) {
             $this->writeEventOutput($event, $capturedOutput);
         }
 
@@ -191,7 +186,7 @@ trait ManagesEventLifecycle
      */
     protected function shouldRunInCurrentProcess(Event $event): bool
     {
-        if (empty($event->command) || !$this->isArtisanCommand((string) $event->command)) {
+        if (empty($event->command) || ! $this->isArtisanCommand((string) $event->command)) {
             return false;
         }
 
@@ -238,7 +233,7 @@ trait ManagesEventLifecycle
      * 2. 清空数据库查询日志，防止常驻内存下无限增长导致 OOM；
      * 3. 忘记残留的用户身份认证态 (forgetGuards)，防止跨任务身份串扰。
      *
-     * @param Container $container
+     * @param  Container  $container
      */
     public function resetRuntimeState(Container $container): void
     {
@@ -280,7 +275,7 @@ trait ManagesEventLifecycle
     /**
      * 回滚所有连接上未提交的事务 (兼容旧方法名).
      *
-     * @param Container $container
+     * @param  Container  $container
      */
     public function rollbackUncommittedTransactions(Container $container): void
     {

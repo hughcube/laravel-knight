@@ -43,9 +43,9 @@ class DaemonCommandTest extends TestCase
         })->everyMinute();
 
         $exitCode = Artisan::call('schedule:daemon', [
-            '--max-runs'  => 1,
+            '--max-runs' => 1,
             '--immediate' => true,
-            '--interval'  => 10,
+            '--interval' => 10,
         ]);
 
         $this->assertSame(0, $exitCode);
@@ -59,8 +59,8 @@ class DaemonCommandTest extends TestCase
     {
         $exitCode = Artisan::call('schedule:daemon', [
             '--max-memory' => 1, // 1MB 必然触发内存超限
-            '--immediate'  => true,
-            '--interval'   => 10,
+            '--immediate' => true,
+            '--interval' => 10,
         ]);
 
         $this->assertSame(0, $exitCode);
@@ -77,11 +77,11 @@ class DaemonCommandTest extends TestCase
         }
 
         $exitCode = Artisan::call('schedule:daemon', [
-            '--immediate'       => true,
-            '--max-runs'        => 1,
-            '--whisper'         => false,
+            '--immediate' => true,
+            '--max-runs' => 1,
+            '--whisper' => false,
             '--run-output-file' => $logFile,
-            '--interval'        => 10,
+            '--interval' => 10,
         ]);
 
         $this->assertSame(0, $exitCode);
@@ -101,9 +101,9 @@ class DaemonCommandTest extends TestCase
     {
         $exitCode = Artisan::call('schedule:daemon', [
             '--immediate' => true,
-            '--max-runs'  => 1,
-            '--whisper'   => true,
-            '--interval'  => 10,
+            '--max-runs' => 1,
+            '--whisper' => true,
+            '--interval' => 10,
         ]);
 
         $this->assertSame(0, $exitCode);

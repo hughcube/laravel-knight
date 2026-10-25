@@ -13,8 +13,8 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Carbon;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -39,7 +39,7 @@ class ScheduleRunner
     protected $container;
 
     /**
-     * @param Container $container
+     * @param  Container  $container
      */
     public function __construct(Container $container)
     {
@@ -49,11 +49,12 @@ class ScheduleRunner
     /**
      * 执行当前到期的调度任务.
      *
-     * @param bool $asyncToQueue 是否将耗时后台任务推入异步队列 (Action 环境传 true, Daemon 环境传 false)
-     * @param callable|null $outputCallback 终端输出回调 (供 Daemon 打印执行日志)
-     * @param bool $repeatUntilEndOfMinute 是否在当前分钟剩余时间内持续调度秒级重复任务 (Daemon 模式传 true)
-     * @param callable|null $shouldInterruptCallback 外部平滑退出回调，返回 true 时立刻中断退出循环
+     * @param  bool  $asyncToQueue  是否将耗时后台任务推入异步队列 (Action 环境传 true, Daemon 环境传 false)
+     * @param  callable|null  $outputCallback  终端输出回调 (供 Daemon 打印执行日志)
+     * @param  bool  $repeatUntilEndOfMinute  是否在当前分钟剩余时间内持续调度秒级重复任务 (Daemon 模式传 true)
+     * @param  callable|null  $shouldInterruptCallback  外部平滑退出回调，返回 true 时立刻中断退出循环
      * @return array 结构化执行简报
+     *
      * @throws Throwable
      */
     public function run(
@@ -85,19 +86,19 @@ class ScheduleRunner
             }
 
             // 1. 调度暂停门禁检查 (illuminate:schedule:paused)
-            if ($isPaused && !(method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused())) {
+            if ($isPaused && ! (method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused())) {
                 $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                 continue;
             }
 
             // 2. 基础过滤器门禁检查 (when / skip / inEnvironment / isDownForMaintenance)
-            if (!$event->filtersPass($app)) {
+            if (! $event->filtersPass($app)) {
                 $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                 continue;
             }
 
             // 3. 多节点单机认领门禁检查 (onOneServer)
-            if ($event->onOneServer && !$schedule->serverShouldRun($event, $startedAt)) {
+            if ($event->onOneServer && ! $schedule->serverShouldRun($event, $startedAt)) {
                 $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                 continue;
             }
@@ -112,7 +113,7 @@ class ScheduleRunner
                 return method_exists($event, 'isRepeatable') && $event->isRepeatable();
             })->all();
 
-            if (!empty($repeatableEvents)) {
+            if (! empty($repeatableEvents)) {
                 $this->repeatEvents(
                     $repeatableEvents,
                     $startedAt,
@@ -126,18 +127,18 @@ class ScheduleRunner
 
         return [
             'triggered_at' => $startedAt->toDateTimeString(),
-            'count'        => count($summary),
-            'tasks'        => $summary,
+            'count' => count($summary),
+            'tasks' => $summary,
         ];
     }
 
     /**
      * 执行具体单个任务项 (包含后台分流与同进程直驱).
      *
-     * @param Event $event
-     * @param bool $asyncToQueue
-     * @param callable|null $outputCallback
-     * @param array $summary
+     * @param  Event  $event
+     * @param  bool  $asyncToQueue
+     * @param  callable|null  $outputCallback
+     * @param  array  $summary
      */
     protected function executeSingleEvent(
         Event $event,
@@ -150,44 +151,45 @@ class ScheduleRunner
         $event->exitCode = null;
 
         // A. 判定是否为后台耗时任务 (runInBackground) 且非闭包
-        if (!($event instanceof CallbackEvent) && !empty($event->runInBackground)) {
+        if (! ($event instanceof CallbackEvent) && ! empty($event->runInBackground)) {
             if ($asyncToQueue) {
                 // Action 模式：为防 HTTP 请求超时，自动升阶推入异步队列！
                 $job = new CommandJob($event);
 
                 // 排他互斥门禁检查与入队前抢锁 (防队列堆积与并发踩踏)
-                if (!empty($event->withoutOverlapping)) {
-                    if ($event->mutex->exists($event) || !$event->mutex->create($event)) {
+                if (! empty($event->withoutOverlapping)) {
+                    if ($event->mutex->exists($event) || ! $event->mutex->create($event)) {
                         $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                         $summary[] = [
-                            'task'     => $event->getSummaryForDisplay(),
-                            'mode'     => 'skipped',
+                            'task' => $event->getSummaryForDisplay(),
+                            'mode' => 'skipped',
                             'duration' => 0.0,
                         ];
                         if ($outputCallback !== null) {
                             $outputCallback($event, 'skipped', 0.0);
                         }
+
                         return;
                     }
                     $job->mutexAcquired = true;
                 }
 
                 $onQueue = property_exists($event, 'onQueue') ? $event->onQueue : ($event->onQueue ?? null);
-                if (!empty($onQueue)) {
+                if (! empty($onQueue)) {
                     $job->onQueue($onQueue);
                 }
                 $onConnection = property_exists($event, 'onConnection')
                     ? $event->onConnection
                     : ($event->onConnection ?? null);
-                if (!empty($onConnection)) {
+                if (! empty($onConnection)) {
                     $job->onConnection($onConnection);
                 }
 
                 $this->busDispatcher()->dispatch($job);
 
                 $summary[] = [
-                    'task'  => $event->getSummaryForDisplay(),
-                    'mode'  => 'queue',
+                    'task' => $event->getSummaryForDisplay(),
+                    'mode' => 'queue',
                     'queue' => $job->queue ?: 'default',
                 ];
 
@@ -196,16 +198,17 @@ class ScheduleRunner
                 }
             } else {
                 // Daemon 模式：本地后台独立运行，零队列开销
-                if (!empty($event->withoutOverlapping) && $event->mutex->exists($event)) {
+                if (! empty($event->withoutOverlapping) && $event->mutex->exists($event)) {
                     $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                     $summary[] = [
-                        'task'     => $event->getSummaryForDisplay(),
-                        'mode'     => 'skipped',
+                        'task' => $event->getSummaryForDisplay(),
+                        'mode' => 'skipped',
                         'duration' => 0.0,
                     ];
                     if ($outputCallback !== null) {
                         $outputCallback($event, 'skipped', 0.0);
                     }
+
                     return;
                 }
 
@@ -218,11 +221,11 @@ class ScheduleRunner
 
                     $duration = round(microtime(true) - $start, 2);
 
-                    if (!empty($event->skippedBecauseOverlapping)) {
+                    if (! empty($event->skippedBecauseOverlapping)) {
                         $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                         $summary[] = [
-                            'task'     => $event->getSummaryForDisplay(),
-                            'mode'     => 'skipped',
+                            'task' => $event->getSummaryForDisplay(),
+                            'mode' => 'skipped',
                             'duration' => $duration,
                         ];
                         if ($outputCallback !== null) {
@@ -231,8 +234,8 @@ class ScheduleRunner
                     } else {
                         $this->eventsDispatcher()->dispatch(new ScheduledTaskFinished($event, $duration));
                         $summary[] = [
-                            'task'     => $event->getSummaryForDisplay(),
-                            'mode'     => 'background',
+                            'task' => $event->getSummaryForDisplay(),
+                            'mode' => 'background',
                             'duration' => $duration,
                         ];
                         if ($outputCallback !== null) {
@@ -244,16 +247,17 @@ class ScheduleRunner
                     $this->eventsDispatcher()->dispatch(new ScheduledTaskFailed($event, $e, $duration));
                     $this->exceptionHandler()->report($e);
                     $summary[] = [
-                        'task'     => $event->getSummaryForDisplay(),
-                        'mode'     => 'background',
+                        'task' => $event->getSummaryForDisplay(),
+                        'mode' => 'background',
                         'duration' => $duration,
-                        'error'    => $e->getMessage(),
+                        'error' => $e->getMessage(),
                     ];
                     if ($outputCallback !== null) {
                         $outputCallback($event, 'error', $duration);
                     }
                 }
             }
+
             return;
         }
 
@@ -266,8 +270,8 @@ class ScheduleRunner
 
             $duration = round(microtime(true) - $start, 2);
             $summary[] = [
-                'task'     => $event->getSummaryForDisplay(),
-                'mode'     => 'sync',
+                'task' => $event->getSummaryForDisplay(),
+                'mode' => 'sync',
                 'duration' => $duration,
             ];
 
@@ -279,10 +283,10 @@ class ScheduleRunner
             $duration = round(microtime(true) - $start, 2);
             $this->exceptionHandler()->report($e);
             $summary[] = [
-                'task'     => $event->getSummaryForDisplay(),
-                'mode'     => 'sync',
+                'task' => $event->getSummaryForDisplay(),
+                'mode' => 'sync',
                 'duration' => $duration,
-                'error'    => $e->getMessage(),
+                'error' => $e->getMessage(),
             ];
 
             if ($outputCallback !== null) {
@@ -294,12 +298,12 @@ class ScheduleRunner
     /**
      * 持续执行可重复秒级任务直到当前分钟结束 (100% 对齐官方 repeatEvents 契约).
      *
-     * @param Event[] $events
-     * @param Carbon $startedAt
-     * @param bool $asyncToQueue
-     * @param callable|null $outputCallback
-     * @param callable|null $shouldInterruptCallback
-     * @param array $summary
+     * @param  Event[]  $events
+     * @param  Carbon  $startedAt
+     * @param  bool  $asyncToQueue
+     * @param  callable|null  $outputCallback
+     * @param  callable|null  $shouldInterruptCallback
+     * @param  array  $summary
      */
     protected function repeatEvents(
         array $events,
@@ -332,7 +336,7 @@ class ScheduleRunner
                     return;
                 }
 
-                if (method_exists($event, 'shouldRepeatNow') && !$event->shouldRepeatNow()) {
+                if (method_exists($event, 'shouldRepeatNow') && ! $event->shouldRepeatNow()) {
                     continue;
                 }
 
@@ -344,23 +348,23 @@ class ScheduleRunner
                     $hasEnteredMaintenanceMode = $hasEnteredMaintenanceMode || (bool) $app->isDownForMaintenance();
                     if ($hasEnteredMaintenanceMode
                         && method_exists($event, 'runsInMaintenanceMode')
-                        && !$event->runsInMaintenanceMode()
+                        && ! $event->runsInMaintenanceMode()
                     ) {
                         continue;
                     }
                 }
 
-                if ($paused && !(method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused())) {
+                if ($paused && ! (method_exists($event, 'runsWhenPaused') && $event->runsWhenPaused())) {
                     $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                     continue;
                 }
 
-                if (!$event->filtersPass($app)) {
+                if (! $event->filtersPass($app)) {
                     $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                     continue;
                 }
 
-                if ($event->onOneServer && !$schedule->serverShouldRun($event, $startedAt)) {
+                if ($event->onOneServer && ! $schedule->serverShouldRun($event, $startedAt)) {
                     $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                     continue;
                 }
@@ -393,7 +397,7 @@ class ScheduleRunner
      */
     protected function isSchedulePaused(): bool
     {
-        if (property_exists(Schedule::class, 'pausable') && !Schedule::$pausable) {
+        if (property_exists(Schedule::class, 'pausable') && ! Schedule::$pausable) {
             return false;
         }
 
@@ -428,7 +432,7 @@ class ScheduleRunner
             ? base_path('routes/console.php')
             : (method_exists($this->container, 'basePath') ? $this->container->basePath('routes/console.php') : null);
 
-        if (!empty($consoleRoutes) && file_exists($consoleRoutes)) {
+        if (! empty($consoleRoutes) && file_exists($consoleRoutes)) {
             require $consoleRoutes;
         }
 

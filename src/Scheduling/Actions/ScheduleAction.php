@@ -17,6 +17,7 @@ class ScheduleAction extends Controller
 {
     /**
      * @return Response
+     *
      * @throws Throwable
      */
     protected function action(): Response

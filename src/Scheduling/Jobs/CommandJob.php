@@ -47,7 +47,7 @@ class CommandJob extends Job implements ShouldQueue
     protected ?Event $runtimeEvent = null;
 
     /**
-     * @param Event $event
+     * @param  Event  $event
      */
     public function __construct(Event $event)
     {
@@ -62,7 +62,7 @@ class CommandJob extends Job implements ShouldQueue
         $this->timezone = $event->timezone instanceof \DateTimeZone
             ? $event->timezone->getName()
             : (string) $event->timezone;
-        $this->user = !empty($event->user) ? (string) $event->user : null;
+        $this->user = ! empty($event->user) ? (string) $event->user : null;
         $this->runtimeEvent = $event;
     }
 
@@ -82,6 +82,7 @@ class CommandJob extends Job implements ShouldQueue
             // 排他互斥门禁检查：若互斥锁已存在，直接派发 Skipped 事件并退出，绝不误派发 Starting
             if ($event->withoutOverlapping && $event->mutex->exists($event)) {
                 $this->getEventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+
                 return;
             }
 
@@ -91,8 +92,9 @@ class CommandJob extends Job implements ShouldQueue
             try {
                 $exitCode = $this->runCommandSafely($event, $this->getContainer());
 
-                if (!empty($event->skippedBecauseOverlapping)) {
+                if (! empty($event->skippedBecauseOverlapping)) {
                     $this->getEventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+
                     return;
                 }
 
@@ -121,8 +123,9 @@ class CommandJob extends Job implements ShouldQueue
         }
 
         // 2. 非闭包命令（Artisan / Shell）：由本调度内核统一管控生命周期与排他互斥
-        if (!$this->mutexAcquired && $this->shouldSkipDueToOverlapping($event)) {
+        if (! $this->mutexAcquired && $this->shouldSkipDueToOverlapping($event)) {
             $this->getEventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+
             return;
         }
 
@@ -160,6 +163,7 @@ class CommandJob extends Job implements ShouldQueue
      * 解析/重建 Event 实例.
      *
      * @return Event
+     *
      * @throws BindingResolutionException
      */
     public function resolveEvent(): Event
@@ -185,6 +189,7 @@ class CommandJob extends Job implements ShouldQueue
      * 获取 EventMutex 实例 (兼容非 CLI 容器绑定).
      *
      * @return EventMutex
+     *
      * @throws BindingResolutionException
      */
     public function getEventMutex(): EventMutex
