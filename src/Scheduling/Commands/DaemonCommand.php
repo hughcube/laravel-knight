@@ -151,19 +151,17 @@ class DaemonCommand extends Command
                 $mode === 'background' ? ' in background' : ''
             );
 
+            if ($mode === 'error') {
+                $statusText = $components !== null ? '<fg=red;options=bold>FAIL</>' : 'FAIL';
+            } elseif ($mode === 'skipped') {
+                $statusText = $components !== null ? '<fg=yellow;options=bold>SKIPPED</>' : 'SKIPPED';
+            } else {
+                $statusText = sprintf('%.2fs DONE', $duration);
+            }
+
             if ($components !== null) {
-                $statusText = match ($mode) {
-                    'error' => '<fg=red;options=bold>FAIL</>',
-                    'skipped' => '<fg=yellow;options=bold>SKIPPED</>',
-                    default => sprintf('%.2fs DONE', $duration),
-                };
                 $components->twoColumnDetail($description, $statusText);
             } else {
-                $statusText = match ($mode) {
-                    'error' => 'FAIL',
-                    'skipped' => 'SKIPPED',
-                    default => sprintf('%.2fs DONE', $duration),
-                };
                 $this->line(sprintf('%s (%s)', strip_tags($description), $statusText));
             }
         };

@@ -375,12 +375,9 @@ class ScheduleRunnerTest extends TestCase
 
         $runner = new ScheduleRunner($this->app);
         // 传入外部立即中断回调
-        $report = $runner->run(
-            asyncToQueue: false,
-            outputCallback: null,
-            repeatUntilEndOfMinute: true,
-            shouldInterruptCallback: fn () => true
-        );
+        $report = $runner->run(false, null, true, function () {
+            return true;
+        });
 
         $this->assertSame(0, $report['count']);
         $this->assertSame(0, $executedCount);
@@ -411,12 +408,7 @@ class ScheduleRunnerTest extends TestCase
         };
 
         $runner = new ScheduleRunner($this->app);
-        $report = $runner->run(
-            asyncToQueue: false,
-            outputCallback: null,
-            repeatUntilEndOfMinute: true,
-            shouldInterruptCallback: $interrupt
-        );
+        $report = $runner->run(false, null, true, $interrupt);
 
         $this->assertGreaterThanOrEqual(1, $executedCount);
     }
