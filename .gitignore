@@ -25,5 +25,4 @@ coverage_*.txt
 coverage_*.xml
 .composer-home/
 build/
-/docs/
 /*.png

@@ -33,7 +33,7 @@ use HughCube\Laravel\Knight\Http\Actions\PhpInfoAction;
 use HughCube\Laravel\Knight\Http\Actions\PingAction;
 use HughCube\Laravel\Knight\Http\Actions\RequestLogAction;
 use HughCube\Laravel\Knight\Http\Actions\RequestShowAction;
-use HughCube\Laravel\Knight\Mixin\Console\Scheduling\EventMixin as ScheduleEventMixin;
+use HughCube\Laravel\Knight\Scheduling\Mixin\EventMixin as ScheduleEventMixin;
 use HughCube\Laravel\Knight\Mixin\Database\Query\BuilderMixin;
 use HughCube\Laravel\Knight\Mixin\Database\Query\Grammars\GrammarMixin;
 use HughCube\Laravel\Knight\Mixin\Http\RequestMixin;
@@ -45,7 +45,9 @@ use HughCube\Laravel\Knight\OPcache\Actions\StatesAction as OPcacheStatesAction;
 use HughCube\Laravel\Knight\OPcache\Commands\ClearCliCacheCommand as OPcacheClearCliCacheCommand;
 use HughCube\Laravel\Knight\OPcache\Commands\CompileFilesCommand as OPcacheCompileFilesCommand;
 use HughCube\Laravel\Knight\OPcache\Commands\CreatePreloadCommand as OPcacheCreatePreloadCommand;
-use HughCube\Laravel\Knight\Scheduling\ScheduleDaemonCommand;
+use HughCube\Laravel\Knight\Scheduling\Actions\ScheduleAction;
+use HughCube\Laravel\Knight\Scheduling\Commands\DaemonCommand;
+use HughCube\Laravel\Knight\Scheduling\Commands\JobPayloadCommand;
 use HughCube\Laravel\Knight\Support\Runtime;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Scheduling\Event as ScheduleEvent;
@@ -88,9 +90,19 @@ class ServiceProvider extends IlluminateServiceProvider
         /** Carbon */
         Carbon::mixin(new CarbonMixin());
 
-        /** Console Scheduling - 仅在 CLI 模式下注册 */
-        if ($this->app->runningInConsole()) {
-            ScheduleEvent::mixin(new ScheduleEventMixin(), false);
+        /** Console Scheduling */
+        ScheduleEvent::mixin(new ScheduleEventMixin(), false);
+        if (!$this->app->bound(\Illuminate\Console\Scheduling\EventMutex::class)) {
+            $this->app->bind(
+                \Illuminate\Console\Scheduling\EventMutex::class,
+                \Illuminate\Console\Scheduling\CacheEventMutex::class
+            );
+        }
+        if (!$this->app->bound(\Illuminate\Console\Scheduling\SchedulingMutex::class)) {
+            $this->app->bind(
+                \Illuminate\Console\Scheduling\SchedulingMutex::class,
+                \Illuminate\Console\Scheduling\CacheSchedulingMutex::class
+            );
         }
 
         /** Migration Schema - 仅在 ide-helper 命令时注册 */
@@ -121,7 +133,8 @@ class ServiceProvider extends IlluminateServiceProvider
                 WalEventDispatchCommand::class,
                 WalDropSlotCommand::class,
                 WalMonitorSlotsCommand::class,
-                ScheduleDaemonCommand::class,
+                DaemonCommand::class,
+                JobPayloadCommand::class,
             ]);
         }
 
@@ -216,6 +229,10 @@ class ServiceProvider extends IlluminateServiceProvider
             Route::group(['prefix' => $prefix], function () use ($config) {
                 if (false !== ($action = $config->get('knight.devops.action.system'))) {
                     Route::any('/devops/system', $action ?: DevopsSystemAction::class)->name('knight.devops.system');
+                }
+
+                if (false !== ($action = $config->get('knight.devops.action.schedule'))) {
+                    Route::any('/devops/schedule', $action ?: ScheduleAction::class)->name('knight.devops.schedule');
                 }
             });
         }
