@@ -19,10 +19,19 @@ class Command extends \Illuminate\Console\Command
     use Container;
     use GetOrSet;
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (property_exists($this, 'aliases') && ! empty($this->aliases)) {
+            $this->setAliases($this->aliases);
+        }
+    }
+
     protected function getOrAskOption($name, $question, $default = null)
     {
         $value = $this->option($name);
-        if (!empty($value)) {
+        if (! empty($value)) {
             return $value;
         }
 

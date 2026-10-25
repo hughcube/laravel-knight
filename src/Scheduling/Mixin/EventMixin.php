@@ -1,13 +1,6 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: hugh.li
- * Date: 2026/2/5
- * Time: 12:00.
- */
-
-namespace HughCube\Laravel\Knight\Mixin\Console\Scheduling;
+namespace HughCube\Laravel\Knight\Scheduling\Mixin;
 
 use Closure;
 use Illuminate\Console\Scheduling\Event as ScheduleEvent;
