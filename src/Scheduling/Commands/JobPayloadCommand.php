@@ -32,6 +32,12 @@ class JobPayloadCommand extends Command
      */
     protected $aliases = ['schedule:job-payload'];
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setAliases($this->aliases);
+    }
+
     /**
      * Execute the console command.
      *
