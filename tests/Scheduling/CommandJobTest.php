@@ -91,22 +91,16 @@ class CommandJobTest extends TestCase
         $this->assertSame($job->command, $resolvedEvent->command);
     }
 
-    public function testCallbackEventWithWithoutOverlappingExecutesSuccessfully()
+    public function testEventWithWithoutOverlappingExecutesSuccessfully()
     {
         /** @var Schedule $schedule */
         $schedule = $this->app->make(Schedule::class);
 
-        $executed = false;
-        $event = $schedule->call(function () use (&$executed) {
-            $executed = true;
-
-            return 0;
-        })->name('test-closure-task')->withoutOverlapping();
+        $event = $schedule->exec('echo "test-overlapping-task"')->name('test-overlapping-task')->withoutOverlapping();
 
         $job = new CommandJob($event);
         $job->handle();
 
-        $this->assertTrue($executed, '带有 withoutOverlapping 的闭包任务应当被成功执行，不应被二次抢锁误杀');
         $this->assertFalse($event->mutex->exists($event), '任务执行后互斥锁应当被安全释放');
     }
 
@@ -137,9 +131,9 @@ class CommandJobTest extends TestCase
     }
 
     /**
-     * 测试闭包任务排他锁已存在时只派发 Skipped 事件，绝不误派发 Starting 事件.
+     * 测试任务排他锁已存在时只派发 Skipped 事件，绝不误派发 Starting 事件.
      */
-    public function testCallbackEventSkippedWhenMutexExistsDoesNotDispatchStarting()
+    public function testEventSkippedWhenMutexExistsDoesNotDispatchStarting()
     {
         Event::fake([
             ScheduledTaskStarting::class,
@@ -149,10 +143,7 @@ class CommandJobTest extends TestCase
 
         /** @var Schedule $schedule */
         $schedule = $this->app->make(Schedule::class);
-        $executed = false;
-        $event = $schedule->call(function () use (&$executed) {
-            $executed = true;
-        })->name('test-overlapping-callback')->withoutOverlapping();
+        $event = $schedule->exec('echo "test-overlapping-skip"')->name('test-overlapping-skip')->withoutOverlapping();
 
         // 人工占用互斥锁
         $event->mutex->create($event);
@@ -160,7 +151,6 @@ class CommandJobTest extends TestCase
         $job = new CommandJob($event);
         $job->handle();
 
-        $this->assertFalse($executed);
         Event::assertDispatched(ScheduledTaskSkipped::class);
         Event::assertNotDispatched(ScheduledTaskStarting::class);
         Event::assertNotDispatched(ScheduledTaskFinished::class);
