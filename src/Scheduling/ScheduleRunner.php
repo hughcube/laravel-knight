@@ -529,6 +529,7 @@ class ScheduleRunner
             $kernel = $this->container->make(\Illuminate\Contracts\Console\Kernel::class);
             if (method_exists($kernel, 'schedule')) {
                 $reflection = new ReflectionMethod($kernel, 'schedule');
+                $reflection->setAccessible(true);
                 $reflection->invoke($kernel, $schedule);
             }
         }
