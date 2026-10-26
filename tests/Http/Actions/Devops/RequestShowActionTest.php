@@ -41,6 +41,7 @@ class RequestShowActionTest extends TestCase
             ->withArgs(function ($message) {
                 return false !== strpos($message, 'request: uri:');
             });
+        Log::shouldIgnoreMissing();
 
         $action = $this->app->make(RequestShowAction::class);
         $response = $this->callMethod($action, 'action');

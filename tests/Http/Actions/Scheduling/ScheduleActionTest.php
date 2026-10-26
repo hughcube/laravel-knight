@@ -73,6 +73,7 @@ class ScheduleActionTest extends TestCase
         \Illuminate\Support\Facades\Log::shouldReceive('channel')
             ->zeroOrMoreTimes()
             ->andReturnSelf();
+        \Illuminate\Support\Facades\Log::shouldIgnoreMissing();
         \Illuminate\Support\Facades\Log::shouldReceive('info')
             ->once()
             ->withArgs(function ($message) use (&$logged) {
@@ -101,6 +102,7 @@ class ScheduleActionTest extends TestCase
         \Illuminate\Support\Facades\Log::shouldReceive('channel')
             ->zeroOrMoreTimes()
             ->andReturnSelf();
+        \Illuminate\Support\Facades\Log::shouldIgnoreMissing();
         \Illuminate\Support\Facades\Log::shouldReceive('info')
             ->once()
             ->withArgs(function ($message) use (&$loggedMessages) {
@@ -170,6 +172,7 @@ class ScheduleActionTest extends TestCase
         \Illuminate\Support\Facades\Log::shouldReceive('channel')
             ->zeroOrMoreTimes()
             ->andReturnSelf();
+        \Illuminate\Support\Facades\Log::shouldIgnoreMissing();
         \Illuminate\Support\Facades\Log::shouldReceive('info')
             ->once()
             ->withArgs(function ($message) use (&$loggedMessages) {
