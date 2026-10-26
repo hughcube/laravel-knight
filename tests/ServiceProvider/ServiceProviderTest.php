@@ -13,48 +13,17 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use ReflectionProperty;
 
 class ServiceProviderTest extends TestCase
 {
-    public function testBootRegistersRoutes()
+    public function testBootRegistersOpcacheCommands()
     {
-        config([
-            'knight.opcache.route_prefix' => 'knight-opcache',
-            'knight.opcache.action.scripts' => null,
-            'knight.opcache.action.states' => null,
-            'knight.opcache.action.reset' => null,
-            'knight.request.route_prefix' => 'knight-request',
-            'knight.request.action.log' => null,
-            'knight.request.action.show' => null,
-            'knight.healthcheck.route_prefix' => 'knight-health',
-            'knight.healthcheck.action.healthcheck' => null,
-            'knight.phpinfo.route_prefix' => 'knight-phpinfo',
-            'knight.phpinfo.action.phpinfo' => null,
-            'knight.devops.route_prefix' => 'knight-devops',
-            'knight.devops.action.system' => null,
-        ]);
+        $commands = $this->app['Illuminate\Contracts\Console\Kernel']->all();
 
-        $provider = new ServiceProvider($this->app);
-
-        $routesCached = $this->app->routesAreCached();
-
-        self::callMethod($provider, 'bootOpCache');
-        self::callMethod($provider, 'bootRequest');
-        self::callMethod($provider, 'bootHealthCheck');
-        self::callMethod($provider, 'bootPhpInfo');
-        self::callMethod($provider, 'bootDevops');
-
-        $this->assertIsBool($routesCached);
-
-        if ($routesCached || Route::getFacadeRoot() === null) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
-        $this->assertIsArray(Route::getRoutes()->getRoutesByName());
+        $this->assertArrayHasKey('opcache:compile-files', $commands);
+        $this->assertArrayHasKey('opcache:clear-cli-cache', $commands);
+        $this->assertArrayHasKey('opcache:create-preload', $commands);
     }
 
     public function testRegisterModelChangedEventCallsOnKnightModelChanged()

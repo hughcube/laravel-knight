@@ -113,7 +113,8 @@ class ScheduleRunnerTest extends TestCase
         // 2. Daemon 模式
         $daemonReport = $runner->run(false);
         $this->assertSame(1, $daemonReport['count']);
-        $this->assertSame('background', $daemonReport['tasks'][0]['mode']);
+        $this->assertSame('background', $daemonReport['tasks'][0]['defined_mode']);
+        $this->assertSame('fork', $daemonReport['tasks'][0]['mode']);
     }
 
     /**

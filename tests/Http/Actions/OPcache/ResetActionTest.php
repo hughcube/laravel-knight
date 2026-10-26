@@ -2,7 +2,7 @@
 
 namespace HughCube\Laravel\Knight\OPcache;
 
-require_once __DIR__.'/../Support/OpcacheOverrides.php';
+require_once __DIR__.'/../../../OPcache/Support/OpcacheOverrides.php';
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 
@@ -13,9 +13,16 @@ if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
     }
 }
 
-namespace HughCube\Laravel\Knight\OPcache\Actions;
+namespace HughCube\Laravel\Knight\Http\Actions\OPcache;
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
+
+if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
+    function extension_loaded($name): bool
+    {
+        return OpcacheTestOverrides::$extensionLoaded;
+    }
+}
 
 if (! function_exists(__NAMESPACE__.'\opcache_reset')) {
     function opcache_reset(): bool
@@ -24,10 +31,10 @@ if (! function_exists(__NAMESPACE__.'\opcache_reset')) {
     }
 }
 
-namespace HughCube\Laravel\Knight\Tests\OPcache\Actions;
+namespace HughCube\Laravel\Knight\Tests\Http\Actions\OPcache;
 
 use Exception;
-use HughCube\Laravel\Knight\OPcache\Actions\ResetAction;
+use HughCube\Laravel\Knight\Http\Actions\OPcache\ResetAction;
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 use HughCube\Laravel\Knight\Tests\TestCase;
 use Illuminate\Http\Request;

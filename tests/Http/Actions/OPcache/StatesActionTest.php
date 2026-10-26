@@ -1,15 +1,8 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: hugh.li
- * Date: 2021/4/15
- * Time: 8:42 下午.
- */
+namespace HughCube\Laravel\Knight\Http\Actions\OPcache;
 
-namespace HughCube\Laravel\Knight\OPcache\Actions;
-
-require_once __DIR__.'/../Support/OpcacheOverrides.php';
+require_once __DIR__.'/../../../OPcache/Support/OpcacheOverrides.php';
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 
@@ -23,14 +16,26 @@ if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
 if (! function_exists(__NAMESPACE__.'\opcache_get_status')) {
     function opcache_get_status()
     {
-        return OpcacheTestOverrides::$opcacheStatusEnabled ? ['enabled' => true] : false;
+        return OpcacheTestOverrides::$opcacheStatusEnabled ? [
+            'opcache_enabled' => true,
+            'cache_full' => false,
+            'restart_pending' => false,
+            'restart_in_progress' => false,
+            'memory_usage' => ['used_memory' => 100],
+            'interned_strings_usage' => [],
+            'opcache_statistics' => [],
+            'scripts' => [
+                '/app/foo.php' => ['hits' => 10],
+                '/app/bar.php' => ['hits' => 5],
+            ],
+        ] : false;
     }
 }
 
-namespace HughCube\Laravel\Knight\Tests\OPcache\Actions;
+namespace HughCube\Laravel\Knight\Tests\Http\Actions\OPcache;
 
 use HughCube\Laravel\Knight\Exceptions\UserException;
-use HughCube\Laravel\Knight\OPcache\Actions\StatesAction;
+use HughCube\Laravel\Knight\Http\Actions\OPcache\StatesAction;
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 use HughCube\Laravel\Knight\Tests\TestCase;
 use Illuminate\Http\Request;
@@ -45,29 +50,33 @@ class StatesActionTest extends TestCase
         OpcacheTestOverrides::resetDefaults();
     }
 
-    public function testRulesContainAsJson()
+    public function testRulesContainParameters()
     {
         $action = new StatesAction();
 
         $rules = $this->callMethod($action, 'rules');
 
-        $this->assertArrayHasKey('as_json', $rules);
-        $this->assertContains('boolean', $rules['as_json']);
+        $this->assertArrayHasKey('x-format', $rules);
+        $this->assertArrayHasKey('x-as-json', $rules);
+        $this->assertArrayHasKey('x-scripts', $rules);
     }
 
-    public function testIsAsJsonReadsParameters()
+    public function testIsJsonReadsParameters()
     {
-        $request = Request::create('/opcache/states', 'GET', ['as_json' => 1]);
+        $request = Request::create('/opcache/states', 'GET', ['x-format' => 'json']);
         $this->app->instance('request', $request);
-
         $action = $this->app->make(StatesAction::class);
-        $this->assertTrue($this->callMethod($action, 'isAsJson'));
+        $this->assertTrue($this->callMethod($action, 'isJson'));
 
-        $request = Request::create('/opcache/states', 'GET', ['as_json' => 0]);
+        $request = Request::create('/opcache/states', 'GET', ['x-as-json' => 1]);
         $this->app->instance('request', $request);
-
         $action = $this->app->make(StatesAction::class);
-        $this->assertFalse($this->callMethod($action, 'isAsJson'));
+        $this->assertTrue($this->callMethod($action, 'isJson'));
+
+        $request = Request::create('/opcache/states', 'GET');
+        $this->app->instance('request', $request);
+        $action = $this->app->make(StatesAction::class);
+        $this->assertFalse($this->callMethod($action, 'isJson'));
     }
 
     public function testRenderViewReturnsContent()
@@ -113,13 +122,13 @@ class StatesActionTest extends TestCase
         $this->callMethod($action, 'action');
     }
 
-    public function testActionReturnsJsonWhenRequested()
+    public function testActionReturnsJsonWithoutScripts()
     {
         OpcacheTestOverrides::$extensionLoaded = true;
         OpcacheTestOverrides::$opcacheStatusEnabled = true;
 
         $action = $this->app->make(StatesAction::class);
-        $request = Request::create('/opcache/states', 'GET', ['as_json' => 1]);
+        $request = Request::create('/opcache/states', 'GET', ['x-format' => 'json']);
         $this->app->instance('request', $request);
 
         $response = $this->callMethod($action, 'action');
@@ -128,7 +137,29 @@ class StatesActionTest extends TestCase
 
         $payload = json_decode($response->getContent(), true);
         $this->assertSame('Success', $payload['Code']);
-        $this->assertTrue($payload['Data']['enabled']);
+        $this->assertTrue($payload['Data']['opcache_enabled']);
+        $this->assertSame(2, $payload['Data']['scripts_count']);
+        $this->assertNull($payload['Data']['scripts']);
+    }
+
+    public function testActionReturnsJsonWithScripts()
+    {
+        OpcacheTestOverrides::$extensionLoaded = true;
+        OpcacheTestOverrides::$opcacheStatusEnabled = true;
+
+        $action = $this->app->make(StatesAction::class);
+        $request = Request::create('/opcache/states', 'GET', ['x-format' => 'json', 'x-scripts' => 1]);
+        $this->app->instance('request', $request);
+
+        $response = $this->callMethod($action, 'action');
+
+        $this->assertInstanceOf(Response::class, $response);
+
+        $payload = json_decode($response->getContent(), true);
+        $this->assertSame('Success', $payload['Code']);
+        $this->assertTrue($payload['Data']['opcache_enabled']);
+        $this->assertSame(2, $payload['Data']['scripts_count']);
+        $this->assertEquals(['/app/foo.php', '/app/bar.php'], $payload['Data']['scripts']);
     }
 
     public function testActionReturnsHtmlWhenNotJson()
@@ -138,13 +169,13 @@ class StatesActionTest extends TestCase
 
         $action = new class() extends StatesAction
         {
-            protected function renderView($file)
+            protected function renderView(string $file): string
             {
                 return 'ok';
             }
         };
 
-        $request = Request::create('/opcache/states', 'GET', ['as_json' => 0]);
+        $request = Request::create('/opcache/states', 'GET');
         $this->app->instance('request', $request);
 
         $response = $this->callMethod($action, 'action');

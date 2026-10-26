@@ -86,9 +86,9 @@ composer install
 
 2. **服务提供者注册**: `ServiceProvider` 类负责:
    - 注册 Mixin 到 Laravel 核心类(Collection、Builder、Grammar、Carbon)
-   - 注册命令行工具
-   - 注册动态路由(opcache、request、healthcheck、phpinfo、devops)
+   - 注册命令行工具(Database, Model Cache, Wal, OPcache, Scheduling 等)
    - 配置自定义的 Auth User Provider
+   - 监听 Eloquent 变更事件刷新缓存 (onKnightModelChanged / deleteRowCache)
 
 3. **缓存层设计**:
    - Model 通过 `getCache()` 方法返回 PSR SimpleCache 实例
@@ -112,8 +112,15 @@ composer install
 - **Action** trait: 为控制器提供参数验证、缓存、事件分发等功能
 - **Controller**: 扩展 Laravel Controller,使用 Action trait
 
+#### Http/Actions
+统一在 `HughCube\Laravel\Knight\Http\Actions\` 命名空间下，零配置路由设计，由业务项目在 `routes/*.php` 中自由引入与绑定中间件：
+- **Devops**: HealthcheckAction (探活)、StatusAction (DB/Redis连通看板)、VersionAction (版本)、SystemAction (系统/内存)、ClientInfoAction (客户端/UA识别)、NowAction (时钟探针)、RequestShowAction (报文回显与按需记录)、QueueDepthAction (队列深度)、PhpInfoAction (phpinfo)
+- **OPcache**: StatesAction (OPcache状态与脚本)、ResetAction (OPcache刷新重置)
+- **Scheduling**: ScheduleAction (统一调度触发网关)
+
 #### Http/Middleware
 提供多种中间件:
+- 运维鉴权: VerifyDevopsToken (严格从原生环境变量 KNIGHT_DEVOPS_TOKEN 动态鉴权，仅支持 Query 与 Header 携带 X-Devops-Token，非 Schedule 端点全环境强制校验)；VerifyScheduleToken (ScheduleAction 专属中间件，阿里云 FC 环境免密放行，非 FC 环境强制校验 KNIGHT_DEVOPS_TOKEN)
 - 认证相关: Authenticate、CheckAuthUserInstanceOf、CheckAuthUserIsAvailable
 - 环境限制: OnlyLocalGuard、OnlyProdEnvGuard、OnlyTestEnvGuard
 - IP 限制: OnlyIpGuard、OnlyPrivateIpGuard、OnlyPublicIpGuard
@@ -122,7 +129,6 @@ composer install
 #### OPcache
 - 提供 OPcache 管理功能
 - Commands: CompileFilesCommand、ClearCliCacheCommand、CreatePreloadCommand
-- Actions: ScriptsAction、StatesAction (通过路由访问 opcache 状态)
 - **CompileFilesCommand**: 默认缓存 app、config、routes、database 目录和所有 Composer PSR-4 自动加载文件
 
 ### 重要的 Trait
@@ -135,13 +141,8 @@ composer install
 
 ### 配置文件
 
-`config/knight.php` 控制功能路由前缀:
-- `opcache.route_prefix`: OPcache 路由前缀
-- `request.route_prefix`: 请求日志路由前缀
-- `phpinfo.route_prefix`: PHPInfo 路由前缀
-- `devops.route_prefix`: Devops 系统信息路由前缀
-
-设置为 `false` 表示禁用相应路由。
+`config/knight.php` 为空或仅保留可选的基础配置。
+所有 Action 端点彻底去除黑盒路由自动注入，Devops 密钥完全从 OS 环境变量动态注入，无需且不建议在配置文件中写死。
 
 ### Mixin 扩展
 

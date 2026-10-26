@@ -1,18 +1,21 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: hugh.li
- * Date: 2021/12/17
- * Time: 21:36.
- */
-
-namespace HughCube\Laravel\Knight\Http\Actions;
+namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class DevopsSystemAction extends Controller
+/**
+ * 宿主系统与 PHP 运行期指标诊断 (OS、PHP版本、内存占用、已加载扩展).
+ *
+ * 推荐路由配置：
+ * Route::any('/system', SystemAction::class)->middleware([VerifyDevopsToken::class]);
+ *
+ * 推荐中间件组合：
+ * - 生产推荐：[VerifyDevopsToken::class] (严格防范系统版本与内存指标外泄)
+ * - 结合内网：[VerifyDevopsToken::class, OnlyPrivateIpGuard::class]
+ */
+class SystemAction extends Controller
 {
     /**
      * @return Response
