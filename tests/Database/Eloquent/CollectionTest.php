@@ -9,14 +9,16 @@ class CollectionTest extends TestCase
 {
     public function testFilterAvailable()
     {
-        $available = new class() {
+        $available = new class()
+        {
             public function isAvailable(): bool
             {
                 return true;
             }
         };
 
-        $unavailable = new class() {
+        $unavailable = new class()
+        {
             public function isAvailable(): bool
             {
                 return false;

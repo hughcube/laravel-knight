@@ -22,7 +22,8 @@ class MultipleHandlerTest extends TestCase
      */
     public function testMultipleHandler()
     {
-        $job = new class() {
+        $job = new class()
+        {
             use MultipleHandler;
 
             public $doneHandlers = [];
@@ -65,7 +66,8 @@ class MultipleHandlerTest extends TestCase
 
     public function testTriggerMultipleHandlersStopsAndSkips()
     {
-        $job = new class() {
+        $job = new class()
+        {
             use MultipleHandler;
 
             public array $called = [];
@@ -105,7 +107,8 @@ class MultipleHandlerTest extends TestCase
 
     public function testTriggerMultipleHandlersReportsExceptions()
     {
-        $job = new class() {
+        $job = new class()
+        {
             use MultipleHandler;
 
             public array $called = [];
@@ -137,7 +140,8 @@ class MultipleHandlerTest extends TestCase
 
     public function testTriggerMultipleHandlersThrowsWhenTryExceptionFalse()
     {
-        $job = new class() {
+        $job = new class()
+        {
             use MultipleHandler;
 
             protected function aHandler()

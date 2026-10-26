@@ -17,7 +17,7 @@ class OnlyProdEnvGuard
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!app()->environment('prod')) {
+        if (! app()->environment('prod')) {
             throw new AccessDeniedHttpException('Only accessible in prod env!');
         }
 

@@ -35,9 +35,8 @@ trait GetMobile
     }
 
     /**
-     * @param int|string|null $mobile
-     * @param int|string|null $iddCode
-     *
+     * @param  int|string|null  $mobile
+     * @param  int|string|null  $iddCode
      * @return bool
      */
     protected function checkMobile($mobile, $iddCode = null): bool
@@ -46,9 +45,9 @@ trait GetMobile
     }
 
     /**
-     * @throws MobileEmptyException
-     *
      * @return mixed
+     *
+     * @throws MobileEmptyException
      */
     protected function emptyMobileResponse()
     {
@@ -56,9 +55,9 @@ trait GetMobile
     }
 
     /**
-     * @throws MobileInvalidException
-     *
      * @return mixed
+     *
+     * @throws MobileInvalidException
      */
     protected function invalidMobileResponse()
     {

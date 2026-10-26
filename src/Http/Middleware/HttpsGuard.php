@@ -36,8 +36,7 @@ class HttpsGuard
     /**
      * Create a new middleware instance.
      *
-     * @param Container $app
-     *
+     * @param  Container  $app
      * @return void
      */
     public function __construct(Container $app)
@@ -46,11 +45,10 @@ class HttpsGuard
     }
 
     /**
-     * @param Request     $request
-     * @param callable    $next
-     * @param int         $status
-     * @param string|null $hsts
-     *
+     * @param  Request  $request
+     * @param  callable  $next
+     * @param  int  $status
+     * @param  string|null  $hsts
      * @return Response
      */
     public function handle(
@@ -59,10 +57,10 @@ class HttpsGuard
         int $status = 301,
         ?string $hsts = 'max-age=31536000'
     ): Response {
-        if (!$request->isSecure()
+        if (! $request->isSecure()
             && $this->isHostRequest($request)
             && $this->isSecureApplicationUrl()
-            && !$this->isExcept($request)
+            && ! $this->isExcept($request)
         ) {
             $url = PUrl::instance($request->getUri())->withScheme('https');
 
@@ -75,7 +73,7 @@ class HttpsGuard
         /**
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
          */
-        if (!empty($hsts) && $request->isSecure()) {
+        if (! empty($hsts) && $request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', $hsts);
         }
 
@@ -83,8 +81,7 @@ class HttpsGuard
     }
 
     /**
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return bool
      */
     protected function isExcept(Request $request): bool
@@ -106,7 +103,7 @@ class HttpsGuard
         }
 
         $scheme = parse_url($url, PHP_URL_SCHEME);
-        if (!is_string($scheme)) {
+        if (! is_string($scheme)) {
             return false;
         }
 
@@ -117,7 +114,7 @@ class HttpsGuard
     {
         $host = $request->getHost();
 
-        return !empty($host) && false === filter_var($host, FILTER_VALIDATE_IP);
+        return ! empty($host) && false === filter_var($host, FILTER_VALIDATE_IP);
     }
 
     public static function customExcept($name, callable $except)

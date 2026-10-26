@@ -227,7 +227,7 @@ class WalEventDispatchCommand extends Command
         }
 
         /** 自动构建 add-tables 参数，仅输出被监听表的 WAL 变更 */
-        if (!$this->option('no-add-tables')) {
+        if (! $this->option('no-add-tables')) {
             $this->autoAddTables = $this->buildAutoAddTables($handlers, $partitionMap);
         }
 
@@ -350,7 +350,7 @@ class WalEventDispatchCommand extends Command
             if ($partitionRefresh > 0 && time() - $this->partitionMapRefreshedAt >= $partitionRefresh) {
                 $partitionMap = $this->buildPartitionMap();
                 $this->partitionMapRefreshedAt = time();
-                if (!$this->option('no-add-tables')) {
+                if (! $this->option('no-add-tables')) {
                     $oldAddTables = $this->autoAddTables;
                     $this->autoAddTables = $this->buildAutoAddTables($handlers, $partitionMap);
                     if ($this->autoAddTables !== $oldAddTables) {
@@ -363,7 +363,7 @@ class WalEventDispatchCommand extends Command
             /** P1: 清理 Laravel 容器作用域绑定，防止长驻进程内存泄漏 */
             $this->clearScopedInstances();
 
-            if (!$hasChanges) {
+            if (! $hasChanges) {
                 usleep(intval($interval * 1000000));
             }
         }
@@ -387,7 +387,7 @@ class WalEventDispatchCommand extends Command
         $paths = $this->getModelPaths();
 
         foreach ($paths as $dir => $namespace) {
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 $this->warn(sprintf('Model path does not exist: %s', $dir));
                 continue;
             }
@@ -407,16 +407,16 @@ class WalEventDispatchCommand extends Command
                 $relativePath = substr($pathname, strlen($baseDir) + 1);
                 $className = $namespace.str_replace('/', '\\', substr($relativePath, 0, -4));
 
-                if (!class_exists($className)) {
+                if (! class_exists($className)) {
                     continue;
                 }
 
                 try {
                     $reflection = new ReflectionClass($className);
-                    if (!$reflection->isInstantiable()) {
+                    if (! $reflection->isInstantiable()) {
                         continue;
                     }
-                    if (!$reflection->implementsInterface(HasWalHandler::class)) {
+                    if (! $reflection->implementsInterface(HasWalHandler::class)) {
                         continue;
                     }
                 } catch (Throwable $e) {
@@ -456,7 +456,7 @@ class WalEventDispatchCommand extends Command
         $result = [];
         foreach ($paths as $path) {
             if (false !== strpos($path, ':')) {
-                list($dir, $ns) = explode(':', $path, 2);
+                [$dir, $ns] = explode(':', $path, 2);
             } else {
                 $dir = $path;
                 $ns = str_replace('/', '\\', ucfirst($dir));
@@ -567,14 +567,13 @@ class WalEventDispatchCommand extends Command
      * 3. 对每条记录 dispatch WalChangesDispatchJob，Job 内 dispatch 字符串事件
      * 4. auto/advance 模式下，推进槽位到最后处理的 LSN
      *
-     * @param string $slot         复制槽名称
-     * @param array  $handlers     Handler 映射 [table => [{handler, keyName}, ...]]
-     * @param int    $batch        单次最大变更数
-     * @param array  $partitionMap 分区表映射 [child => parent]
+     * @param  string  $slot  复制槽名称
+     * @param  array  $handlers  Handler 映射 [table => [{handler, keyName}, ...]]
+     * @param  int  $batch  单次最大变更数
+     * @param  array  $partitionMap  分区表映射 [child => parent]
+     * @return bool 是否有变更
      *
      * @throws Throwable
-     *
-     * @return bool 是否有变更
      */
     protected function pollChanges(string $slot, array $handlers, int $batch, array $partitionMap): bool
     {
@@ -641,7 +640,7 @@ class WalEventDispatchCommand extends Command
             $lastLsn = $row->lsn;
 
             $payload = json_decode($row->data, true);
-            if (!is_array($payload)) {
+            if (! is_array($payload)) {
                 if (JSON_ERROR_NONE !== json_last_error()) {
                     $this->warn(sprintf('json_decode failed (LSN %s): %s, data prefix: %s', $row->lsn, json_last_error_msg(), substr($row->data, 0, 200)));
                 }
@@ -656,7 +655,7 @@ class WalEventDispatchCommand extends Command
                 }
 
                 $resolvedTable = $this->resolveTable($rawTable, $partitionMap);
-                if (!isset($handlers[$resolvedTable])) {
+                if (! isset($handlers[$resolvedTable])) {
                     continue;
                 }
 
@@ -708,22 +707,22 @@ class WalEventDispatchCommand extends Command
         $params = [];
 
         /** format-version（用户通过 --wal2json-params 手动指定时跳过，避免重复） */
-        if (!in_array('format-version', $userKeys, true)) {
+        if (! in_array('format-version', $userKeys, true)) {
             $formatVersion = $this->option('format-version');
-            if (!empty($formatVersion)) {
+            if (! empty($formatVersion)) {
                 $params['format-version'] = $formatVersion;
             }
         }
 
         /** add-tables（用户通过 --wal2json-params 手动指定时跳过） */
-        if (!in_array('add-tables', $userKeys, true) && null !== $this->autoAddTables) {
+        if (! in_array('add-tables', $userKeys, true) && null !== $this->autoAddTables) {
             $params['add-tables'] = $this->autoAddTables;
         }
 
         /** filter-tables 黑名单（用户通过 --wal2json-params 手动指定时跳过） */
-        if (!in_array('filter-tables', $userKeys, true)) {
+        if (! in_array('filter-tables', $userKeys, true)) {
             $filterTables = $this->option('filter-tables');
-            if (!empty($filterTables)) {
+            if (! empty($filterTables)) {
                 $params['filter-tables'] = implode(',', array_map([$this, 'qualifyTableName'], $filterTables));
             }
         }
@@ -758,9 +757,9 @@ class WalEventDispatchCommand extends Command
         $bindings = [];
 
         $params = $this->option('wal2json-params');
-        if (!empty($params)) {
+        if (! empty($params)) {
             foreach ($params as $param) {
-                list($key, $value) = self::parseWal2jsonParam($param);
+                [$key, $value] = self::parseWal2jsonParam($param);
                 $bindings[] = $key;
                 $bindings[] = $value;
             }
@@ -786,7 +785,7 @@ class WalEventDispatchCommand extends Command
      */
     protected function getEffectiveWal2jsonFormatVersion(): string
     {
-        list(, $bindings) = $this->getCachedWal2jsonParams();
+        [, $bindings] = $this->getCachedWal2jsonParams();
 
         for ($i = 0, $count = count($bindings); $i < $count; $i += 2) {
             if ('format-version' === $bindings[$i]) {
@@ -817,8 +816,7 @@ class WalEventDispatchCommand extends Command
     /**
      * 解析单个 wal2json 参数字符串为 [key, value] 对。
      *
-     * @param string $param 如 "filter-columns=content,body" 或 "include-lsn"
-     *
+     * @param  string  $param  如 "filter-columns=content,body" 或 "include-lsn"
      * @return array{string, string} [key, value]
      */
     protected static function parseWal2jsonParam($param)
@@ -835,9 +833,8 @@ class WalEventDispatchCommand extends Command
      * WAL 中分区表使用子表名（如 user_syllabuses_p056），不是父表名，
      * 因此需要把被监听的父表展开为所有分区子表名。
      *
-     * @param array $handlers     Handler 映射 [table => [{handler, keyName}, ...]]
-     * @param array $partitionMap 分区表映射 [child => parent]
-     *
+     * @param  array  $handlers  Handler 映射 [table => [{handler, keyName}, ...]]
+     * @param  array  $partitionMap  分区表映射 [child => parent]
      * @return string|null add-tables 值，无被监听表时返回 null
      */
     protected function buildAutoAddTables(array $handlers, array $partitionMap = [])
@@ -876,9 +873,9 @@ class WalEventDispatchCommand extends Command
     /**
      * 推进复制槽到指定 LSN，失败时仅记录警告不中断流程。
      *
-     * @param Connection $connection
-     * @param string     $slot
-     * @param string     $lsn
+     * @param  Connection  $connection
+     * @param  string  $slot
+     * @param  string  $lsn
      */
     protected function advanceSlot($connection, $slot, $lsn): void
     {
@@ -894,7 +891,7 @@ class WalEventDispatchCommand extends Command
      *
      * 提取为独立方法便于子类覆盖（如测试中替换为计数器跳过真实 Job dispatch）。
      *
-     * @param WalChangeRecord $record
+     * @param  WalChangeRecord  $record
      */
     protected function dispatchWalChange(WalChangeRecord $record): void
     {
@@ -908,8 +905,7 @@ class WalEventDispatchCommand extends Command
     /**
      * 将 [table => [kind => count]] 计数器格式化为可读摘要。
      *
-     * @param array<string, array<string, int>> $tableCounts
-     *
+     * @param  array<string, array<string, int>>  $tableCounts
      * @return string 如 "users: 3 inserts, 2 updates; orders: 1 delete"
      */
     protected function formatChangeSummary(array $tableCounts): string
@@ -935,7 +931,7 @@ class WalEventDispatchCommand extends Command
     protected function getSlotName(): string
     {
         $slot = $this->option('slot');
-        if (!empty($slot)) {
+        if (! empty($slot)) {
             return $slot;
         }
 
@@ -970,7 +966,7 @@ class WalEventDispatchCommand extends Command
      */
     protected function registerSignalHandlers(): void
     {
-        if (!extension_loaded('pcntl')) {
+        if (! extension_loaded('pcntl')) {
             return;
         }
 
@@ -984,7 +980,7 @@ class WalEventDispatchCommand extends Command
     }
 
     /**
-     * @param int $memoryLimit MB
+     * @param  int  $memoryLimit  MB
      */
     protected function isMemoryExceeded($memoryLimit): bool
     {
@@ -997,8 +993,7 @@ class WalEventDispatchCommand extends Command
      * wal2json 的 add-tables/filter-tables 参数要求 schema.table 格式，
      * 未指定 schema 的表名默认加 public 前缀。
      *
-     * @param string $table
-     *
+     * @param  string  $table
      * @return string
      */
     protected function qualifyTableName($table)
@@ -1011,8 +1006,7 @@ class WalEventDispatchCommand extends Command
      *
      * 1s → 2s → 4s → 8s → 16s → 32s → 60s（上限）
      *
-     * @param int $errorStreak
-     *
+     * @param  int  $errorStreak
      * @return int
      */
     protected function getBackoffSeconds($errorStreak)
@@ -1034,7 +1028,7 @@ class WalEventDispatchCommand extends Command
             return;
         }
 
-        if (!call_user_func([$telescopeClass, 'isRecording'])) {
+        if (! call_user_func([$telescopeClass, 'isRecording'])) {
             return;
         }
 
@@ -1056,7 +1050,7 @@ class WalEventDispatchCommand extends Command
             $this->telescopeAvailable = class_exists('Laravel\Telescope\Telescope');
         }
 
-        if (!$this->telescopeAvailable) {
+        if (! $this->telescopeAvailable) {
             return null;
         }
 
@@ -1079,10 +1073,9 @@ class WalEventDispatchCommand extends Command
     /**
      * 检查复制槽健康状态，检测 WAL 堆积和 slot 失效。
      *
-     * @param string $slot       复制槽名称
-     * @param int    $warningMB  警告阈值（MB），0 表示不检查
-     * @param int    $criticalMB 严重阈值（MB），0 表示不检查，超过时返回 true
-     *
+     * @param  string  $slot  复制槽名称
+     * @param  int  $warningMB  警告阈值（MB），0 表示不检查
+     * @param  int  $criticalMB  严重阈值（MB），0 表示不检查，超过时返回 true
      * @return bool true 表示应停止进程
      */
     protected function checkSlotHealth($slot, $warningMB = 0, $criticalMB = 0)

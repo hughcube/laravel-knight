@@ -19,7 +19,7 @@ class CheckAuthUserIsAvailable
      */
     public function handle($request, $next): Response
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             return $next($request);
         }
 

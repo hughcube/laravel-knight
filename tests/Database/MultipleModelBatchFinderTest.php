@@ -274,7 +274,7 @@ class MultipleModelBatchFinderTest extends TestCase
         $this->assertDatabaseQueryCount(0, function () {
             $result = MultipleModelBatchFinder::find([]);
 
-            $this->assertTrue(!$result->has());
+            $this->assertTrue(! $result->has());
         });
 
         $this->assertDatabaseQueryCount(0, function () {
@@ -283,7 +283,7 @@ class MultipleModelBatchFinderTest extends TestCase
                 Post::class => [],
             ]);
 
-            $this->assertTrue(!$result->has());
+            $this->assertTrue(! $result->has());
         });
     }
 
@@ -370,7 +370,7 @@ class MultipleModelBatchFinderTest extends TestCase
         $this->assertSame(5, $result->count());
 
         // isEmpty / isNotEmpty
-        $this->assertFalse(!$result->has());
+        $this->assertFalse(! $result->has());
         $this->assertTrue($result->has());
     }
 
@@ -823,7 +823,7 @@ class MultipleModelBatchFinderTest extends TestCase
         ]);
 
         $this->assertSame(0, $result->count());
-        $this->assertTrue(!$result->has());
+        $this->assertTrue(! $result->has());
         $this->assertFalse($result->has());
     }
 

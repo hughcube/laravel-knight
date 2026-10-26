@@ -118,7 +118,7 @@ class MobileTraitsTest extends TestCase
     {
         $action = new MobileTraitsGetMobileAction();
         $action->request = Request::create('/', 'GET', [
-            'mobile'   => '13800138000',
+            'mobile' => '13800138000',
             'idd_code' => 86,
         ]);
 
@@ -158,7 +158,7 @@ class MobileTraitsTest extends TestCase
     {
         $action = new PinCodeSmsAction();
         $action->request = Request::create('/', 'POST', [
-            'mobile'   => '13800138000',
+            'mobile' => '13800138000',
             'idd_code' => 86,
         ]);
 
@@ -175,7 +175,7 @@ class MobileTraitsTest extends TestCase
         $action = new PinCodeSmsAction();
         $action->enableSendResult = false;
         $action->request = Request::create('/', 'POST', [
-            'mobile'   => '13800138000',
+            'mobile' => '13800138000',
             'idd_code' => 86,
         ]);
 
@@ -197,7 +197,7 @@ class MobileTraitsTest extends TestCase
         $action = new PinCodeSmsAction();
         $action->checkMobileResult = false;
         $action->request = Request::create('/', 'POST', [
-            'mobile'   => '13800138000',
+            'mobile' => '13800138000',
             'idd_code' => 86,
         ]);
 
@@ -209,7 +209,7 @@ class MobileTraitsTest extends TestCase
     {
         $action = new SendPinCodeSmsAction();
         $action->request = Request::create('/', 'POST', [
-            'mobile'   => '13800138000',
+            'mobile' => '13800138000',
             'idd_code' => 86,
         ]);
 
@@ -224,9 +224,9 @@ class MobileTraitsTest extends TestCase
     {
         $action = new ValidatePinCodeSmsAction();
         $action->request = Request::create('/', 'POST', [
-            'mobile'   => '13800138000',
+            'mobile' => '13800138000',
             'idd_code' => 86,
-            'pincode'  => '1234',
+            'pincode' => '1234',
         ]);
 
         $this->callMethod($action, 'validatePinCode', [true]);
@@ -238,9 +238,9 @@ class MobileTraitsTest extends TestCase
         $action = new ValidatePinCodeSmsAction();
         $action->validateResult = false;
         $action->request = Request::create('/', 'POST', [
-            'mobile'   => '13800138000',
+            'mobile' => '13800138000',
             'idd_code' => 86,
-            'pincode'  => '1234',
+            'pincode' => '1234',
         ]);
 
         $this->expectException(ValidatePinCodeException::class);

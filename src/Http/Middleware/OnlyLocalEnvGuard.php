@@ -17,7 +17,7 @@ class OnlyLocalEnvGuard
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!app()->environment('local')) {
+        if (! app()->environment('local')) {
             throw new AccessDeniedHttpException('Only accessible in local env!');
         }
 

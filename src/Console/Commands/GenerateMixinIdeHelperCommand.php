@@ -44,7 +44,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
         $this->line("匹配模式: {$pattern}");
         $this->line("输出文件: {$outputFile}");
 
-        if (!$this->files->isDirectory($path)) {
+        if (! $this->files->isDirectory($path)) {
             $this->error("目录不存在: {$path}");
 
             return self::FAILURE;
@@ -72,11 +72,11 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
 
             $this->line("  类名: {$className}");
 
-            if (!class_exists($className)) {
+            if (! class_exists($className)) {
                 $this->warn('  类不存在，尝试加载...');
             }
 
-            if (!class_exists($className)) {
+            if (! class_exists($className)) {
                 $this->warn("  无法加载类: {$className}");
                 continue;
             }
@@ -102,9 +102,8 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 递归查找匹配模式的文件.
      *
-     * @param string $path
-     * @param string $pattern
-     *
+     * @param  string  $path
+     * @param  string  $pattern
      * @return array<string>
      */
     protected function findMatchingFiles(string $path, string $pattern): array
@@ -128,9 +127,8 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 检查文件名是否匹配模式.
      *
-     * @param string $filename
-     * @param string $pattern
-     *
+     * @param  string  $filename
+     * @param  string  $pattern
      * @return bool
      */
     protected function matchesPattern(string $filename, string $pattern): bool
@@ -141,8 +139,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 解析路径，支持相对路径和绝对路径.
      *
-     * @param string $path
-     *
+     * @param  string  $path
      * @return string
      */
     protected function resolvePath(string $path): string
@@ -215,10 +212,10 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
 
         // 将方法添加到对应的目标类
         foreach ($targetClasses as $targetClass) {
-            if (!isset($this->targetClassMethods[$targetClass])) {
+            if (! isset($this->targetClassMethods[$targetClass])) {
                 $this->targetClassMethods[$targetClass] = [
                     'mixinClass' => $mixinClass,
-                    'methods'    => [],
+                    'methods' => [],
                 ];
             }
             $this->targetClassMethods[$targetClass]['methods'] = array_merge(
@@ -245,7 +242,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
 
         // 找到类定义的位置
         $classPattern = '/\bclass\s+'.preg_quote($className, '/').'\b/';
-        if (!preg_match($classPattern, $content, $classMatch, PREG_OFFSET_CAPTURE)) {
+        if (! preg_match($classPattern, $content, $classMatch, PREG_OFFSET_CAPTURE)) {
             $this->line('    未找到类定义');
 
             return [];
@@ -257,7 +254,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
         $beforeClass = substr($content, 0, $classPos);
 
         // 查找最后一个 /** ... */ 块
-        if (!preg_match_all('/\/\*\*[\s\S]*?\*\//', $beforeClass, $docMatches, PREG_OFFSET_CAPTURE)) {
+        if (! preg_match_all('/\/\*\*[\s\S]*?\*\//', $beforeClass, $docMatches, PREG_OFFSET_CAPTURE)) {
             $this->line('    未找到文档注释');
 
             return [];
@@ -348,7 +345,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
             $instance = new $mixinClass();
             $closure = $method->invoke($instance);
 
-            if (!$closure instanceof Closure) {
+            if (! $closure instanceof Closure) {
                 return null;
             }
 
@@ -396,12 +393,12 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
             }
 
             return [
-                'name'          => $method->getName(),
-                'parameters'    => $parameters,
-                'returnType'    => $returnTypeStr,
+                'name' => $method->getName(),
+                'parameters' => $parameters,
+                'returnType' => $returnTypeStr,
                 'docReturnType' => $docReturnType,
-                'docComment'    => $docComment,
-                'mixinClass'    => $mixinClass,
+                'docComment' => $docComment,
+                'mixinClass' => $mixinClass,
             ];
         } catch (\Throwable $e) {
             $this->warn("无法解析方法 {$method->getName()}: {$e->getMessage()}");
@@ -411,9 +408,8 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
     }
 
     /**
-     * @param ReflectionType|null $type
-     * @param bool                $isUnionPart
-     *
+     * @param  ReflectionType|null  $type
+     * @param  bool  $isUnionPart
      * @return string
      */
     protected function formatType($type, bool $isUnionPart = false): string
@@ -441,7 +437,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
         }
 
         // ReflectionNamedType (PHP 7.1+)
-        if (!$type instanceof ReflectionNamedType) {
+        if (! $type instanceof ReflectionNamedType) {
             return 'mixed';
         }
 
@@ -455,7 +451,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
         }
 
         // 只有非 union 部分才添加 ? 前缀
-        if (!$isUnionPart && $type->allowsNull() && $name !== 'null' && $name !== 'mixed') {
+        if (! $isUnionPart && $type->allowsNull() && $name !== 'null' && $name !== 'mixed') {
             $typeStr = '?'.$typeStr;
         }
 
@@ -463,8 +459,7 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
     }
 
     /**
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return string
      */
     protected function formatDefaultValue($value): string
@@ -512,9 +507,9 @@ class GenerateMixinIdeHelperCommand extends \HughCube\Laravel\Knight\Console\Com
             $methods = $this->buildMethodsForClass($data['methods'], $data['mixinClass']);
 
             $namespaceBlocks[$namespace][] = [
-                'className'  => $className,
+                'className' => $className,
                 'mixinClass' => $data['mixinClass'],
-                'methods'    => $methods,
+                'methods' => $methods,
             ];
         }
 
@@ -561,12 +556,12 @@ PHP;
 
             // 当 Closure 没有返回类型声明（mixed）且 docblock 有 @return 注解时，使用 docblock 的返回类型
             $effectiveReturnType = $returnType;
-            if ($returnType === 'mixed' && !empty($info['docReturnType'])) {
+            if ($returnType === 'mixed' && ! empty($info['docReturnType'])) {
                 $effectiveReturnType = $info['docReturnType'];
             }
 
             $docLines = [];
-            if (!empty($info['docComment'])) {
+            if (! empty($info['docComment'])) {
                 // 提取原始注释中的描述部分
                 if (preg_match('/\/\*\*\s*\n\s*\*\s*([^@\n]+)/', $info['docComment'], $matches)) {
                     $docLines[] = trim($matches[1]);
@@ -575,7 +570,7 @@ PHP;
             $docLines[] = "@see \\{$info['mixinClass']}::{$info['name']}()";
 
             // 添加 @return 注解（优先使用 docblock 中的 @return）
-            if (!empty($info['docReturnType'])) {
+            if (! empty($info['docReturnType'])) {
                 $docLines[] = "@return {$info['docReturnType']}";
             }
 

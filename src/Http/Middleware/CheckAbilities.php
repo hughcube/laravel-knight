@@ -15,7 +15,7 @@ class CheckAbilities extends \Laravel\Sanctum\Http\Middleware\CheckAbilities
 {
     public function handle($request, $next, ...$abilities): Response
     {
-        if (!$request->user() || !$request->user()->currentAccessToken()) {
+        if (! $request->user() || ! $request->user()->currentAccessToken()) {
             return $next($request);
         }
 

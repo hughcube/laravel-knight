@@ -19,10 +19,10 @@ class RotateFileJob extends Job
     protected function rules(): array
     {
         return [
-            'items'               => ['array'],
-            'items.*.dir'         => ['required'],
-            'items.*.pattern'     => ['nullable'],
-            'items.*.exclude'     => ['nullable'],
+            'items' => ['array'],
+            'items.*.dir' => ['required'],
+            'items.*.pattern' => ['nullable'],
+            'items.*.exclude' => ['nullable'],
             'items.*.date_format' => ['nullable', 'string'],
         ];
     }
@@ -73,7 +73,7 @@ class RotateFileJob extends Job
                 $file->getExtension() ? sprintf('.%s', $file->getExtension()) : ''
             );
 
-            if (0 < $file->getSize() || !$skipEmpty) {
+            if (0 < $file->getSize() || ! $skipEmpty) {
                 $this->rotate($file->getRealPath(), $datePath);
                 $rotates = $rotates->add(['path' => $file->getRealPath(), 'date_path' => $datePath]);
             }
@@ -109,12 +109,12 @@ class RotateFileJob extends Job
 
         try {
             $handle = fopen($from, 'r+b');
-            if (!is_resource($handle)) {
+            if (! is_resource($handle)) {
                 throw new Exception('Failed to open file!');
             }
 
             $dateHandle = fopen($to, 'ab');
-            if (!is_resource($dateHandle)) {
+            if (! is_resource($dateHandle)) {
                 throw new Exception('Failed to open date file!');
             }
         } catch (Throwable $exception) {
@@ -126,7 +126,7 @@ class RotateFileJob extends Job
 
         /** 复制文件并且截断文件 */
         try {
-            if (!flock($handle, LOCK_EX)) {
+            if (! flock($handle, LOCK_EX)) {
                 throw new Exception('Failed to lock the file!');
             }
 

@@ -19,7 +19,8 @@ class ScheduleJobTest extends TestCase
 
     public function testIsDue()
     {
-        $job = new class() extends ScheduleJob {
+        $job = new class() extends ScheduleJob
+        {
             protected function testHandler()
             {
                 $this->isDue('* * * * *');
@@ -65,7 +66,8 @@ class ScheduleJobTest extends TestCase
 
     public function testPushAndFireJobs()
     {
-        $dispatcher = new class() implements Dispatcher {
+        $dispatcher = new class() implements Dispatcher
+        {
             public array $dispatched = [];
             public array $dispatchedSync = [];
 
@@ -120,7 +122,8 @@ class ScheduleJobTest extends TestCase
 
         $this->app->instance(Dispatcher::class, $dispatcher);
 
-        $job = new class() extends ScheduleJob {
+        $job = new class() extends ScheduleJob
+        {
             public array $logs = [];
 
             public function log($level, string $message, array $context = []): void
@@ -141,7 +144,8 @@ class ScheduleJobTest extends TestCase
 
     public function testDueHelpers()
     {
-        $dispatcher = new class() implements Dispatcher {
+        $dispatcher = new class() implements Dispatcher
+        {
             public function dispatch($job)
             {
                 return 'job-id';
@@ -189,7 +193,8 @@ class ScheduleJobTest extends TestCase
 
         $this->app->instance(Dispatcher::class, $dispatcher);
 
-        $job = new class() extends ScheduleJob {
+        $job = new class() extends ScheduleJob
+        {
             protected function getActionStartedAt($share = false): Carbon
             {
                 return Carbon::create(2020, 1, 1, 0, 0, 0);

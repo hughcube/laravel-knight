@@ -41,7 +41,7 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
         $this->outputFile = $this->getProjectRoot().'/tests/.temp/ide_helper_test_'.$this->uniqueId.'.php';
 
         $outputDir = dirname($this->outputFile);
-        if (!is_dir($outputDir)) {
+        if (! is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
     }
@@ -63,7 +63,7 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
         $nonExistentPath = $this->getProjectRoot().'/tests/.temp/non_existent_'.md5(uniqid());
 
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'   => $nonExistentPath,
+            '--path' => $nonExistentPath,
             '--output' => $this->outputFile,
         ])->assertExitCode(1);
 
@@ -76,9 +76,9 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
     public function testNoMatchingFiles()
     {
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'    => $this->getProjectRoot().'/src',
+            '--path' => $this->getProjectRoot().'/src',
             '--pattern' => '*NonExistentPattern*.php',
-            '--output'  => $this->outputFile,
+            '--output' => $this->outputFile,
         ])->assertExitCode(1);
 
         $this->assertFileDoesNotExist($this->outputFile);
@@ -93,9 +93,9 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
         $path = $this->getProjectRoot().'/src/Mixin/Support';
 
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'    => $path,
+            '--path' => $path,
             '--pattern' => 'CollectionMixin.php',
-            '--output'  => $this->outputFile,
+            '--output' => $this->outputFile,
             '--dry-run' => true,
         ])->assertExitCode(0);
 
@@ -108,9 +108,9 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
     public function testGenerateIdeHelperForSrcMixins()
     {
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'    => $this->getProjectRoot().'/src',
+            '--path' => $this->getProjectRoot().'/src',
             '--pattern' => '*Mixin.php',
-            '--output'  => $this->outputFile,
+            '--output' => $this->outputFile,
         ])->assertExitCode(0);
 
         $this->assertFileExists($this->outputFile);
@@ -128,9 +128,9 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
     public function testGenerateWithCustomPattern()
     {
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'    => $this->getProjectRoot().'/src/Mixin/Support',
+            '--path' => $this->getProjectRoot().'/src/Mixin/Support',
             '--pattern' => 'CollectionMixin.php',
-            '--output'  => $this->outputFile,
+            '--output' => $this->outputFile,
         ])->assertExitCode(0);
 
         $this->assertFileExists($this->outputFile);
@@ -145,9 +145,9 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
     public function testGenerateSpecificMixinDirectory()
     {
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'    => $this->getProjectRoot().'/src/Mixin/Support',
+            '--path' => $this->getProjectRoot().'/src/Mixin/Support',
             '--pattern' => '*Mixin.php',
-            '--output'  => $this->outputFile,
+            '--output' => $this->outputFile,
         ])->assertExitCode(0);
 
         $this->assertFileExists($this->outputFile);
@@ -164,9 +164,9 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
     {
         // StrMixin.php 有 @mixin Str 注解，应该成功生成
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'    => $this->getProjectRoot().'/src/Mixin/Support',
+            '--path' => $this->getProjectRoot().'/src/Mixin/Support',
             '--pattern' => 'StrMixin.php',
-            '--output'  => $this->outputFile,
+            '--output' => $this->outputFile,
         ])->assertExitCode(0);
 
         $this->assertFileExists($this->outputFile);
@@ -300,7 +300,7 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
     {
         // 测试不传 pattern 参数时使用默认值
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'   => $this->getProjectRoot().'/src/Mixin/Support',
+            '--path' => $this->getProjectRoot().'/src/Mixin/Support',
             '--output' => $this->outputFile,
         ])->assertExitCode(0);
 
@@ -320,9 +320,9 @@ class GenerateMixinIdeHelperCommandTest extends TestCase
         $outputFile = $this->getProjectRoot().'/_ide_helper.php';
 
         $this->artisan('ide:generate-mixin-helper', [
-            '--path'    => $this->getProjectRoot().'/src',
+            '--path' => $this->getProjectRoot().'/src',
             '--pattern' => '*Mixin.php',
-            '--output'  => $outputFile,
+            '--output' => $outputFile,
         ])->assertExitCode(0);
 
         $this->assertFileExists($outputFile);

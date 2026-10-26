@@ -12,9 +12,8 @@ namespace HughCube\Laravel\Knight\Traits;
 trait BuildUniqueKey
 {
     /**
-     * @param mixed    $data
-     * @param int|null $length
-     *
+     * @param  mixed  $data
+     * @param  int|null  $length
      * @return string
      */
     protected static function buildUniqueKey($data, ?int $length = null): string

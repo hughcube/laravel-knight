@@ -1,11 +1,10 @@
 <?php
 
-if (!function_exists('log_path')) {
+if (! function_exists('log_path')) {
     /**
      * Get the path to the log folder.
      *
-     * @param string $path
-     *
+     * @param  string  $path
      * @return string
      */
     function log_path(string $path = ''): string

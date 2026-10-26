@@ -12,9 +12,9 @@ class CacheTableGcJob extends Job
     public function rules(): array
     {
         return [
-            'connection'  => ['string', 'nullable'],
+            'connection' => ['string', 'nullable'],
             'cache_table' => ['nullable'],
-            'lock'        => ['nullable'],
+            'lock' => ['nullable'],
         ];
     }
 

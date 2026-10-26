@@ -13,7 +13,8 @@ class TestActionCaseTest extends TestCase
 
     public function testAssertKnightHandleCallsHandleAndSetsLogChannel(): void
     {
-        $job = new class() {
+        $job = new class()
+        {
             public $handled = false;
             public $channel;
 
@@ -43,7 +44,8 @@ class TestActionCaseTest extends TestCase
 
     public function testAssertKnightHandleFailsWhenHandleThrowsException(): void
     {
-        $job = new class() {
+        $job = new class()
+        {
             public function handle(): void
             {
                 throw new RuntimeException('job failed');

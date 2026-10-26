@@ -17,13 +17,14 @@ use ReflectionException;
 class GetOrSetTest extends TestCase
 {
     /**
-     * @throws ReflectionException
-     *
      * @return void
+     *
+     * @throws ReflectionException
      */
     public function testGetOrSetNotEmpty()
     {
-        $mock = new class() {
+        $mock = new class()
+        {
             use GetOrSet;
         };
 
@@ -43,13 +44,14 @@ class GetOrSetTest extends TestCase
     }
 
     /**
-     * @throws ReflectionException
-     *
      * @return void
+     *
+     * @throws ReflectionException
      */
     public function testGetOrSetEmpty()
     {
-        $mock = new class() {
+        $mock = new class()
+        {
             use GetOrSet;
         };
 
@@ -76,13 +78,14 @@ class GetOrSetTest extends TestCase
     }
 
     /**
-     * @throws ReflectionException
-     *
      * @return void
+     *
+     * @throws ReflectionException
      */
     public function testFlushHughCubeKnightClassSelfCacheStorage()
     {
-        $mock = new class() {
+        $mock = new class()
+        {
             use GetOrSet;
         };
 
@@ -104,7 +107,8 @@ class GetOrSetTest extends TestCase
      */
     public function testGetOrSetWithArrayKey()
     {
-        $mock = new class() {
+        $mock = new class()
+        {
             use GetOrSet;
         };
 

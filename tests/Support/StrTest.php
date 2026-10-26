@@ -279,8 +279,8 @@ class StrTest extends TestCase
 
     public function testIsChinese()
     {
-        $this->assertTrue(!Str::isChinese('a'));
-        $this->assertTrue(!Str::isChinese('张三a'));
+        $this->assertTrue(! Str::isChinese('a'));
+        $this->assertTrue(! Str::isChinese('张三a'));
 
         $this->assertTrue(Str::isChinese('张三'));
         $this->assertTrue(Str::isChinese('犇猋骉麤毳淼焱垚昍琰'));
@@ -288,8 +288,8 @@ class StrTest extends TestCase
 
     public function testHasChinese()
     {
-        $this->assertTrue(!Str::hasChinese('a'));
-        $this->assertTrue(!Str::hasChinese('abcd1234ddg&)129'));
+        $this->assertTrue(! Str::hasChinese('a'));
+        $this->assertTrue(! Str::hasChinese('abcd1234ddg&)129'));
 
         $this->assertTrue(Str::hasChinese('张三a'));
 
@@ -299,19 +299,19 @@ class StrTest extends TestCase
 
     public function testIsChineseName()
     {
-        $this->assertTrue(!Str::isChineseName('a'));
-        $this->assertTrue(!Str::isChineseName('abcd1234ddg&)129'));
+        $this->assertTrue(! Str::isChineseName('a'));
+        $this->assertTrue(! Str::isChineseName('abcd1234ddg&)129'));
 
-        $this->assertTrue(!Str::isChineseName('张三a'));
+        $this->assertTrue(! Str::isChineseName('张三a'));
 
-        $this->assertTrue(!Str::isChineseName('张'));
+        $this->assertTrue(! Str::isChineseName('张'));
 
         $this->assertTrue(Str::isChineseName('张三'));
         $this->assertTrue(Str::isChineseName('犇猋骉麤毳淼焱垚昍琰'));
 
         $this->assertFalse(Str::isChineseName('·犇猋骉麤毳淼焱垚昍琰'));
         $this->assertTrue(Str::isChineseName('犇猋骉麤毳·淼焱垚昍琰'));
-        $this->assertTrue(!Str::isChineseName('犇猋骉麤毳淼焱垚昍琰·'));
+        $this->assertTrue(! Str::isChineseName('犇猋骉麤毳淼焱垚昍琰·'));
 
         $this->assertFalse(Str::isChineseName('犇猋骉·麤毳·淼焱垚昍琰'));
     }

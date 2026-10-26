@@ -139,9 +139,9 @@ class WalChangeRecordTest extends TestCase
     public function testFromWal2jsonInsert()
     {
         $change = [
-            'kind'         => 'insert',
-            'table'        => 'users',
-            'columnnames'  => ['id', 'name', 'email'],
+            'kind' => 'insert',
+            'table' => 'users',
+            'columnnames' => ['id', 'name', 'email'],
             'columnvalues' => [42, 'John', 'john@example.com'],
         ];
 
@@ -159,10 +159,10 @@ class WalChangeRecordTest extends TestCase
     public function testFromWal2jsonDelete()
     {
         $change = [
-            'kind'    => 'delete',
-            'table'   => 'users',
+            'kind' => 'delete',
+            'table' => 'users',
             'oldkeys' => [
-                'keynames'  => ['id'],
+                'keynames' => ['id'],
                 'keyvalues' => [15],
             ],
         ];
@@ -178,9 +178,9 @@ class WalChangeRecordTest extends TestCase
     public function testFromWal2jsonWithPartitionTable()
     {
         $change = [
-            'kind'         => 'insert',
-            'table'        => 'orders_p0',
-            'columnnames'  => ['id', 'name'],
+            'kind' => 'insert',
+            'table' => 'orders_p0',
+            'columnnames' => ['id', 'name'],
             'columnvalues' => [1, 'test'],
         ];
 
@@ -202,9 +202,9 @@ class WalChangeRecordTest extends TestCase
     public function testFromWal2jsonReturnsNullWhenKeyMissing()
     {
         $change = [
-            'kind'         => 'insert',
-            'table'        => 'users',
-            'columnnames'  => ['name'],
+            'kind' => 'insert',
+            'table' => 'users',
+            'columnnames' => ['name'],
             'columnvalues' => ['John'],
         ];
 
@@ -215,9 +215,9 @@ class WalChangeRecordTest extends TestCase
     {
         $uuid = '550e8400-e29b-41d4-a716-446655440000';
         $change = [
-            'kind'         => 'insert',
-            'table'        => 'items',
-            'columnnames'  => ['uuid', 'name'],
+            'kind' => 'insert',
+            'table' => 'items',
+            'columnnames' => ['uuid', 'name'],
             'columnvalues' => [$uuid, 'Widget'],
         ];
 
@@ -238,9 +238,9 @@ class WalChangeRecordTest extends TestCase
     public function testFromWal2jsonWithMismatchedColumnLengths()
     {
         $change = [
-            'kind'         => 'insert',
-            'table'        => 'items',
-            'columnnames'  => ['id', 'name', 'extra'],
+            'kind' => 'insert',
+            'table' => 'items',
+            'columnnames' => ['id', 'name', 'extra'],
             'columnvalues' => [1, 'test'],
         ];
 
@@ -713,8 +713,8 @@ class WalChangeRecordTest extends TestCase
     public function testFromWal2jsonV2ToastUnchangedReplacedWithNull()
     {
         $change = [
-            'action'  => 'U',
-            'table'   => 'wal_record_test_items',
+            'action' => 'U',
+            'table' => 'wal_record_test_items',
             'columns' => [
                 ['name' => 'id', 'type' => 'integer', 'value' => 1],
                 ['name' => 'name', 'type' => 'text', 'value' => 'updated'],
@@ -740,8 +740,8 @@ class WalChangeRecordTest extends TestCase
     public function testToModelDoesNotContainToastSentinel()
     {
         $change = [
-            'action'  => 'U',
-            'table'   => 'wal_record_test_items',
+            'action' => 'U',
+            'table' => 'wal_record_test_items',
             'columns' => [
                 ['name' => 'id', 'type' => 'integer', 'value' => 42],
                 ['name' => 'name', 'type' => 'text', 'value' => 'hello'],
@@ -783,8 +783,8 @@ class WalChangeRecordTest extends TestCase
     {
         /** 通过 fromWal2json 实际路径构建 record，验证 isToastUnchanged 正确性 */
         $change = [
-            'action'  => 'U',
-            'table'   => 'wal_record_test_items',
+            'action' => 'U',
+            'table' => 'wal_record_test_items',
             'columns' => [
                 ['name' => 'id', 'type' => 'integer', 'value' => 1],
                 ['name' => 'name', 'type' => 'text', 'value' => 'updated'],
@@ -812,7 +812,7 @@ class WalChangeRecordTest extends TestCase
 }
 
 /**
- * @property int    $id
+ * @property int $id
  * @property string $name
  * @property string $email
  */

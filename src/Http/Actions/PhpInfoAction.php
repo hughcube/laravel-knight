@@ -21,7 +21,7 @@ class PhpInfoAction extends Controller
         phpinfo();
         $content = ob_get_clean();
 
-        if (!Str::startsWith($content, '<')) {
+        if (! Str::startsWith($content, '<')) {
             $content = sprintf('<html><pre>%s</pre></html>', $content);
         }
 

@@ -20,8 +20,8 @@ class PingJob extends Job
     public function rules(): array
     {
         return [
-            'url'     => ['string', 'nullable'],
-            'method'  => ['string', 'nullable'],
+            'url' => ['string', 'nullable'],
+            'method' => ['string', 'nullable'],
             'options' => ['array', 'nullable'],
         ];
     }
@@ -64,7 +64,7 @@ class PingJob extends Job
 
     protected function getRequestId($response): ?string
     {
-        if (!$response instanceof Response) {
+        if (! $response instanceof Response) {
             return null;
         }
 
@@ -91,7 +91,7 @@ class PingJob extends Job
 
         /** with app url scheme */
         $appUrl = PUrl::parse(config('app.url'));
-        if ($appUrl instanceof PUrl && !empty($appUrl->getScheme()) && $purl instanceof PUrl) {
+        if ($appUrl instanceof PUrl && ! empty($appUrl->getScheme()) && $purl instanceof PUrl) {
             $purl = $purl->withScheme($appUrl->getScheme());
         }
 

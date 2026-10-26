@@ -84,7 +84,8 @@ class ClientApiVersionTest extends TestCase
     {
         return [
             [
-                new class() {
+                new class()
+                {
                     use ClientApiVersion;
 
                     protected function getClientApiVersion(): string

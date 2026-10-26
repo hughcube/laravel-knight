@@ -21,9 +21,8 @@ use InvalidArgumentException;
 class Carbon extends \Illuminate\Support\Carbon
 {
     /**
-     * @param DateTimeInterface|int|float|string $date
-     * @param string|null                        $format
-     *
+     * @param  DateTimeInterface|int|float|string  $date
+     * @param  string|null  $format
      * @return static|null
      */
     public static function fromDate($date, ?string $format = null): ?Carbon
@@ -55,9 +54,8 @@ class Carbon extends \Illuminate\Support\Carbon
     }
 
     /**
-     * @param DateTimeInterface|int|float $value
-     * @param string                      $format
-     *
+     * @param  DateTimeInterface|int|float  $value
+     * @param  string  $format
      * @return string|null
      */
     public static function asDate($value, string $format = 'Y-m-d H:i:s'): ?string
@@ -68,9 +66,8 @@ class Carbon extends \Illuminate\Support\Carbon
     }
 
     /**
-     * @param mixed  $date
-     * @param string $format
-     *
+     * @param  mixed  $date
+     * @param  string  $format
      * @return bool
      */
     public static function isPastDate($date, string $format = 'Y-m-d H:i:s'): bool
@@ -81,8 +78,7 @@ class Carbon extends \Illuminate\Support\Carbon
     }
 
     /**
-     * @param mixed $timestamp
-     *
+     * @param  mixed  $timestamp
      * @return bool
      */
     public static function isPastTimestamp($timestamp): bool
@@ -91,9 +87,8 @@ class Carbon extends \Illuminate\Support\Carbon
     }
 
     /**
-     * @param string $date
-     * @param bool   $extended
-     *
+     * @param  string  $date
+     * @param  bool  $extended
      * @return static|false
      */
     public static function createFromRfc3339(string $date, bool $extended = false)
@@ -104,8 +99,7 @@ class Carbon extends \Illuminate\Support\Carbon
     }
 
     /**
-     * @param string $date
-     *
+     * @param  string  $date
      * @return static|false
      */
     public static function createFromRfc3339Extended(string $date)

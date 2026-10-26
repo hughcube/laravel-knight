@@ -17,9 +17,9 @@ use Illuminate\Http\JsonResponse;
 class DevopsSystemActionTest extends TestCase
 {
     /**
-     * @throws BindingResolutionException
-     *
      * @return void
+     *
+     * @throws BindingResolutionException
      */
     public function testRun()
     {

@@ -22,14 +22,15 @@ class CompileFilesCommandTest extends TestCase
     public function testRun()
     {
         $storageDir = storage_path();
-        if (!is_dir($storageDir)) {
+        if (! is_dir($storageDir)) {
             File::makeDirectory($storageDir, 0777, true);
         }
 
         $tempFile = tempnam(sys_get_temp_dir(), 'compile-');
         file_put_contents($tempFile, '<?php echo "ok";');
 
-        $command = new class([$tempFile]) extends CompileFilesCommand {
+        $command = new class([$tempFile]) extends CompileFilesCommand
+        {
             private array $files;
 
             public function __construct(array $files)

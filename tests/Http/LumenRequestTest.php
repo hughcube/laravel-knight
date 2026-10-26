@@ -8,7 +8,7 @@ class LumenRequestTest extends TestCase
 {
     public function testCreateReturnsLumenRequestWhenAvailable()
     {
-        if (!class_exists(\Laravel\Lumen\Http\Request::class)) {
+        if (! class_exists(\Laravel\Lumen\Http\Request::class)) {
             $this->markTestSkipped('Lumen Request class is not available.');
         }
 

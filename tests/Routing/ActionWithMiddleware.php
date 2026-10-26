@@ -24,8 +24,7 @@ class ActionWithMiddleware
     protected $middlewares = [];
 
     /**
-     * @param array $middlewares
-     *
+     * @param  array  $middlewares
      * @return $this
      */
     public function setMiddlewares(array $middlewares)

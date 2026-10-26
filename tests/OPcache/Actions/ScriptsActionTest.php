@@ -20,13 +20,13 @@ class ScriptsActionTest extends TestCase
 {
     public function testRun()
     {
-        if (!extension_loaded('Zend OPcache') || !function_exists('opcache_reset')) {
+        if (! extension_loaded('Zend OPcache') || ! function_exists('opcache_reset')) {
             $this->markTestSkipped('OPcache extension is not loaded or opcache_reset function is not available');
 
             return;
         }
 
-        if (!opcache_reset()) {
+        if (! opcache_reset()) {
             $this->markTestSkipped('Failed to reset OPcache');
 
             return;
@@ -54,7 +54,8 @@ class ScriptsActionTest extends TestCase
         $property->setAccessible(true);
         $previous = $property->getValue();
 
-        $stub = new class() extends OPcache {
+        $stub = new class() extends OPcache
+        {
             public function getScripts(): array
             {
                 return [

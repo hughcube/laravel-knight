@@ -15,9 +15,9 @@ class IdempotencyGuardTest extends TestCase
 
         $app['config']->set('cache', [
             'default' => 'array',
-            'stores'  => [
+            'stores' => [
                 'array' => [
-                    'driver'    => 'array',
+                    'driver' => 'array',
                     'serialize' => true,
                 ],
             ],

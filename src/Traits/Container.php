@@ -27,9 +27,9 @@ trait Container
     }
 
     /**
-     * @throws
-     *
      * @return Dispatcher
+     *
+     * @throws
      *
      * @phpstan-ignore-next-line
      */
@@ -39,9 +39,9 @@ trait Container
     }
 
     /**
-     * @throws
-     *
      * @return EventsDispatcher
+     *
+     * @throws
      *
      * @phpstan-ignore-next-line
      */
@@ -51,9 +51,9 @@ trait Container
     }
 
     /**
-     * @throws
-     *
      * @return QueueManager
+     *
+     * @throws
      *
      * @phpstan-ignore-next-line
      */
@@ -63,9 +63,9 @@ trait Container
     }
 
     /**
-     * @throws
-     *
      * @return ExceptionHandler
+     *
+     * @throws
      *
      * @phpstan-ignore-next-line
      */
@@ -75,9 +75,9 @@ trait Container
     }
 
     /**
-     * @throws
-     *
      * @return Repository|mixed|null
+     *
+     * @throws
      *
      * @phpstan-ignore-next-line
      */

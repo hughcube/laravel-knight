@@ -21,7 +21,7 @@ class LogsPruneCommand extends Command
         $pattern = $this->option('pattern') ?: '*.log';
         $dir = $this->option('dir') ?: log_path();
 
-        if (!File::exists($dir)) {
+        if (! File::exists($dir)) {
             $this->info(sprintf('Directory not found, skip: %s', $dir));
 
             return;

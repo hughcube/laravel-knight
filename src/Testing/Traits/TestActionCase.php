@@ -20,11 +20,11 @@ trait TestActionCase
     /**
      * 断言 Job 执行不抛出异常.
      *
-     * @param object $job
+     * @param  object  $job
      */
     protected function assertKnightHandle(object $job): void
     {
-        if (!method_exists($job, 'handle')) {
+        if (! method_exists($job, 'handle')) {
             $this->fail(sprintf('Object %s does not have a handle method', get_class($job)));
         }
 

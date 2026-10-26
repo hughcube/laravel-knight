@@ -36,7 +36,7 @@ class PaginateQueryNoMaxRuleStub extends PaginateQueryActionStub
     protected function rules(): array
     {
         return [
-            'page'      => ['integer', 'remove_if_empty'],
+            'page' => ['integer', 'remove_if_empty'],
             'page_size' => ['integer', 'remove_if_empty'],
         ];
     }

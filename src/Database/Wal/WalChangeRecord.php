@@ -60,18 +60,18 @@ class WalChangeRecord implements JsonSerializable
     private $fetcher;
 
     /**
-     * @param string      $kind
-     * @param string      $table
-     * @param string|null $partitionTable
-     * @param int|string  $id
-     * @param string      $keyName
-     * @param array       $columns
-     * @param array       $oldColumns
-     * @param string      $modelClass
+     * @param  string  $kind
+     * @param  string  $table
+     * @param  string|null  $partitionTable
+     * @param  int|string  $id
+     * @param  string  $keyName
+     * @param  array  $columns
+     * @param  array  $oldColumns
+     * @param  string  $modelClass
      */
     public function __construct($kind, $table, $partitionTable, $id, $keyName, array $columns, array $oldColumns, $modelClass)
     {
-        if (!in_array($kind, [self::KIND_INSERT, self::KIND_UPDATE, self::KIND_DELETE], true)) {
+        if (! in_array($kind, [self::KIND_INSERT, self::KIND_UPDATE, self::KIND_DELETE], true)) {
             throw new InvalidArgumentException(sprintf('Invalid WAL change kind: %s', $kind));
         }
 
@@ -92,12 +92,11 @@ class WalChangeRecord implements JsonSerializable
      * - v1: kind + columnnames/columnvalues 并行数组 + oldkeys.keynames/keyvalues
      * - v2: action + columns[{name,type,value}] + identity[{name,type,value}]
      *
-     * @param array       $change        wal2json 单条 change 记录
-     * @param string      $resolvedTable 解析后的父表名
-     * @param string|null $rawTable      原始表名（分区子表），与 resolvedTable 相同时传 null
-     * @param string      $keyName       主键列名
-     * @param string      $modelClass    Model 类名
-     *
+     * @param  array  $change  wal2json 单条 change 记录
+     * @param  string  $resolvedTable  解析后的父表名
+     * @param  string|null  $rawTable  原始表名（分区子表），与 resolvedTable 相同时传 null
+     * @param  string  $keyName  主键列名
+     * @param  string  $modelClass  Model 类名
      * @return self|null 无法提取主键时返回 null
      */
     public static function fromWal2json(array $change, $resolvedTable, $rawTable, $keyName, $modelClass)
@@ -143,12 +142,11 @@ class WalChangeRecord implements JsonSerializable
      * - columns: [{name, type, value}, ...] （INSERT/UPDATE 的新值）
      * - identity: [{name, type, value}, ...] （UPDATE/DELETE 的旧值/主键）
      *
-     * @param array       $change        wal2json v2 单条 change 记录
-     * @param string      $resolvedTable 解析后的父表名
-     * @param string|null $rawTable      原始表名
-     * @param string      $keyName       主键列名
-     * @param string      $modelClass    Model 类名
-     *
+     * @param  array  $change  wal2json v2 单条 change 记录
+     * @param  string  $resolvedTable  解析后的父表名
+     * @param  string|null  $rawTable  原始表名
+     * @param  string  $keyName  主键列名
+     * @param  string  $modelClass  Model 类名
      * @return self|null
      */
     protected static function fromWal2jsonV2(array $change, $resolvedTable, $rawTable, $keyName, $modelClass)
@@ -198,8 +196,7 @@ class WalChangeRecord implements JsonSerializable
      * 避免 toModel() 将哨兵字符串填充到 Model 属性中。
      * 使用 isToastUnchanged() 检测某列是否为未变更的 TOAST 列。
      *
-     * @param array $v2Columns
-     *
+     * @param  array  $v2Columns
      * @return array<string, mixed>
      */
     protected static function flattenV2Columns(array $v2Columns)
@@ -223,21 +220,19 @@ class WalChangeRecord implements JsonSerializable
      * TOAST 列在 flattenV2Columns 中被跳过（key 不存在于 columns），
      * 因此通过 array_key_exists 即可判断。
      *
-     * @param string $column
-     *
+     * @param  string  $column
      * @return bool
      */
     public function isToastUnchanged($column)
     {
-        return !array_key_exists($column, $this->columns);
+        return ! array_key_exists($column, $this->columns);
     }
 
     /**
      * 将并行的 names/values 数组组合为关联数组。长度不匹配时返回空数组。
      *
-     * @param array $names
-     * @param array $values
-     *
+     * @param  array  $names
+     * @param  array  $values
      * @return array<string, mixed>
      */
     protected static function combineKeyValues(array $names, array $values)
@@ -298,9 +293,8 @@ class WalChangeRecord implements JsonSerializable
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
-     *
+     * @param  string  $key
+     * @param  mixed  $value
      * @return $this
      */
     public function setContext($key, $value)
@@ -311,9 +305,8 @@ class WalChangeRecord implements JsonSerializable
     }
 
     /**
-     * @param string $key
-     * @param mixed  $default
-     *
+     * @param  string  $key
+     * @param  mixed  $default
      * @return mixed
      */
     public function getContext($key, $default = null)
@@ -322,8 +315,7 @@ class WalChangeRecord implements JsonSerializable
     }
 
     /**
-     * @param string $key
-     *
+     * @param  string  $key
      * @return bool
      */
     public function hasContext($key)
@@ -378,7 +370,7 @@ class WalChangeRecord implements JsonSerializable
 
         $model->{$this->keyName} = $this->id;
         $model->syncOriginal();
-        $model->exists = !$this->isDelete();
+        $model->exists = ! $this->isDelete();
 
         return $model;
     }
@@ -389,8 +381,7 @@ class WalChangeRecord implements JsonSerializable
      * 适用场景：需要带额外条件查询（软删除、分区键）、eager load 关联、
      * 或使用非标准查询方式获取 Model。
      *
-     * @param callable $fetcher 签名: function(WalChangeRecord $record): Model|null
-     *
+     * @param  callable  $fetcher  签名: function(WalChangeRecord $record): Model|null
      * @return $this
      */
     public function setFetcher(callable $fetcher)
@@ -442,8 +433,7 @@ class WalChangeRecord implements JsonSerializable
      * 后续 Listener 调用 fetchModel() 时直接复用，避免重复查询。
      * 传入 null 表示记录不存在（缓存为 null，不再重复查询）。
      *
-     * @param Model|null $model
-     *
+     * @param  Model|null  $model
      * @return $this
      */
     public function setModel($model)
@@ -460,14 +450,14 @@ class WalChangeRecord implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'kind'           => $this->kind,
-            'table'          => $this->table,
+            'kind' => $this->kind,
+            'table' => $this->table,
             'partitionTable' => $this->partitionTable,
-            'id'             => $this->id,
-            'keyName'        => $this->keyName,
-            'columns'        => $this->columns,
-            'oldColumns'     => $this->oldColumns,
-            'modelClass'     => $this->modelClass,
+            'id' => $this->id,
+            'keyName' => $this->keyName,
+            'columns' => $this->columns,
+            'oldColumns' => $this->oldColumns,
+            'modelClass' => $this->modelClass,
         ];
     }
 

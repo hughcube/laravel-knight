@@ -583,9 +583,9 @@ class IsEqualAttributesTest extends TestCase
     public function testTimestampFieldsDbVsCache()
     {
         $model = EqualTestModel::create([
-            'name'  => 'Alice',
+            'name' => 'Alice',
             'email' => 'alice@test.com',
-            'age'   => 25,
+            'age' => 25,
         ]);
 
         // 确保 created_at/updated_at 有值
@@ -607,10 +607,10 @@ class IsEqualAttributesTest extends TestCase
     public function testNullableFieldsDbVsCache()
     {
         $model = EqualTestModel::create([
-            'name'      => 'Alice',
-            'email'     => 'alice@test.com',
+            'name' => 'Alice',
+            'email' => 'alice@test.com',
             'json_data' => null,
-            'tags'      => null,
+            'tags' => null,
         ]);
 
         $dbModel = EqualTestModel::noCacheQuery()->find($model->id);
@@ -628,8 +628,8 @@ class IsEqualAttributesTest extends TestCase
     public function testJsonStringFieldDbVsCache()
     {
         $model = EqualTestModel::create([
-            'name'      => 'Alice',
-            'email'     => 'alice@test.com',
+            'name' => 'Alice',
+            'email' => 'alice@test.com',
             'json_data' => '{"role":"admin","permissions":["read","write"]}',
         ]);
 
@@ -649,9 +649,9 @@ class IsEqualAttributesTest extends TestCase
     {
         for ($i = 1; $i <= 5; $i++) {
             EqualTestModel::create([
-                'name'  => "User{$i}",
+                'name' => "User{$i}",
                 'email' => "user{$i}@test.com",
-                'age'   => 20 + $i,
+                'age' => 20 + $i,
                 'price' => 10.50 + $i,
             ]);
         }

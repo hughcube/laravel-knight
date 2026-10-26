@@ -113,7 +113,8 @@ class RequestTest extends TestCase
 
     public function testClientHeadersAndDates()
     {
-        $request = new class() extends Request {
+        $request = new class() extends Request
+        {
             public function getClientHeaderPrefix(): string
             {
                 return 'X-Client-';
@@ -145,7 +146,7 @@ class RequestTest extends TestCase
     {
         $wechat = Request::create('/foo/bar', 'GET', [], [], [], [
             'HTTP_USER_AGENT' => 'MicroMessenger miniProgram',
-            'HTTP_HOST'       => 'example.test:8080',
+            'HTTP_HOST' => 'example.test:8080',
         ]);
 
         $this->assertTrue($wechat->isWeChat());

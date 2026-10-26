@@ -29,7 +29,7 @@ class OnlyLocalGuard
 
     public function handle(Request $request, Closure $next)
     {
-        if (!IpUtils::checkIp($request->getClientIp(), $this->allowIps())) {
+        if (! IpUtils::checkIp($request->getClientIp(), $this->allowIps())) {
             throw new AccessDeniedHttpException('Only allow local access!');
         }
 

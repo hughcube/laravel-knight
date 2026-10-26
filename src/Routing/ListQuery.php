@@ -33,8 +33,7 @@ trait ListQuery
     }
 
     /**
-     * @param EloquentBuilder|mixed $query
-     *
+     * @param  EloquentBuilder|mixed  $query
      * @return null|int
      */
     protected function queryCount($query): ?int

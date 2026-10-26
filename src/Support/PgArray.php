@@ -11,13 +11,12 @@ class PgArray
      * 解析 int[]: {1,2,3} → [1,2,3]
      * 注意：为避免 bigint 溢出，超过 PHP_INT_MAX 的值保持为字符串.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return Collection
      */
     public static function parseIntArray($value): Collection
     {
-        if (!is_string($value) || $value === '' || $value === '{}') {
+        if (! is_string($value) || $value === '' || $value === '{}') {
             return Collection::make();
         }
 
@@ -35,13 +34,12 @@ class PgArray
      * 解析简单 text[]: {o:1,o:2} → ['o:1','o:2']
      * 仅支持字母、数字、冒号、下划线、点、连字符.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return Collection
      */
     public static function parseSimpleTextArray($value): Collection
     {
-        if (!is_string($value) || $value === '' || $value === '{}') {
+        if (! is_string($value) || $value === '' || $value === '{}') {
             return Collection::make();
         }
 
@@ -51,8 +49,7 @@ class PgArray
     /**
      * 序列化 int[]: [1,2,3] → {1,2,3}.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return string
      */
     public static function serializeIntArray($value): string
@@ -65,8 +62,7 @@ class PgArray
      * 支持字母、数字、冒号、下划线、点、连字符、斜杠、@、+、=、#、~
      * 不支持: 空格、逗号、花括号、引号、反斜杠（这些是 PostgreSQL 数组特殊字符）.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return string
      */
     public static function serializeSimpleTextArray($value): string

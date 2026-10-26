@@ -21,7 +21,7 @@ namespace HughCube\Laravel\Knight\Console\Commands {
         }
     }
 
-    if (!function_exists(__NAMESPACE__.'\\extension_loaded')) {
+    if (! function_exists(__NAMESPACE__.'\\extension_loaded')) {
         function extension_loaded($name)
         {
             if ($name === 'pcntl' && WalEventDispatchCommandRuntimeState::$mockPcntl) {
@@ -32,7 +32,7 @@ namespace HughCube\Laravel\Knight\Console\Commands {
         }
     }
 
-    if (!function_exists(__NAMESPACE__.'\\pcntl_async_signals')) {
+    if (! function_exists(__NAMESPACE__.'\\pcntl_async_signals')) {
         function pcntl_async_signals($enable)
         {
             WalEventDispatchCommandRuntimeState::$asyncSignalCalls[] = $enable;
@@ -41,7 +41,7 @@ namespace HughCube\Laravel\Knight\Console\Commands {
         }
     }
 
-    if (!function_exists(__NAMESPACE__.'\\pcntl_signal')) {
+    if (! function_exists(__NAMESPACE__.'\\pcntl_signal')) {
         function pcntl_signal($signal, $handler)
         {
             WalEventDispatchCommandRuntimeState::$signalHandlers[$signal] = $handler;
@@ -50,7 +50,7 @@ namespace HughCube\Laravel\Knight\Console\Commands {
         }
     }
 
-    if (!function_exists(__NAMESPACE__.'\\usleep')) {
+    if (! function_exists(__NAMESPACE__.'\\usleep')) {
         function usleep($microseconds)
         {
             if (WalEventDispatchCommandRuntimeState::$mockSleep) {
@@ -63,7 +63,7 @@ namespace HughCube\Laravel\Knight\Console\Commands {
         }
     }
 
-    if (!function_exists(__NAMESPACE__.'\\class_exists')) {
+    if (! function_exists(__NAMESPACE__.'\\class_exists')) {
         function class_exists($class, $autoload = true)
         {
             if (array_key_exists($class, WalEventDispatchCommandRuntimeState::$classExistsOverrides)) {
@@ -121,7 +121,7 @@ namespace HughCube\Laravel\Knight\Tests\Console\Commands {
 
             $this->initializeCommand($command, [
                 '--interval' => '0.25',
-                '--batch'    => '5',
+                '--batch' => '5',
             ]);
 
             $command->handle();
@@ -147,7 +147,7 @@ namespace HughCube\Laravel\Knight\Tests\Console\Commands {
 
             $this->initializeCommand($command, [
                 '--interval' => '0.1',
-                '--batch'    => '10',
+                '--batch' => '10',
             ]);
 
             $command->handle();
@@ -177,7 +177,7 @@ namespace HughCube\Laravel\Knight\Tests\Console\Commands {
 
             $this->initializeCommand($command, [
                 '--interval' => '0.1',
-                '--batch'    => '10',
+                '--batch' => '10',
             ]);
 
             $command->handle();
@@ -200,8 +200,8 @@ namespace HughCube\Laravel\Knight\Tests\Console\Commands {
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval'   => '0.1',
-                '--batch'      => '10',
+                '--interval' => '0.1',
+                '--batch' => '10',
                 '--max-errors' => '3',
             ]);
 
@@ -228,8 +228,8 @@ namespace HughCube\Laravel\Knight\Tests\Console\Commands {
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval'   => '0.1',
-                '--batch'      => '10',
+                '--interval' => '0.1',
+                '--batch' => '10',
                 '--max-errors' => '5',
             ]);
 
@@ -256,8 +256,8 @@ namespace HughCube\Laravel\Knight\Tests\Console\Commands {
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval'   => '0.1',
-                '--batch'      => '10',
+                '--interval' => '0.1',
+                '--batch' => '10',
                 '--max-errors' => '0',
             ]);
 
@@ -359,7 +359,8 @@ PHP
 
         public function testBuildPartitionMapMapsReturnedRows(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -367,7 +368,8 @@ PHP
                     return $this->connection;
                 }
             };
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function select($query, array $bindings = [])
                 {
                     return [
@@ -389,7 +391,8 @@ PHP
         {
             $originalDb = app('db');
 
-            $connection = new class() {
+            $connection = new class()
+            {
                 public $writeConnectionForced = false;
 
                 public function useWriteConnectionWhenReading($value = true)
@@ -400,7 +403,8 @@ PHP
                 }
             };
 
-            $db = new class($connection) {
+            $db = new class($connection)
+            {
                 public $requestedConnection = null;
                 private $connection;
 
@@ -420,7 +424,8 @@ PHP
             app()->instance('db', $db);
 
             try {
-                $command = new class() extends WalEventDispatchCommand {
+                $command = new class() extends WalEventDispatchCommand
+                {
                     public function exposedGetConnection()
                     {
                         return $this->getConnection();
@@ -462,7 +467,8 @@ PHP
 
             $connection = new MockCursorConnection($rows);
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -509,7 +515,8 @@ PHP
 
             $connection = new MockCursorConnection($rows);
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -553,7 +560,8 @@ PHP
 
             $connection = new MockCursorConnection($rows);
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -563,7 +571,7 @@ PHP
             };
 
             $this->initializeCommand($command, [
-                '--mode'            => 'advance',
+                '--mode' => 'advance',
                 '--wal2json-params' => ['format-version=1'],
             ]);
             $command->connection = $connection;
@@ -598,7 +606,8 @@ PHP
 
             $connection = new MockCursorConnection($rows);
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -640,7 +649,8 @@ PHP
             $connection = new MockCursorConnection($rows);
             $connection->advanceThrows = true;
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -683,8 +693,8 @@ PHP
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval'   => '0.1',
-                '--batch'      => '10',
+                '--interval' => '0.1',
+                '--batch' => '10',
                 '--max-errors' => '10',
             ]);
 
@@ -708,10 +718,10 @@ PHP
 
         public function testRegisterSignalHandlersUsesPcntlWhenAvailable(): void
         {
-            if (!defined('SIGTERM')) {
+            if (! defined('SIGTERM')) {
                 define('SIGTERM', 15);
             }
-            if (!defined('SIGINT')) {
+            if (! defined('SIGINT')) {
                 define('SIGINT', 2);
             }
 
@@ -743,10 +753,12 @@ PHP
 
         public function testReconnectDatabaseHandlesReconnectFailure(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 protected function getConnection()
                 {
-                    return new class() {
+                    return new class()
+                    {
                         public function reconnect(): void
                         {
                             throw new \RuntimeException('reconnect failed');
@@ -765,7 +777,8 @@ PHP
 
         public function testCheckSlotHealthReturnsFalseWhenNoLag(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -776,7 +789,8 @@ PHP
 
             $this->initializeCommand($command);
 
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
                 {
                     return (object) ['lag_bytes' => 0];
@@ -789,7 +803,8 @@ PHP
 
         public function testCheckSlotHealthWarnsOnWarningThreshold(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -800,7 +815,8 @@ PHP
 
             $this->initializeCommand($command);
 
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
                 {
                     return (object) ['lag_bytes' => 150 * 1024 * 1024];
@@ -813,7 +829,8 @@ PHP
 
         public function testCheckSlotHealthReturnsTrueOnCriticalThreshold(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -824,7 +841,8 @@ PHP
 
             $this->initializeCommand($command);
 
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
                 {
                     return (object) ['lag_bytes' => 250 * 1024 * 1024];
@@ -837,7 +855,8 @@ PHP
 
         public function testCheckSlotHealthReturnsFalseOnQueryException(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -848,7 +867,8 @@ PHP
 
             $this->initializeCommand($command);
 
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
                 {
                     throw new \RuntimeException('connection lost');
@@ -861,7 +881,8 @@ PHP
 
         public function testCheckSlotHealthReturnsFalseWhenSlotNotFound(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -872,7 +893,8 @@ PHP
 
             $this->initializeCommand($command);
 
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
                 {
                     return null;
@@ -887,7 +909,8 @@ PHP
 
         public function testEnsureSlotExistsThrowsOnWrongPlugin(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -898,7 +921,8 @@ PHP
 
             $this->initializeCommand($command);
 
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
                 {
                     return (object) ['plugin' => 'test_decoding', 'active' => false, 'active_pid' => null];
@@ -913,7 +937,8 @@ PHP
 
         public function testEnsureSlotExistsThrowsOnActiveSlotMocked(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -924,7 +949,8 @@ PHP
 
             $this->initializeCommand($command);
 
-            $command->connection = new class() {
+            $command->connection = new class()
+            {
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
                 {
                     return (object) ['plugin' => 'wal2json', 'active' => true, 'active_pid' => 12345];
@@ -945,16 +971,16 @@ PHP
 
             $rows = [
                 (object) ['lsn' => '0/10', 'data' => json_encode([
-                    'action'  => 'I',
-                    'table'   => 'users',
+                    'action' => 'I',
+                    'table' => 'users',
                     'columns' => [
                         ['name' => 'id', 'type' => 'integer', 'value' => 1],
                         ['name' => 'name', 'type' => 'text', 'value' => 'alice'],
                     ],
                 ])],
                 (object) ['lsn' => '0/11', 'data' => json_encode([
-                    'action'  => 'U',
-                    'table'   => 'users',
+                    'action' => 'U',
+                    'table' => 'users',
                     'columns' => [
                         ['name' => 'id', 'type' => 'integer', 'value' => 1],
                         ['name' => 'name', 'type' => 'text', 'value' => 'bob'],
@@ -964,7 +990,8 @@ PHP
 
             $connection = new MockCursorConnection($rows);
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -1002,7 +1029,8 @@ PHP
 
             $connection = new MockCursorConnection($rows);
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -1012,10 +1040,10 @@ PHP
             };
 
             $this->initializeCommand($command, [
-                '--mode'             => 'advance',
-                '--format-version'   => '1',
+                '--mode' => 'advance',
+                '--format-version' => '1',
                 '--queue-connection' => 'redis',
-                '--queue'            => 'wal-events',
+                '--queue' => 'wal-events',
             ]);
             $command->connection = $connection;
 
@@ -1041,7 +1069,8 @@ PHP
                 return new \stdClass();
             });
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 protected function getTelescopeClass()
                 {
                     return TestFakeTelescope::class;
@@ -1065,7 +1094,8 @@ PHP
              * 不绑定 EntriesRepository → app() 抛异常。
              * flushTelescopeEntries 的 catch(Throwable) 应静默处理。
              */
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 protected function getTelescopeClass()
                 {
                     return TestFakeTelescope::class;
@@ -1086,7 +1116,8 @@ PHP
 
         public function testFlushTelescopeEntriesSkipsWhenNotRecording(): void
         {
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 protected function getTelescopeClass()
                 {
                     return TestFakeTelescope::class;
@@ -1117,8 +1148,8 @@ PHP
 
             $this->initializeCommand($command, [
                 '--interval' => '0.1',
-                '--batch'    => '10',
-                '--memory'   => '1',
+                '--batch' => '10',
+                '--memory' => '1',
             ]);
 
             $command->handle();
@@ -1145,8 +1176,8 @@ PHP
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval'          => '0.1',
-                '--batch'             => '10',
+                '--interval' => '0.1',
+                '--batch' => '10',
                 '--partition-refresh' => '1',
             ]);
 
@@ -1173,8 +1204,8 @@ PHP
             WalEventDispatchCommandRuntimeState::$mockSleep = true;
 
             $this->initializeCommand($command, [
-                '--interval'          => '0.1',
-                '--batch'             => '10',
+                '--interval' => '0.1',
+                '--batch' => '10',
                 '--slot-lag-critical' => '100',
             ]);
 
@@ -1194,7 +1225,8 @@ PHP
         {
             $connection = new MockCursorConnection([]);
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -1218,7 +1250,8 @@ PHP
             $connection = new MockCursorConnection([]);
             $connection->advanceThrows = true;
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -1254,7 +1287,7 @@ PHP
 
             $this->initializeCommand($command, [
                 '--interval' => '0.1',
-                '--batch'    => '10',
+                '--batch' => '10',
             ]);
 
             $command->handle();
@@ -1277,7 +1310,8 @@ PHP
             $exceptionHandler = $this->createMock(ExceptionHandler::class);
             $exceptionHandler->expects($this->once())->method('report');
 
-            $mockConnection = new class([]) extends MockCursorConnection {
+            $mockConnection = new class([]) extends MockCursorConnection
+            {
                 public function statement($query, array $bindings = [])
                 {
                     $this->statements[] = ['query' => $query, 'bindings' => $bindings];
@@ -1299,7 +1333,7 @@ PHP
 
             $this->initializeCommand($command, [
                 '--interval' => '0.1',
-                '--batch'    => '10',
+                '--batch' => '10',
             ]);
 
             $command->handle();
@@ -1328,7 +1362,7 @@ PHP
 
             $this->initializeCommand($command, [
                 '--interval' => '0.1',
-                '--batch'    => '10',
+                '--batch' => '10',
             ]);
 
             $command->handle();
@@ -1344,7 +1378,8 @@ PHP
         {
             $rows = [];
 
-            $connection = new class($rows) extends MockCursorConnection {
+            $connection = new class($rows) extends MockCursorConnection
+            {
                 public $selectOneCalls = [];
 
                 public function selectOne($query, array $bindings = [], $useReadPdo = true)
@@ -1359,7 +1394,8 @@ PHP
                 }
             };
 
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $connection;
 
                 protected function getConnection()
@@ -1394,12 +1430,12 @@ PHP
 
         private function deleteDirectory(string $dir): void
         {
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 return;
             }
 
             $items = scandir($dir);
-            if (!is_array($items)) {
+            if (! is_array($items)) {
                 @rmdir($dir);
 
                 return;
@@ -1728,8 +1764,8 @@ PHP
         public function cursor($query, array $bindings = [], $useReadPdo = true, array $fetchUsing = [])
         {
             $this->cursorCalls[] = [
-                'query'      => $query,
-                'bindings'   => $bindings,
+                'query' => $query,
+                'bindings' => $bindings,
                 'useReadPdo' => $useReadPdo,
                 'fetchUsing' => $fetchUsing,
             ];

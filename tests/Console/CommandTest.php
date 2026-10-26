@@ -10,7 +10,8 @@ class CommandTest extends TestCase
 {
     private function makeCommand(array $options, $askResponse, $confirmResponse): Command
     {
-        return new class($options, $askResponse, $confirmResponse) extends Command {
+        return new class($options, $askResponse, $confirmResponse) extends Command
+        {
             protected $signature = 'knight:test-command';
 
             public array $optionsValues = [];

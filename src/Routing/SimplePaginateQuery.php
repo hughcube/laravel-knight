@@ -20,8 +20,7 @@ trait SimplePaginateQuery
     use PaginateQuery;
 
     /**
-     * @param mixed $results
-     *
+     * @param  mixed  $results
      * @return mixed
      */
     protected function createResponse($results)

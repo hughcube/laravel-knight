@@ -18,7 +18,7 @@ class OnlyPrivateIpGuard
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Str::isPrivateIp($request->getClientIp())) {
+        if (! Str::isPrivateIp($request->getClientIp())) {
             throw new AccessDeniedHttpException('Only allow specified intranet ip access!');
         }
 

@@ -39,7 +39,7 @@ class OpcacheViewTest extends TestCase
     private function prepareSampleDataDirectory(): void
     {
         $dir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'knight-opcache-view-tests';
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
 

@@ -141,14 +141,14 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
         }
 
         // 确认执行
-        if (!$this->option('force') && !$this->confirm('Proceed with randomization?')) {
+        if (! $this->option('force') && ! $this->confirm('Proceed with randomization?')) {
             $this->info('Operation cancelled.');
 
             return 0;
         }
 
         // 执行随机化
-        $useLock = !$this->option('no-lock');
+        $useLock = ! $this->option('no-lock');
 
         if ($useLock) {
             return $this->executeWithLock($connection, $sequences, $min, $max);
@@ -160,8 +160,7 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
     /**
      * 获取所有序列.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return Collection
      */
     protected function getSequences(Connection $connection): Collection
@@ -179,8 +178,7 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
     /**
      * 根据 pattern 和 exclude 过滤序列.
      *
-     * @param Collection $sequences
-     *
+     * @param  Collection  $sequences
      * @return Collection
      */
     protected function filterSequences(Collection $sequences): Collection
@@ -194,20 +192,20 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
 
         // 过滤空值
         $patterns = array_filter($patterns, function ($p) {
-            return !empty($p);
+            return ! empty($p);
         });
         $excludes = array_filter($excludes, function ($e) {
-            return !empty($e);
+            return ! empty($e);
         });
 
         return $sequences->filter(function ($seq) use ($patterns, $excludes) {
             // pattern 为空时匹配所有，否则检查是否匹配任一 pattern
-            if (!empty($patterns) && !$this->matchesAnyPattern($seq, $patterns)) {
+            if (! empty($patterns) && ! $this->matchesAnyPattern($seq, $patterns)) {
                 return false;
             }
 
             // exclude 为空时不排除，否则检查是否被排除
-            if (!empty($excludes) && $this->matchesAnyPattern($seq, $excludes)) {
+            if (! empty($excludes) && $this->matchesAnyPattern($seq, $excludes)) {
                 return false;
             }
 
@@ -221,9 +219,8 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
      * 使用 Laravel 的 Str::is() 方法
      * 支持通配符: * 匹配任意数量的任意字符
      *
-     * @param string $string
-     * @param array  $patterns
-     *
+     * @param  string  $string
+     * @param  array  $patterns
      * @return bool
      */
     protected function matchesAnyPattern(string $string, array $patterns): bool
@@ -234,11 +231,10 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
     /**
      * 使用咨询锁执行随机化.
      *
-     * @param Connection $connection
-     * @param Collection $sequences
-     * @param int        $min
-     * @param int        $max
-     *
+     * @param  Connection  $connection
+     * @param  Collection  $sequences
+     * @param  int  $min
+     * @param  int  $max
      * @return int
      */
     protected function executeWithLock(
@@ -255,7 +251,7 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
             self::ADVISORY_LOCK_ID
         ));
 
-        if (!$result->locked) {
+        if (! $result->locked) {
             $this->error('Failed to acquire lock. Another instance may be running.');
 
             return 1;
@@ -278,11 +274,10 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
     /**
      * 执行序列随机化.
      *
-     * @param Connection $connection
-     * @param Collection $sequences
-     * @param int        $min
-     * @param int        $max
-     *
+     * @param  Connection  $connection
+     * @param  Collection  $sequences
+     * @param  int  $min
+     * @param  int  $max
      * @return int
      */
     protected function executeRandomization(
@@ -322,10 +317,9 @@ class DatabaseRandomizeSequences extends \HughCube\Laravel\Knight\Console\Comman
     /**
      * 随机化单个序列.
      *
-     * @param Connection $connection
-     * @param string     $sequenceName
-     * @param int        $increment
-     *
+     * @param  Connection  $connection
+     * @param  string  $sequenceName
+     * @param  int  $increment
      * @return void
      */
     protected function randomizeSequence(

@@ -62,7 +62,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -138,7 +138,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -216,7 +216,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -287,7 +287,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -348,7 +348,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -409,7 +409,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -474,7 +474,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -535,7 +535,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -596,7 +596,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -666,7 +666,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -727,7 +727,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -795,7 +795,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -860,7 +860,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -921,7 +921,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -982,7 +982,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1047,7 +1047,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1108,7 +1108,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1169,7 +1169,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1234,7 +1234,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1295,7 +1295,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1356,7 +1356,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1425,7 +1425,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1486,7 +1486,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1549,7 +1549,7 @@ class BuilderMixin
 
             $this->wheres[] = ['type' => $type, 'column' => $column, 'value' => $valueArray, 'boolean' => $boolean, 'not' => $not];
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 foreach ($valueArray as $val) {
                     $this->addBinding($val);
                 }
@@ -1621,7 +1621,7 @@ class BuilderMixin
 
             $this->wheres[] = compact('type', 'column', 'operator', 'value', 'boolean');
 
-            if (!$value instanceof Expression) {
+            if (! $value instanceof Expression) {
                 $this->addBinding($value);
             }
 

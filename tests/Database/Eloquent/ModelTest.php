@@ -138,11 +138,10 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @param int $count
+     * @param  int  $count
+     * @return void
      *
      * @throws Exception
-     *
-     * @return void
      */
     protected function createUsers(int $count = 1)
     {
@@ -157,9 +156,9 @@ class ModelTest extends TestCase
     {
         $this->resetTable();
 
-        $this->assertTrue(!User::isMatchPk(0));
-        $this->assertTrue(!User::isMatchPk(null));
-        $this->assertTrue(!User::isMatchPk(''));
+        $this->assertTrue(! User::isMatchPk(0));
+        $this->assertTrue(! User::isMatchPk(null));
+        $this->assertTrue(! User::isMatchPk(''));
 
         $this->assertTrue(User::isMatchPk(1));
         $this->assertTrue(User::isMatchPk('1'));
@@ -183,9 +182,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testCacheOnCreate()
     {
@@ -253,9 +252,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testCacheOnUpdate()
     {
@@ -291,9 +290,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testCacheOnForceDelete()
     {
@@ -319,9 +318,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testCacheOnDelete()
     {
@@ -377,9 +376,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testFindById()
     {
@@ -409,9 +408,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testFindByIds()
     {
@@ -500,9 +499,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testConversionDateTime()
     {
@@ -562,9 +561,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testUniqueRows()
     {
@@ -595,9 +594,9 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function testQueryWhereLike()
     {

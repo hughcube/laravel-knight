@@ -27,12 +27,11 @@ trait Validation
     }
 
     /**
-     * @param array|Request $request
+     * @param  array|Request  $request
+     * @return array
      *
      * @throws ValidationException
      * @throws BindingResolutionException
-     *
-     * @return array
      */
     protected function validate($request): array
     {
@@ -59,6 +58,6 @@ trait Validation
             $data = $validator->valid();
         }
 
-        return (empty($data) || !is_array($data)) ? [] : $data;
+        return (empty($data) || ! is_array($data)) ? [] : $data;
     }
 }

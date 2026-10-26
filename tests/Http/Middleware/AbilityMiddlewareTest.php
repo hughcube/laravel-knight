@@ -30,7 +30,8 @@ class AbilityMiddlewareTest extends TestCase
     {
         $request = Request::create('/abilities', 'GET');
         $request->setUserResolver(function () {
-            return new class() {
+            return new class()
+            {
                 public function currentAccessToken()
                 {
                     return null;
@@ -65,7 +66,8 @@ class AbilityMiddlewareTest extends TestCase
     {
         $request = Request::create('/abilities', 'GET');
         $request->setUserResolver(function () {
-            return new class() {
+            return new class()
+            {
                 public function currentAccessToken()
                 {
                     return null;
@@ -133,7 +135,8 @@ class AbilityMiddlewareTest extends TestCase
     {
         $request = Request::create('/abilities', 'GET');
         $request->setUserResolver(function () use ($allowed) {
-            return new class($allowed) {
+            return new class($allowed)
+            {
                 private array $allowed;
 
                 public function __construct(array $allowed)

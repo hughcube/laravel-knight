@@ -81,7 +81,8 @@ class LogQuerySqlTest extends TestCase
         $handler = $this->setupTestLogHandler();
         $initialCount = $handler !== null ? count($handler->getRecords()) : 0;
 
-        $listener = new class() extends LogQuerySql {
+        $listener = new class() extends LogQuerySql
+        {
             protected function getThreshold(): float
             {
                 return 500;
@@ -111,7 +112,8 @@ class LogQuerySqlTest extends TestCase
     {
         $handler = $this->setupTestLogHandler();
 
-        $listener = new class() extends LogQuerySql {
+        $listener = new class() extends LogQuerySql
+        {
             protected function getLogLevel(): string
             {
                 return 'warning';

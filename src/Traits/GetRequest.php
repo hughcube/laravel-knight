@@ -19,9 +19,9 @@ use Laravel\Lumen\Http\Request as LumenRequest;
 trait GetRequest
 {
     /**
-     * @throws
-     *
      * @return Request|IdeRequest|\Request|LumenRequest
+     *
+     * @throws
      */
     public function getRequest(): Request
     {

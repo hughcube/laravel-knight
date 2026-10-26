@@ -89,7 +89,7 @@ class WalMonitorSlotsCommand extends Command
             }
         }
 
-        if (!$hasAlert) {
+        if (! $hasAlert) {
             $this->info(sprintf('All %d slot(s) are within threshold.', count($slots)));
         }
     }

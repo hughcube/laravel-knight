@@ -69,7 +69,7 @@ class StrMixin
     protected function checkMobile(): Closure
     {
         return function ($mobile, $iddCode = null): bool {
-            if (!is_string($mobile) && !ctype_digit(strval($mobile))) {
+            if (! is_string($mobile) && ! ctype_digit(strval($mobile))) {
                 return false;
             }
 
@@ -115,7 +115,7 @@ class StrMixin
 
             $json = @json_encode([$string]);
 
-            return '[null]' !== $json && !empty($json);
+            return '[null]' !== $json && ! empty($json);
 
             // $temp1 = @iconv("GBK", "UTF-8", $string);
             // $temp2 = @iconv("UTF-8", "GBK", $temp1);
@@ -225,7 +225,7 @@ class StrMixin
             $result = false !== filter_var($string, FILTER_VALIDATE_EMAIL);
 
             if ($result && $isStrict && function_exists('getmxrr')) {
-                list($prefix, $domain) = explode('@', $string);
+                [$prefix, $domain] = explode('@', $string);
                 $result = getmxrr($domain, $mxhosts);
             }
 
@@ -293,7 +293,7 @@ class StrMixin
     {
         return function ($string): bool {
             /** @phpstan-ignore-next-line */
-            return !static::isPrivateIp();
+            return ! static::isPrivateIp();
         };
     }
 
@@ -304,7 +304,7 @@ class StrMixin
                 return false;
             }
 
-            if ($checkAccess && !is_array(get_headers($string))) {
+            if ($checkAccess && ! is_array(get_headers($string))) {
                 return false;
             }
 
@@ -385,7 +385,7 @@ class StrMixin
             $from = $from == 'UTF8' ? 'utf-8' : $from;
             $to = $to == 'UTF8' ? 'utf-8' : $to;
 
-            if ($from === $to || empty($contents) || (is_scalar($contents) && !is_string($contents))) {
+            if ($from === $to || empty($contents) || (is_scalar($contents) && ! is_string($contents))) {
                 return $contents;
             }
 

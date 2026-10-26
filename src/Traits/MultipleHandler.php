@@ -46,13 +46,13 @@ trait MultipleHandler
     }
 
     /**
-     * @throws Throwable
-     *
      * @return Collection<int, array{
      *     method: ReflectionMethod,
      *     result: mixed,
      *     exception: Throwable|null
      * }>
+     *
+     * @throws Throwable
      */
     protected function triggerMultipleHandlers(bool $tryException = true): Collection
     {
@@ -104,7 +104,7 @@ trait MultipleHandler
 
             /** 获取sort属性 */
             $sort = substr($method->name, $position + strlen('Handler'));
-            if ('' !== $sort && !ctype_digit($sort)) {
+            if ('' !== $sort && ! ctype_digit($sort)) {
                 continue;
             }
 

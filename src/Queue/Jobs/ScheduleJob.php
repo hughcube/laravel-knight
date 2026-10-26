@@ -19,9 +19,9 @@ class ScheduleJob extends Job
     private $scheduleJobCount = 0;
 
     /**
-     * @throws Throwable
-     *
      * @return void
+     *
+     * @throws Throwable
      */
     protected function action(): void
     {
@@ -46,10 +46,9 @@ class ScheduleJob extends Job
     }
 
     /**
-     * @param string|array      $name
-     * @param string|array|null $in
-     * @param string|null       $basePath
-     *
+     * @param  string|array  $name
+     * @param  string|array|null  $in
+     * @param  string|null  $basePath
      * @return array<int, object>
      */
     protected function parseDirJobs($name = '*.php', $in = null, ?string $basePath = null): array
@@ -72,7 +71,7 @@ class ScheduleJob extends Job
                 continue;
             }
 
-            if (!$reflection->isInstantiable()) {
+            if (! $reflection->isInstantiable()) {
                 continue;
             }
 
@@ -108,9 +107,8 @@ class ScheduleJob extends Job
     }
 
     /**
-     * @param string              $expression
-     * @param callable|Job|object $job
-     *
+     * @param  string  $expression
+     * @param  callable|Job|object  $job
      * @return void
      */
     protected function pushJobIfDue(string $expression, $job)
@@ -121,8 +119,7 @@ class ScheduleJob extends Job
     }
 
     /**
-     * @param mixed $job
-     *
+     * @param  mixed  $job
      * @return mixed
      */
     protected function fireJob($job)
@@ -145,9 +142,8 @@ class ScheduleJob extends Job
     }
 
     /**
-     * @param string              $expression
-     * @param callable|Job|object $job
-     *
+     * @param  string  $expression
+     * @param  callable|Job|object  $job
      * @return void
      */
     protected function fireJobIfDue(string $expression, $job)

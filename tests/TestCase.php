@@ -46,7 +46,7 @@ class TestCase extends OrchestraTestCase
         // Force resolve log manager to ensure it's properly initialized
         $this->app->make('log');
 
-        if (!self::$postgresGrammarRegistered) {
+        if (! self::$postgresGrammarRegistered) {
             KnightPostgresGrammar::registerConnectionResolver();
             self::$postgresGrammarRegistered = true;
         }
@@ -55,8 +55,7 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param Application $app
-     *
+     * @param  Application  $app
      * @return array
      */
     protected function getPackageProviders($app): array
@@ -69,7 +68,7 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param Application $app
+     * @param  Application  $app
      *
      * @throws Exception
      */
@@ -82,7 +81,7 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param Application $app
+     * @param  Application  $app
      */
     protected function setupLogging(Application $app)
     {
@@ -90,30 +89,30 @@ class TestCase extends OrchestraTestCase
         $appConfig = $app['config'];
 
         $appConfig->set('logging', [
-            'default'      => 'null',
+            'default' => 'null',
             'deprecations' => [
                 'channel' => 'null',
-                'trace'   => false,
+                'trace' => false,
             ],
             'channels' => [
                 'null' => [
-                    'driver'  => 'monolog',
+                    'driver' => 'monolog',
                     'handler' => \Monolog\Handler\NullHandler::class,
                 ],
                 'stack' => [
-                    'driver'            => 'stack',
-                    'channels'          => ['null'],
+                    'driver' => 'stack',
+                    'channels' => ['null'],
                     'ignore_exceptions' => false,
                 ],
                 'single' => [
                     'driver' => 'single',
-                    'path'   => storage_path('logs/laravel.log'),
-                    'level'  => 'debug',
+                    'path' => storage_path('logs/laravel.log'),
+                    'level' => 'debug',
                 ],
                 'stdout' => [
-                    'driver'  => 'monolog',
+                    'driver' => 'monolog',
                     'handler' => \Monolog\Handler\StreamHandler::class,
-                    'with'    => [
+                    'with' => [
                         'stream' => 'php://stdout',
                     ],
                 ],
@@ -122,7 +121,7 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param Application $app
+     * @param  Application  $app
      */
     protected function setupCache(Application $app)
     {
@@ -131,21 +130,21 @@ class TestCase extends OrchestraTestCase
 
         $appConfig->set('cache', [
             'default' => 'file',
-            'stores'  => [
+            'stores' => [
                 'array' => [
-                    'driver'    => 'array',
+                    'driver' => 'array',
                     'serialize' => true,
                 ],
                 'file' => [
                     'driver' => 'file',
-                    'path'   => '/tmp/test/',
+                    'path' => '/tmp/test/',
                 ],
             ],
         ]);
     }
 
     /**
-     * @param Application $app
+     * @param  Application  $app
      *
      * @throws Exception
      */
@@ -159,10 +158,10 @@ class TestCase extends OrchestraTestCase
 
         $connections = [
             'sqlite' => [
-                'driver'                  => 'sqlite',
-                'url'                     => '',
-                'database'                => $file,
-                'prefix'                  => '',
+                'driver' => 'sqlite',
+                'url' => '',
+                'database' => $file,
+                'prefix' => '',
                 'foreign_key_constraints' => true,
             ],
         ];
@@ -178,7 +177,7 @@ class TestCase extends OrchestraTestCase
         }
 
         $appConfig->set('database', [
-            'default'     => 'sqlite',
+            'default' => 'sqlite',
             'connections' => $connections,
         ]);
     }
@@ -208,8 +207,7 @@ class TestCase extends OrchestraTestCase
     /**
      * Resolve PostgreSQL configuration from environment variable prefix.
      *
-     * @param string $prefix
-     *
+     * @param  string  $prefix
      * @return array|null
      */
     protected function resolvePgsqlConfigFromEnv(string $prefix): ?array
@@ -226,17 +224,17 @@ class TestCase extends OrchestraTestCase
         $password = getenv($prefix.'_PASSWORD');
 
         return [
-            'driver'   => 'pgsql',
-            'host'     => $host,
-            'port'     => ($port === false || $port === '') ? 5432 : (int) $port,
+            'driver' => 'pgsql',
+            'host' => $host,
+            'port' => ($port === false || $port === '') ? 5432 : (int) $port,
             'database' => $database,
             'username' => $username,
             'password' => ($password === false) ? null : $password,
-            'charset'  => 'utf8',
-            'prefix'   => '',
-            'schema'   => 'public',
-            'options'  => [
-                \PDO::ATTR_PERSISTENT       => true,
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
+            'options' => [
+                \PDO::ATTR_PERSISTENT => true,
                 \PDO::ATTR_EMULATE_PREPARES => true,
             ],
         ];
@@ -266,11 +264,11 @@ class TestCase extends OrchestraTestCase
     /**
      * Skip test if PostgreSQL is not configured.
      *
-     * @param string|null $testName
+     * @param  string|null  $testName
      */
     protected function skipIfPgsqlNotConfigured(?string $testName = null): void
     {
-        if (!$this->isPgsqlConfigured()) {
+        if (! $this->isPgsqlConfigured()) {
             $this->markTestSkipped('PostgreSQL connection is not configured'.($testName ? " for {$testName}" : '').'.');
         }
     }
@@ -300,8 +298,7 @@ class TestCase extends OrchestraTestCase
     /**
      * Resolve MySQL configuration from environment variable prefix.
      *
-     * @param string $prefix
-     *
+     * @param  string  $prefix
      * @return array|null
      */
     protected function resolveMysqlConfigFromEnv(string $prefix): ?array
@@ -318,19 +315,19 @@ class TestCase extends OrchestraTestCase
         $password = getenv($prefix.'_PASSWORD');
 
         return [
-            'driver'    => 'mysql',
-            'host'      => $host,
-            'port'      => ($port === false || $port === '') ? 3306 : (int) $port,
-            'database'  => $database,
-            'username'  => $username,
-            'password'  => ($password === false) ? null : $password,
-            'charset'   => 'utf8mb4',
+            'driver' => 'mysql',
+            'host' => $host,
+            'port' => ($port === false || $port === '') ? 3306 : (int) $port,
+            'database' => $database,
+            'username' => $username,
+            'password' => ($password === false) ? null : $password,
+            'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix'    => '',
-            'strict'    => true,
-            'engine'    => null,
-            'options'   => [
-                \PDO::ATTR_PERSISTENT       => true,
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+            'options' => [
+                \PDO::ATTR_PERSISTENT => true,
                 \PDO::ATTR_EMULATE_PREPARES => true,
             ],
         ];
@@ -349,23 +346,22 @@ class TestCase extends OrchestraTestCase
     /**
      * Skip test if MySQL is not configured.
      *
-     * @param string|null $testName
+     * @param  string|null  $testName
      */
     protected function skipIfMysqlNotConfigured(?string $testName = null): void
     {
-        if (!$this->isMysqlConfigured()) {
+        if (! $this->isMysqlConfigured()) {
             $this->markTestSkipped('MySQL connection is not configured'.($testName ? " for {$testName}" : '').'.');
         }
     }
 
     /**
-     * @param string|object $object $object
-     * @param string        $method
-     * @param array         $args
+     * @param  string|object  $object  $object
+     * @param  string  $method
+     * @param  array  $args
+     * @return mixed
      *
      * @throws ReflectionException
-     *
-     * @return mixed
      */
     protected static function callMethod($object, string $method, array $args = [])
     {
@@ -381,12 +377,11 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param object $object $object
-     * @param string $name
+     * @param  object  $object  $object
+     * @param  string  $name
+     * @return mixed
      *
      * @throws ReflectionException
-     *
-     * @return mixed
      */
     protected static function getProperty($object, string $name)
     {
@@ -401,9 +396,9 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param object $object
-     * @param string $name
-     * @param mixed  $value
+     * @param  object  $object
+     * @param  string  $name
+     * @param  mixed  $value
      *
      * @throws ReflectionException
      */
@@ -420,15 +415,15 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param string $storeName
-     * @param string $key
-     * @param array  $tags
-     *
+     * @param  string  $storeName
+     * @param  string  $key
+     * @param  array  $tags
      * @return CacheEvent
      */
     protected function newCacheEvent(string $storeName, string $key, array $tags): CacheEvent
     {
-        return new class($storeName, $key, $tags) extends CacheEvent {
+        return new class($storeName, $key, $tags) extends CacheEvent
+        {
             public function __construct($storeName, $key, array $tags)
             {
                 if (property_exists($this, 'storeName')) {
@@ -447,11 +442,10 @@ class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param string    $sql
-     * @param array     $bindings
-     * @param Throwable $previous
-     * @param string    $connectionName
-     *
+     * @param  string  $sql
+     * @param  array  $bindings
+     * @param  Throwable  $previous
+     * @param  string  $connectionName
      * @return QueryException
      */
     protected function newQueryException(

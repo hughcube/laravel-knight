@@ -16,9 +16,9 @@ class FlowJobDescribeTest extends TestCase
 
         $app['config']->set('queue.default', 'sync');
         $app['config']->set('queue.connections.database', [
-            'driver'      => 'database',
-            'table'       => 'jobs',
-            'queue'       => 'default',
+            'driver' => 'database',
+            'table' => 'jobs',
+            'queue' => 'default',
             'retry_after' => 90,
         ]);
     }

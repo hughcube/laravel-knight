@@ -18,7 +18,8 @@ class ValidationTest extends TestCase
     public function testMake()
     {
         $this->assertNoException(function () {
-            $instance = new class() {
+            $instance = new class()
+            {
                 use Validation;
             };
 
@@ -28,21 +29,22 @@ class ValidationTest extends TestCase
 
     public function testValidateWithRulesAndRequest()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use Validation;
 
             protected function rules(): array
             {
                 return [
                     'name' => ['required', 'string'],
-                    'age'  => ['required', 'integer'],
+                    'age' => ['required', 'integer'],
                 ];
             }
         };
 
         $request = Request::create('/validate', 'POST', [
             'name' => 'Bob',
-            'age'  => 20,
+            'age' => 20,
         ]);
 
         $data = $this->callMethod($instance, 'validate', [$request]);
@@ -53,10 +55,12 @@ class ValidationTest extends TestCase
 
     public function testValidateUsesValidWhenValidateReturnsNull()
     {
-        $factory = new class() {
+        $factory = new class()
+        {
             public function make(array $data, array $rules, array $messages = [], array $attributes = [])
             {
-                return new class() {
+                return new class()
+                {
                     public function validate()
                     {
                         return null;
@@ -70,7 +74,8 @@ class ValidationTest extends TestCase
             }
         };
 
-        $container = new class($factory) {
+        $container = new class($factory)
+        {
             private $factory;
 
             public function __construct($factory)
@@ -84,7 +89,8 @@ class ValidationTest extends TestCase
             }
         };
 
-        $instance = new class($container) {
+        $instance = new class($container)
+        {
             use Validation;
 
             private $container;

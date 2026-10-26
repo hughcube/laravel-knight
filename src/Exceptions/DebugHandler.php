@@ -41,9 +41,8 @@ class DebugHandler extends ExceptionHandler
     }
 
     /**
-     * @param           $request
-     * @param Throwable $e
-     *
+     * @param  $request
+     * @param  Throwable  $e
      * @return Response
      */
     public function render($request, Throwable $e): Response
@@ -71,7 +70,7 @@ class DebugHandler extends ExceptionHandler
     {
         // 优先使用子类自定义的转换逻辑
         $custom = $this->convertExceptionToResults($e);
-        if (!empty($custom)) {
+        if (! empty($custom)) {
             $custom['Data'] ??= new stdClass();
 
             return $custom;
@@ -112,11 +111,11 @@ class DebugHandler extends ExceptionHandler
     protected function convertExceptionToDebugArray(Throwable $e): array
     {
         $array = [
-            'code'        => $e->getCode(),
-            'exception'   => get_class($e),
-            'message'     => $e->getMessage(),
-            'file'        => $e->getFile(),
-            'line'        => $e->getLine(),
+            'code' => $e->getCode(),
+            'exception' => get_class($e),
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
             'stack-trace' => $e->getTrace(),
         ];
 

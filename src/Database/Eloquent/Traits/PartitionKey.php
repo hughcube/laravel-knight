@@ -33,8 +33,7 @@ trait PartitionKey
     /**
      * 为 setKeysForSaveQuery 添加分区键条件 (UPDATE/DELETE).
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function setKeysForSaveQueryFromPartitionKey($query)
@@ -49,8 +48,7 @@ trait PartitionKey
     /**
      * 为 setKeysForSelectQuery 添加分区键条件 (refresh/fresh).
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function setKeysForSelectQueryFromPartitionKey($query)

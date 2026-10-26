@@ -22,7 +22,7 @@ class Helper
      */
     public function assertClassExists(string $class)
     {
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             throw new RuntimeException(sprintf("Class '%s' does not exist.", $class));
         }
     }
@@ -32,7 +32,7 @@ class Helper
      */
     public function assertLoadedExtension(string $name)
     {
-        if (!extension_loaded($name)) {
+        if (! extension_loaded($name)) {
             throw new RuntimeException(sprintf('Not have the %s extension loaded.', $name));
         }
     }
@@ -40,11 +40,11 @@ class Helper
     public static function convertExceptionToArray(Throwable $e): array
     {
         $array = [
-            'code'      => $e->getCode(),
+            'code' => $e->getCode(),
             'exception' => get_class($e),
-            'message'   => $e->getMessage(),
-            'file'      => sprintf('%s(%s)', $e->getFile(), $e->getLine()),
-            'trace'     => (new Collection($e->getTrace()))->map(fn ($trace) => Arr::except($trace, ['args']))->all(),
+            'message' => $e->getMessage(),
+            'file' => sprintf('%s(%s)', $e->getFile(), $e->getLine()),
+            'trace' => (new Collection($e->getTrace()))->map(fn ($trace) => Arr::except($trace, ['args']))->all(),
         ];
 
         if ($e instanceof ValidationException) {

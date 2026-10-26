@@ -35,7 +35,7 @@ use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
 
 /**
- * @method static PendingDispatch|static        dispatch(...$arguments)
+ * @method static PendingDispatch|static dispatch(...$arguments)
  * @method static PendingDispatch|Fluent|static dispatchIf($boolean, ...$arguments)
  * @method static PendingDispatch|Fluent|static dispatchUnless($boolean, ...$arguments)
  */
@@ -90,9 +90,9 @@ abstract class Job implements ShouldQueue, StaticInstanceInterface, FromFlowJob
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function handle(): void
     {
@@ -235,8 +235,7 @@ abstract class Job implements ShouldQueue, StaticInstanceInterface, FromFlowJob
     }
 
     /**
-     * @param array|string|null $channel
-     *
+     * @param  array|string|null  $channel
      * @return $this
      */
     public function setLogChannel($channel = null): Job
@@ -247,9 +246,9 @@ abstract class Job implements ShouldQueue, StaticInstanceInterface, FromFlowJob
     }
 
     /**
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function log($level, string $message, array $context = [])
     {
@@ -269,9 +268,8 @@ abstract class Job implements ShouldQueue, StaticInstanceInterface, FromFlowJob
     }
 
     /**
-     * @param string $key
-     * @param null   $default
-     *
+     * @param  string  $key
+     * @param  null  $default
      * @return mixed
      *
      * @deprecated Will be removed in a future version.
@@ -282,8 +280,7 @@ abstract class Job implements ShouldQueue, StaticInstanceInterface, FromFlowJob
     }
 
     /**
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return bool
      *
      * @deprecated Will be removed in a future version.
@@ -294,9 +291,8 @@ abstract class Job implements ShouldQueue, StaticInstanceInterface, FromFlowJob
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
-     *
+     * @param  string  $key
+     * @param  mixed  $value
      * @return $this
      *
      * @deprecated Will be removed in a future version.
@@ -311,8 +307,7 @@ abstract class Job implements ShouldQueue, StaticInstanceInterface, FromFlowJob
     /**
      * 同步执行 Job，日志输出到 stdout（适用于 artisan 命令行场景）.
      *
-     * @param array<int|string, mixed> ...$arguments
-     *
+     * @param  array<int|string, mixed>  ...$arguments
      * @return void
      */
     public static function dispatchStdout(...$arguments): void

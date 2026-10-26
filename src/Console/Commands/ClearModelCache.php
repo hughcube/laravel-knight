@@ -32,8 +32,7 @@ class ClearModelCache extends \HughCube\Laravel\Knight\Console\Command
     /**
      * Execute the console command.
      *
-     * @param Schedule $schedule
-     *
+     * @param  Schedule  $schedule
      * @return void
      */
     public function handle(Schedule $schedule): void
@@ -59,7 +58,7 @@ class ClearModelCache extends \HughCube\Laravel\Knight\Console\Command
                 continue;
             }
 
-            if (!$reflection->isInstantiable() || !$reflection->hasMethod('deleteRowCache')) {
+            if (! $reflection->isInstantiable() || ! $reflection->hasMethod('deleteRowCache')) {
                 continue;
             }
 
