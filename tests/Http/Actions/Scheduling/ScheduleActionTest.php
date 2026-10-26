@@ -33,7 +33,7 @@ class ScheduleActionTest extends TestCase
         $response = $action();
 
         $this->assertSame(200, $response->getStatusCode());
-        $data = json_decode((string) $response->getContent(), true);
+        $data = json_decode(strval($response->getContent()), true);
 
         $this->assertSame('Success', $data['Code']);
         $this->assertTrue($executed, '调度任务应当由 ScheduleAction 标准派发执行');
@@ -58,7 +58,7 @@ class ScheduleActionTest extends TestCase
         $response = $action();
 
         $this->assertSame(200, $response->getStatusCode());
-        $data = json_decode((string) $response->getContent(), true);
+        $data = json_decode(strval($response->getContent()), true);
 
         $this->assertSame('Success', $data['Code']);
         $this->assertArrayHasKey('tasks', $data['Data']);

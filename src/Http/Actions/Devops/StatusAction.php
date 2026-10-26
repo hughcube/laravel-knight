@@ -9,6 +9,20 @@ use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
+/**
+ * 基础依赖连通性与健康状态诊断大盘 (Database, Redis/Cache).
+ *
+ * 推荐路由配置：
+ * Route::any('/status', StatusAction::class)->middleware([VerifyDevopsToken::class]);
+ *
+ * 推荐中间件组合：
+ * - 生产推荐：[VerifyDevopsToken::class] (严格校验 X-Devops-Token 防止服务拓扑与网络延迟外泄)
+ * - 结合内网：[VerifyDevopsToken::class, OnlyPrivateIpGuard::class]
+ *
+ * 支持参数：
+ * - ?x-format=json (或 Header Accept: application/json)：输出 JSON 结构化状态数据
+ * - 默认输出暗黑极客风格可视化 HTML 诊断看板
+ */
 class StatusAction extends Controller
 {
     /**
@@ -39,8 +53,8 @@ class StatusAction extends Controller
         }
 
         $data = [
-            'healthy' => $allHealthy ? 1 : 0,
-            'checks' => $checks,
+            'healthy'   => $allHealthy ? 1 : 0,
+            'checks'    => $checks,
             'timestamp' => Carbon::now()->toIso8601String(),
         ];
 
@@ -52,7 +66,7 @@ class StatusAction extends Controller
     }
 
     /**
-     * @param  array{healthy: int, checks: array<string, array{status: string, latency_ms?: float, message?: string}>, timestamp: string}  $data
+     * @param array{healthy: int, checks: array<string, array{status: string, latency_ms?: float, message?: string}>, timestamp: string} $data
      */
     private function renderHtml(array $data): string
     {

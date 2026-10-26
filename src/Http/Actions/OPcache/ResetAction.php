@@ -8,6 +8,16 @@ use HughCube\Laravel\Knight\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * 重置与刷新 PHP OPcache 字节码缓存.
+ *
+ * 推荐路由配置：
+ * Route::any('/opcache/reset', ResetAction::class)->middleware([VerifyDevopsToken::class]);
+ *
+ * 推荐中间件组合：
+ * - 生产极力推荐：[VerifyDevopsToken::class, OnlyLocalGuard::class] 或 [VerifyDevopsToken::class, OnlyPrivateIpGuard::class]
+ * - 高危变更操作：执行 opcache_reset() 会瞬间清空所有编译好的脚本字节码并引发短期 CPU 抖动，严禁公网调用
+ */
 class ResetAction extends Controller
 {
     use LoadedOPcacheExtension;

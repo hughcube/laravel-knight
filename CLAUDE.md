@@ -120,7 +120,7 @@ composer install
 
 #### Http/Middleware
 提供多种中间件:
-- 运维鉴权: VerifyDevopsToken (直接从原生环境变量 KNIGHT_DEVOPS_AUTH_MODE 与 KNIGHT_DEVOPS_TOKEN 动态鉴权，脱离镜像，支持 disabled/fc/token 模式)
+- 运维鉴权: VerifyDevopsToken (严格从原生环境变量 KNIGHT_DEVOPS_TOKEN 动态鉴权，仅支持 Query 与 Header 携带 X-Devops-Token，非 Schedule 端点全环境强制校验)；VerifyScheduleToken (ScheduleAction 专属中间件，阿里云 FC 环境免密放行，非 FC 环境强制校验 KNIGHT_DEVOPS_TOKEN)
 - 认证相关: Authenticate、CheckAuthUserInstanceOf、CheckAuthUserIsAvailable
 - 环境限制: OnlyLocalGuard、OnlyProdEnvGuard、OnlyTestEnvGuard
 - IP 限制: OnlyIpGuard、OnlyPrivateIpGuard、OnlyPublicIpGuard
