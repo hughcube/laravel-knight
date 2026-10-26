@@ -72,8 +72,8 @@ class JsonOverlapsTest extends TestCase
 
     private function skipIfBuilderJsonDoesntOverlapNotSupported(): void
     {
-        if (!method_exists(Builder::class, 'whereJsonDoesntOverlap')
-            || !method_exists(Builder::class, 'whereJsonOverlaps')
+        if (! method_exists(Builder::class, 'whereJsonDoesntOverlap')
+            || ! method_exists(Builder::class, 'whereJsonOverlaps')
         ) {
             $this->markTestSkipped('Query builder does not support whereJsonDoesntOverlap (Laravel version too old).');
         }
@@ -81,7 +81,7 @@ class JsonOverlapsTest extends TestCase
 
     private function skipIfBuilderOrWhereJsonDoesntOverlapNotSupported(): void
     {
-        if (!method_exists(Builder::class, 'orWhereJsonDoesntOverlap')) {
+        if (! method_exists(Builder::class, 'orWhereJsonDoesntOverlap')) {
             $this->markTestSkipped('Query builder does not support orWhereJsonDoesntOverlap (Laravel version too old).');
         }
     }

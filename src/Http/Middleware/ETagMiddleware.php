@@ -9,16 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 class ETagMiddleware
 {
     /**
-     * @param Request $request
-     * @param Closure $next
-     *
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return Response
      */
     public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
 
-        if (!$this->shouldProcess($request, $response)) {
+        if (! $this->shouldProcess($request, $response)) {
             return $response;
         }
 
@@ -40,14 +39,13 @@ class ETagMiddleware
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
-     *
+     * @param  Request  $request
+     * @param  Response  $response
      * @return bool
      */
     protected function shouldProcess(Request $request, Response $response): bool
     {
-        if (!in_array(strtoupper($request->method()), ['GET', 'HEAD'])) {
+        if (! in_array(strtoupper($request->method()), ['GET', 'HEAD'])) {
             return false;
         }
 
@@ -59,8 +57,7 @@ class ETagMiddleware
     }
 
     /**
-     * @param string $content
-     *
+     * @param  string  $content
      * @return string
      */
     protected function generateETag(string $content): string

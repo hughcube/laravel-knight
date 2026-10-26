@@ -333,8 +333,8 @@ class TestTimeRangeObject implements HasTimeRange
     private $endedAt;
 
     /**
-     * @param Carbon|null $startedAt
-     * @param Carbon|null $endedAt
+     * @param  Carbon|null  $startedAt
+     * @param  Carbon|null  $endedAt
      */
     public function __construct($startedAt, $endedAt)
     {

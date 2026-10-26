@@ -23,11 +23,11 @@ class SystemAction extends Controller
     protected function action(): Response
     {
         return $this->asSuccess([
-            'os'                   => php_uname(),
-            'php_version'          => PHP_VERSION,
+            'os' => php_uname(),
+            'php_version' => PHP_VERSION,
             'current_memory_usage' => $this->asFileSize(memory_get_usage()),
-            'peak_memory_usage'    => $this->asFileSize(memory_get_peak_usage()),
-            'php_extensions'       => get_loaded_extensions(),
+            'peak_memory_usage' => $this->asFileSize(memory_get_peak_usage()),
+            'php_extensions' => get_loaded_extensions(),
         ]);
     }
 

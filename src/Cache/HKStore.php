@@ -17,9 +17,8 @@ class HKStore
     protected array $storage = [];
 
     /**
-     * @param string $key
-     * @param mixed  $default
-     *
+     * @param  string  $key
+     * @param  mixed  $default
      * @return mixed
      */
     public function get(string $key, $default = null)
@@ -28,16 +27,15 @@ class HKStore
     }
 
     /**
-     * @param string                $key
-     * @param mixed                 $value
-     * @param DateInterval|int|null $ttl
-     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @param  DateInterval|int|null  $ttl
      * @return bool
      */
     public function set(string $key, $value, $ttl = null): bool
     {
         $this->storage[$key] = [
-            'value'     => $value,
+            'value' => $value,
             'expiresAt' => null === $ttl ? null : $this->availableAt($ttl),
         ];
 
@@ -45,8 +43,7 @@ class HKStore
     }
 
     /**
-     * @param string $key
-     *
+     * @param  string  $key
      * @return bool
      */
     public function delete(string $key): bool
@@ -67,9 +64,8 @@ class HKStore
     }
 
     /**
-     * @param iterable $keys
-     * @param mixed    $default
-     *
+     * @param  iterable  $keys
+     * @param  mixed  $default
      * @return iterable
      */
     public function getMultiple(iterable $keys, $default = null): iterable
@@ -84,9 +80,8 @@ class HKStore
     }
 
     /**
-     * @param iterable              $values
-     * @param DateInterval|int|null $ttl
-     *
+     * @param  iterable  $values
+     * @param  DateInterval|int|null  $ttl
      * @return bool
      */
     public function setMultiple(iterable $values, $ttl = null): bool
@@ -99,8 +94,7 @@ class HKStore
     }
 
     /**
-     * @param iterable $keys
-     *
+     * @param  iterable  $keys
      * @return bool
      */
     public function deleteMultiple(iterable $keys): bool
@@ -113,13 +107,12 @@ class HKStore
     }
 
     /**
-     * @param string $key
-     *
+     * @param  string  $key
      * @return bool
      */
     public function has(string $key): bool
     {
-        if (!isset($this->storage[$key])) {
+        if (! isset($this->storage[$key])) {
             return false;
         }
 
@@ -134,10 +127,9 @@ class HKStore
     }
 
     /**
-     * @param string                $key
-     * @param callable              $callable
-     * @param DateInterval|int|null $ttl
-     *
+     * @param  string  $key
+     * @param  callable  $callable
+     * @param  DateInterval|int|null  $ttl
      * @return mixed
      */
     public function getOrSet(string $key, callable $callable, $ttl = null)

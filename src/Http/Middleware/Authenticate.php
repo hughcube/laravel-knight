@@ -31,7 +31,7 @@ class Authenticate extends Middleware
         } catch (AuthenticationException $exception) {
         }
 
-        if ($exception instanceof AuthenticationException && !$this->isOptional($request)) {
+        if ($exception instanceof AuthenticationException && ! $this->isOptional($request)) {
             throw $exception;
         }
 

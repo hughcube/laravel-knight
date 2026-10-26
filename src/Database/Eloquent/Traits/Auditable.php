@@ -25,7 +25,7 @@ trait Auditable
     {
         static::updating(function ($model) {
             /** @var static $model */
-            if (!$model->isAuditEnabled()) {
+            if (! $model->isAuditEnabled()) {
                 return;
             }
 
@@ -35,7 +35,7 @@ trait Auditable
             $excludedColumns = $model->getAuditExcludedColumns();
 
             foreach ($dirty as $column => $newValue) {
-                if (null !== $auditableColumns && !in_array($column, $auditableColumns)) {
+                if (null !== $auditableColumns && ! in_array($column, $auditableColumns)) {
                     continue;
                 }
 
@@ -44,14 +44,14 @@ trait Auditable
                 }
 
                 $changes[] = [
-                    'column'     => $column,
-                    'old'        => $model->getOriginal($column),
-                    'new'        => $newValue,
+                    'column' => $column,
+                    'old' => $model->getOriginal($column),
+                    'new' => $newValue,
                     'changed_at' => Carbon::now()->toDateTimeString(),
                 ];
             }
 
-            if (!empty($changes)) {
+            if (! empty($changes)) {
                 $model->auditChanges = $changes;
                 $model->recordAuditLog($changes);
             }
@@ -125,8 +125,7 @@ trait Auditable
     /**
      * 审计记录存储方式.
      *
-     * @param array $changes
-     *
+     * @param  array  $changes
      * @return void
      */
     protected function recordAuditLog(array $changes): void

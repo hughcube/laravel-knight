@@ -18,9 +18,9 @@ class WatchOpcacheScriptsJob extends Job
     public function rules(): array
     {
         return [
-            'url'         => ['string', 'nullable'],
+            'url' => ['string', 'nullable'],
             'use_app_url' => ['boolean', 'default:1'],
-            'timeout'     => ['integer', 'default:30'],
+            'timeout' => ['integer', 'default:30'],
         ];
     }
 
@@ -31,7 +31,7 @@ class WatchOpcacheScriptsJob extends Job
     {
         /** 确定请求的url */
         $url = OPcache::i()->getUrl($this->p()->get('url') ?: null);
-        if (!$url instanceof PUrl) {
+        if (! $url instanceof PUrl) {
             $this->warning('Remote interface URL cannot be found!');
 
             return;

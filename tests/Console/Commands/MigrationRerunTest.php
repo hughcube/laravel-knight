@@ -34,7 +34,7 @@ class MigrationRerunTest extends TestCase
         Schema::dropIfExists('test_no_down');
 
         // 确保 migrations 表存在
-        if (!Schema::hasTable('migrations')) {
+        if (! Schema::hasTable('migrations')) {
             Schema::create('migrations', function ($table) {
                 $table->increments('id');
                 $table->string('migration');
@@ -67,9 +67,9 @@ class MigrationRerunTest extends TestCase
     public function testRunNonAnonymousMigration()
     {
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_users_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_users_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -88,9 +88,9 @@ class MigrationRerunTest extends TestCase
     public function testRunAnonymousMigration()
     {
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_posts_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_posts_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -110,9 +110,9 @@ class MigrationRerunTest extends TestCase
     {
         // 第一次执行
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_users_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_users_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -128,9 +128,9 @@ class MigrationRerunTest extends TestCase
 
         // 第二次执行（跳过 down，因为表已不存在）
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_users_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_users_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -152,9 +152,9 @@ class MigrationRerunTest extends TestCase
     {
         // 第一次执行
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_users_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_users_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -163,8 +163,8 @@ class MigrationRerunTest extends TestCase
         // 第二次执行（使用 --force 会自动执行 down）
         $this->artisan('migrate:krerun', [
             'migrations' => ['create_test_users_table'],
-            '--path'     => $this->migrationPath,
-            '--force'    => true,
+            '--path' => $this->migrationPath,
+            '--force' => true,
         ])->assertExitCode(0);
 
         // 验证表仍然存在（down + up）
@@ -177,9 +177,9 @@ class MigrationRerunTest extends TestCase
     public function testRunMultipleMigrations()
     {
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_users_table', 'create_test_posts_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_users_table', 'create_test_posts_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -202,9 +202,9 @@ class MigrationRerunTest extends TestCase
     public function testRunMigrationByKeyword()
     {
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['test_users'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['test_users'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -222,9 +222,9 @@ class MigrationRerunTest extends TestCase
         $this->assertFalse(Schema::hasTable('migrations'));
 
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_users_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_users_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -240,8 +240,8 @@ class MigrationRerunTest extends TestCase
     {
         $this->artisan('migrate:krerun', [
             'migrations' => ['non_existing_migration'],
-            '--path'     => $this->migrationPath,
-            '--force'    => true,
+            '--path' => $this->migrationPath,
+            '--force' => true,
         ])->assertExitCode(1);
     }
 
@@ -252,8 +252,8 @@ class MigrationRerunTest extends TestCase
     {
         $this->artisan('migrate:krerun', [
             'migrations' => ['test'],
-            '--path'     => 'non/existing/path',
-            '--force'    => true,
+            '--path' => 'non/existing/path',
+            '--force' => true,
         ])->assertExitCode(1);
     }
 
@@ -399,7 +399,8 @@ class MigrationRerunTest extends TestCase
         $method->setAccessible(true);
 
         // 普通 migration 默认使用事务
-        $migration = new class() extends \Illuminate\Database\Migrations\Migration {
+        $migration = new class() extends \Illuminate\Database\Migrations\Migration
+        {
             public function up()
             {
             }
@@ -407,7 +408,8 @@ class MigrationRerunTest extends TestCase
         $this->assertTrue($method->invoke($command, $migration));
 
         // 启用事务的 migration
-        $migrationWithTransaction = new class() extends \Illuminate\Database\Migrations\Migration {
+        $migrationWithTransaction = new class() extends \Illuminate\Database\Migrations\Migration
+        {
             public $withinTransaction = true;
 
             public function up()
@@ -417,7 +419,8 @@ class MigrationRerunTest extends TestCase
         $this->assertTrue($method->invoke($command, $migrationWithTransaction));
 
         // 禁用事务的 migration
-        $migrationNoTransaction = new class() extends \Illuminate\Database\Migrations\Migration {
+        $migrationNoTransaction = new class() extends \Illuminate\Database\Migrations\Migration
+        {
             public $withinTransaction = false;
 
             public function up()
@@ -466,8 +469,8 @@ class MigrationRerunTest extends TestCase
         // 但因为没有记录，所以不会执行 down
         $this->artisan('migrate:krerun', [
             'migrations' => ['create_test_users_table'],
-            '--path'     => $this->migrationPath,
-            '--force'    => true,
+            '--path' => $this->migrationPath,
+            '--force' => true,
         ])->assertExitCode(0);
 
         $this->assertTrue(Schema::hasTable('test_users'));
@@ -480,8 +483,8 @@ class MigrationRerunTest extends TestCase
     {
         $this->artisan('migrate:krerun', [
             'migrations' => ['create_test_no_down_table'],
-            '--path'     => $this->migrationPath,
-            '--force'    => true,
+            '--path' => $this->migrationPath,
+            '--force' => true,
         ])->assertExitCode(0);
 
         $this->assertTrue(Schema::hasTable('test_no_down'));
@@ -492,8 +495,8 @@ class MigrationRerunTest extends TestCase
         // 重复执行也应该成功（因为没有 down 方法，不会尝试回滚）
         $this->artisan('migrate:krerun', [
             'migrations' => ['create_test_no_down_table'],
-            '--path'     => $this->migrationPath,
-            '--force'    => true,
+            '--path' => $this->migrationPath,
+            '--force' => true,
         ])->assertExitCode(0);
 
         $this->assertTrue(Schema::hasTable('test_no_down'));
@@ -510,8 +513,8 @@ class MigrationRerunTest extends TestCase
         try {
             $this->artisan('migrate:krerun', [
                 'migrations' => ['test'],
-                '--path'     => $emptyDir,
-                '--force'    => true,
+                '--path' => $emptyDir,
+                '--force' => true,
             ])->assertExitCode(1);
         } finally {
             rmdir($emptyDir);
@@ -545,9 +548,9 @@ class MigrationRerunTest extends TestCase
     {
         // 第一次执行
         $this->artisan('migrate:krerun', [
-            'migrations'  => ['create_test_users_table'],
-            '--path'      => $this->migrationPath,
-            '--force'     => true,
+            'migrations' => ['create_test_users_table'],
+            '--path' => $this->migrationPath,
+            '--force' => true,
             '--skip-down' => true,
         ])->assertExitCode(0);
 
@@ -557,8 +560,8 @@ class MigrationRerunTest extends TestCase
         // 第二次执行，down 会失败（表不存在），但 --force 模式应该继续
         $this->artisan('migrate:krerun', [
             'migrations' => ['create_test_users_table'],
-            '--path'     => $this->migrationPath,
-            '--force'    => true,
+            '--path' => $this->migrationPath,
+            '--force' => true,
         ])->assertExitCode(0);
 
         // 表应该被重新创建
@@ -572,9 +575,9 @@ class MigrationRerunTest extends TestCase
     {
         for ($i = 1; $i <= 3; $i++) {
             $this->artisan('migrate:krerun', [
-                'migrations'  => ['create_test_users_table'],
-                '--path'      => $this->migrationPath,
-                '--force'     => true,
+                'migrations' => ['create_test_users_table'],
+                '--path' => $this->migrationPath,
+                '--force' => true,
                 '--skip-down' => true,
             ])->assertExitCode(0);
 
@@ -598,9 +601,9 @@ class MigrationRerunTest extends TestCase
     {
         for ($i = 1; $i <= 2; $i++) {
             $this->artisan('migrate:krerun', [
-                'migrations'  => ['create_test_posts_table'],
-                '--path'      => $this->migrationPath,
-                '--force'     => true,
+                'migrations' => ['create_test_posts_table'],
+                '--path' => $this->migrationPath,
+                '--force' => true,
                 '--skip-down' => true,
             ])->assertExitCode(0);
 
@@ -613,7 +616,8 @@ class MigrationRerunTest extends TestCase
 
     public function testHandleReturnsErrorWhenInteractiveInputIsEmpty(): void
     {
-        $command = new class() extends MigrateRerun {
+        $command = new class() extends MigrateRerun
+        {
             public function argument($key = null)
             {
                 return [];
@@ -636,7 +640,7 @@ class MigrationRerunTest extends TestCase
     {
         $this->artisan('migrate:krerun', [
             'migrations' => ['create_test_users_table'],
-            '--path'     => $this->migrationPath,
+            '--path' => $this->migrationPath,
         ])
             ->expectsConfirmation('Do you want to re-run these migrations?', 'no')
             ->assertExitCode(0);
@@ -667,7 +671,7 @@ PHP
         try {
             $this->artisan('migrate:krerun', [
                 'migrations' => ['temp_fail'],
-                '--path'     => $tempDir,
+                '--path' => $tempDir,
             ])
                 ->expectsConfirmation('Do you want to re-run these migrations?', 'yes')
                 ->expectsConfirmation('Continue with remaining migrations?', 'no')
@@ -680,7 +684,8 @@ PHP
 
     public function testAskForMigrationsReturnsEmptyArrayWhenNoInput(): void
     {
-        $command = new class() extends MigrateRerun {
+        $command = new class() extends MigrateRerun
+        {
             public function ask($question, $default = null)
             {
                 return '';
@@ -693,7 +698,8 @@ PHP
 
     public function testAskForMigrationsParsesCommaSeparatedValues(): void
     {
-        $command = new class() extends MigrateRerun {
+        $command = new class() extends MigrateRerun
+        {
             public function ask($question, $default = null)
             {
                 return ' user , post,  comment ';
@@ -706,7 +712,8 @@ PHP
 
     public function testHandleDownMethodRunsRollbackWhenConfirmed(): void
     {
-        $migration = new class() {
+        $migration = new class()
+        {
             public bool $called = false;
 
             public function down(): void
@@ -715,12 +722,13 @@ PHP
             }
         };
 
-        $command = new class() extends MigrateRerun {
+        $command = new class() extends MigrateRerun
+        {
             public function option($key = null)
             {
                 $options = [
                     'skip-down' => false,
-                    'force'     => false,
+                    'force' => false,
                 ];
 
                 return $options[$key] ?? null;
@@ -750,21 +758,23 @@ PHP
 
     public function testHandleDownMethodFailureCanContinueWhenConfirmed(): void
     {
-        $migration = new class() {
+        $migration = new class()
+        {
             public function down(): void
             {
                 throw new \RuntimeException('down failed');
             }
         };
 
-        $command = new class() extends MigrateRerun {
+        $command = new class() extends MigrateRerun
+        {
             private int $confirmCount = 0;
 
             public function option($key = null)
             {
                 $options = [
                     'skip-down' => false,
-                    'force'     => false,
+                    'force' => false,
                 ];
 
                 return $options[$key] ?? null;
@@ -796,21 +806,23 @@ PHP
 
     public function testHandleDownMethodFailureThrowsWhenUserRejectsContinue(): void
     {
-        $migration = new class() {
+        $migration = new class()
+        {
             public function down(): void
             {
                 throw new \RuntimeException('down failed');
             }
         };
 
-        $command = new class() extends MigrateRerun {
+        $command = new class() extends MigrateRerun
+        {
             private int $confirmCount = 0;
 
             public function option($key = null)
             {
                 $options = [
                     'skip-down' => false,
-                    'force'     => false,
+                    'force' => false,
                 ];
 
                 return $options[$key] ?? null;

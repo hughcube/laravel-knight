@@ -6,7 +6,7 @@ require_once __DIR__.'/Support/OpcacheOverrides.php';
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 
-if (!function_exists(__NAMESPACE__.'\extension_loaded')) {
+if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
     function extension_loaded($name): bool
     {
         return OpcacheTestOverrides::$extensionLoaded;
@@ -30,7 +30,8 @@ class LoadedOPcacheExtensionTest extends TestCase
 
     public function testLoadedOPcacheExtensionThrowsWhenMissing()
     {
-        $checker = new class() {
+        $checker = new class()
+        {
             use LoadedOPcacheExtension;
 
             public function callCheck(): void
@@ -47,7 +48,8 @@ class LoadedOPcacheExtensionTest extends TestCase
 
     public function testLoadedOPcacheExtensionPassesWhenLoaded()
     {
-        $checker = new class() {
+        $checker = new class()
+        {
             use LoadedOPcacheExtension;
 
             public function callCheck(): void

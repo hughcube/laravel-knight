@@ -28,7 +28,7 @@ class WalEventDispatchIntegrationTest extends TestCase
     {
         parent::setUp();
 
-        if (!$this->isPgsqlConfigured()) {
+        if (! $this->isPgsqlConfigured()) {
             return;
         }
 
@@ -148,7 +148,9 @@ class WalEventDispatchIntegrationTest extends TestCase
         $this->assertTrue($hasChanges, 'pollChanges should detect INSERT changes');
         $this->assertNotEmpty($dispatchedRecords, 'wal:* event should be dispatched');
 
-        $ids = array_map(function ($r) { return $r->getId(); }, $dispatchedRecords);
+        $ids = array_map(function ($r) {
+            return $r->getId();
+        }, $dispatchedRecords);
         $this->assertContains(1, $ids);
         $this->assertContains(2, $ids);
     }
@@ -187,7 +189,9 @@ class WalEventDispatchIntegrationTest extends TestCase
 
         $this->assertTrue($hasChanges);
         $this->assertNotEmpty($dispatchedRecords);
-        $ids = array_map(function ($r) { return $r->getId(); }, $dispatchedRecords);
+        $ids = array_map(function ($r) {
+            return $r->getId();
+        }, $dispatchedRecords);
         $this->assertContains(1, $ids);
     }
 
@@ -228,7 +232,9 @@ class WalEventDispatchIntegrationTest extends TestCase
 
         $this->assertTrue($hasChanges);
         $this->assertNotEmpty($dispatchedRecords);
-        $ids = array_map(function ($r) { return $r->getId(); }, $dispatchedRecords);
+        $ids = array_map(function ($r) {
+            return $r->getId();
+        }, $dispatchedRecords);
         $this->assertContains(1, $ids);
     }
 
@@ -315,7 +321,9 @@ class WalEventDispatchIntegrationTest extends TestCase
         $this->assertTrue($hasChanges);
         // Both handlers should produce records (same WAL change, different modelClass)
         $this->assertCount(2, $dispatchedRecords);
-        $modelClasses = array_map(function ($r) { return get_class($r->toModel()); }, $dispatchedRecords);
+        $modelClasses = array_map(function ($r) {
+            return get_class($r->toModel());
+        }, $dispatchedRecords);
         $this->assertCount(2, array_unique($modelClasses));
     }
 
@@ -350,7 +358,9 @@ class WalEventDispatchIntegrationTest extends TestCase
 
         // Both insert and update records should be preserved (no dedup)
         $this->assertGreaterThanOrEqual(2, count($dispatchedRecords));
-        $ids = array_map(function ($r) { return $r->getId(); }, $dispatchedRecords);
+        $ids = array_map(function ($r) {
+            return $r->getId();
+        }, $dispatchedRecords);
         $this->assertContains(1, $ids);
     }
 
@@ -598,7 +608,9 @@ class WalEventDispatchIntegrationTest extends TestCase
 
         $this->assertTrue($hasChanges);
         $this->assertNotEmpty($dispatchedRecords);
-        $ids = array_map(function ($r) { return $r->getId(); }, $dispatchedRecords);
+        $ids = array_map(function ($r) {
+            return $r->getId();
+        }, $dispatchedRecords);
         $this->assertContains($insertedUuid, $ids);
 
         // Cleanup
@@ -649,7 +661,9 @@ class WalEventDispatchIntegrationTest extends TestCase
         $this->assertTrue($hasChanges);
         $this->assertNotEmpty($dispatchedRecords);
 
-        $ids = array_map(function ($r) { return $r->getId(); }, $dispatchedRecords);
+        $ids = array_map(function ($r) {
+            return $r->getId();
+        }, $dispatchedRecords);
         $this->assertContains(1, $ids);  // updated + deleted
         $this->assertContains(2, $ids);  // inserted
     }
@@ -686,7 +700,9 @@ class WalEventDispatchIntegrationTest extends TestCase
 
         $this->assertTrue($hasChanges);
         $this->assertNotEmpty($dispatchedRecords);
-        $ids = array_map(function ($r) { return $r->getId(); }, $dispatchedRecords);
+        $ids = array_map(function ($r) {
+            return $r->getId();
+        }, $dispatchedRecords);
         $this->assertCount(100, $ids);
 
         // Verify all 100 IDs are present
@@ -745,7 +761,9 @@ class WalEventDispatchIntegrationTest extends TestCase
         // Should have 2 records, one for each table
         $this->assertCount(2, $dispatchedRecords);
 
-        $modelClasses = array_map(function ($r) { return get_class($r->toModel()); }, $dispatchedRecords);
+        $modelClasses = array_map(function ($r) {
+            return get_class($r->toModel());
+        }, $dispatchedRecords);
         $this->assertContains(WalIntegrationItem::class, $modelClasses);
         $this->assertContains(WalIntegrationOtherItem::class, $modelClasses);
 
@@ -759,7 +777,7 @@ class WalEventDispatchIntegrationTest extends TestCase
 }
 
 /**
- * @property int    $id
+ * @property int $id
  * @property string $name
  */
 class WalIntegrationItem extends Model implements HasWalHandler
@@ -833,7 +851,7 @@ class WalIntegrationUuidItem extends Model implements HasWalHandler
 /**
  * Handler for a separate table (testing multi-table dispatch).
  *
- * @property int    $id
+ * @property int $id
  * @property string $value
  */
 class WalIntegrationOtherItem extends Model implements HasWalHandler

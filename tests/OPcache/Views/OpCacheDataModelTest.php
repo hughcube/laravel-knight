@@ -53,7 +53,7 @@ class OpCacheDataModelTest extends TestCase
 
     public function testPrivateHelpersWithoutThousandSeparator()
     {
-        if (!defined('THOUSAND_SEPARATOR')) {
+        if (! defined('THOUSAND_SEPARATOR')) {
             define('THOUSAND_SEPARATOR', false);
         }
 
@@ -131,7 +131,7 @@ class OpCacheDataModelTest extends TestCase
     private function prepareSampleDataDirectory(): string
     {
         $dir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'knight-opcache-view-tests';
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
 
@@ -203,7 +203,7 @@ PHP;
                 'version' => '1.2.3',
             ],
             'directives' => [
-                'opcache.enable_cli'         => false,
+                'opcache.enable_cli' => false,
                 'opcache.memory_consumption' => 2048,
             ],
         ];
@@ -219,38 +219,38 @@ PHP;
 
         $status = [
             'memory_usage' => [
-                'used_memory'               => 10485760,
-                'free_memory'               => 2048,
-                'wasted_memory'             => 512,
+                'used_memory' => 10485760,
+                'free_memory' => 2048,
+                'wasted_memory' => 512,
                 'current_wasted_percentage' => 1.23,
-                'misc'                      => $resource,
+                'misc' => $resource,
             ],
             'opcache_statistics' => [
-                'num_cached_keys'      => 10,
-                'max_cached_keys'      => 100,
-                'misses'               => 2,
-                'hits'                 => 8,
-                'oom_restarts'         => 1,
-                'manual_restarts'      => 0,
-                'hash_restarts'        => 0,
-                'opcache_hit_rate'     => 99.5,
+                'num_cached_keys' => 10,
+                'max_cached_keys' => 100,
+                'misses' => 2,
+                'hits' => 8,
+                'oom_restarts' => 1,
+                'manual_restarts' => 0,
+                'hash_restarts' => 0,
+                'opcache_hit_rate' => 99.5,
                 'blacklist_miss_ratio' => 0.125,
-                'start_time'           => 1000000000,
-                'last_restart_time'    => 0,
+                'start_time' => 1000000000,
+                'last_restart_time' => 0,
             ],
-            'bool_flag'  => true,
+            'bool_flag' => true,
             'false_flag' => false,
-            'scripts'    => [
+            'scripts' => [
                 $dirA.DIRECTORY_SEPARATOR.'a.php' => [
-                    'hits'               => 1000,
+                    'hits' => 1000,
                     'memory_consumption' => 2048,
                 ],
                 $dirA.DIRECTORY_SEPARATOR.'b.php' => [
-                    'hits'               => 2,
+                    'hits' => 2,
                     'memory_consumption' => 1048576,
                 ],
                 $dirB.DIRECTORY_SEPARATOR.'c.php' => [
-                    'hits'               => 5,
+                    'hits' => 5,
                     'memory_consumption' => 512,
                 ],
             ],

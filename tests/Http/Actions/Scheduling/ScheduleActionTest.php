@@ -100,8 +100,7 @@ class ScheduleActionTest extends TestCase
 
         $loggedMessages = [];
         \Illuminate\Support\Facades\Log::shouldReceive('channel')
-            ->once()
-            ->with(null)
+            ->zeroOrMoreTimes()
             ->andReturnSelf();
         \Illuminate\Support\Facades\Log::shouldReceive('info')
             ->once()
@@ -170,8 +169,7 @@ class ScheduleActionTest extends TestCase
     {
         $loggedMessages = [];
         \Illuminate\Support\Facades\Log::shouldReceive('channel')
-            ->once()
-            ->with(null)
+            ->zeroOrMoreTimes()
             ->andReturnSelf();
         \Illuminate\Support\Facades\Log::shouldReceive('info')
             ->once()

@@ -33,7 +33,7 @@ class MultipleModelBatchResult implements Countable, IteratorAggregate, Arrayabl
     protected array $results;
 
     /**
-     * @param array<class-string, array> $results
+     * @param  array<class-string, array>  $results
      */
     public function __construct(array $results)
     {
@@ -53,8 +53,7 @@ class MultipleModelBatchResult implements Countable, IteratorAggregate, Arrayabl
     /**
      * 检查是否包含指定模型的结果.
      *
-     * @param class-string $class 模型类名
-     *
+     * @param  class-string  $class  模型类名
      * @return bool
      */
     public function hasOf(string $class)
@@ -83,8 +82,7 @@ class MultipleModelBatchResult implements Countable, IteratorAggregate, Arrayabl
     /**
      * 获取指定模型的查询结果.
      *
-     * @param class-string $class 模型类名
-     *
+     * @param  class-string  $class  模型类名
      * @return EloquentCollection
      */
     public function getOf(string $class)
@@ -123,8 +121,7 @@ class MultipleModelBatchResult implements Countable, IteratorAggregate, Arrayabl
     /**
      * 获取指定模型的记录数.
      *
-     * @param class-string $class 模型类名
-     *
+     * @param  class-string  $class  模型类名
      * @return int
      */
     public function countOf(string $class)
@@ -145,8 +142,7 @@ class MultipleModelBatchResult implements Countable, IteratorAggregate, Arrayabl
     /**
      * 遍历每一个模型实例.
      *
-     * @param callable(IlluminateModel, int): void $callback
-     *
+     * @param  callable(IlluminateModel, int): void  $callback
      * @return $this
      */
     public function each(callable $callback)
@@ -165,9 +161,8 @@ class MultipleModelBatchResult implements Countable, IteratorAggregate, Arrayabl
     /**
      * 遍历指定模型类的每一个模型实例.
      *
-     * @param class-string                         $class    模型类名
-     * @param callable(IlluminateModel, int): void $callback
-     *
+     * @param  class-string  $class  模型类名
+     * @param  callable(IlluminateModel, int): void  $callback
      * @return $this
      */
     public function eachOf(string $class, callable $callback)

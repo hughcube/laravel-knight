@@ -62,8 +62,8 @@ class BatchPingJobTest extends TestCase
         $job = new BatchPingJob(['jobs' => [['url' => 'https://example.test']]]);
         $requests = [
             [
-                'method'  => 'POST',
-                'url'     => 'https://example.test/ping',
+                'method' => 'POST',
+                'url' => 'https://example.test/ping',
                 'headers' => ['X-Test' => '1'],
             ],
         ];
@@ -79,7 +79,8 @@ class BatchPingJobTest extends TestCase
 
     public function testLogResponseUsesRequestId()
     {
-        $job = new class() extends BatchPingJob {
+        $job = new class() extends BatchPingJob
+        {
             public array $messages = [];
 
             public function info(string $message, array $context = []): void

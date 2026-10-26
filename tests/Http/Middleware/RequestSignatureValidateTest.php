@@ -15,7 +15,8 @@ class RequestSignatureValidateTest extends TestCase
      */
     private function makeDisabledMiddleware(): RequestSignatureValidate
     {
-        return new class() extends RequestSignatureValidate {
+        return new class() extends RequestSignatureValidate
+        {
             protected function isDisabled(): bool
             {
                 return true;
@@ -28,7 +29,8 @@ class RequestSignatureValidateTest extends TestCase
      */
     private function makeMiddleware(array $optional = []): RequestSignatureValidate
     {
-        return new class($optional) extends RequestSignatureValidate {
+        return new class($optional) extends RequestSignatureValidate
+        {
             public $optional;
 
             public function __construct(array $optional)

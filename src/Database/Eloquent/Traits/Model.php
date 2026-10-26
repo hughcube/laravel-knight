@@ -58,15 +58,14 @@ trait Model
     /**
      * 统一入口：自动调用所有 trait 的 setKeysForSaveQueryFrom{TraitName}() 方法.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function setKeysForSaveQuery($query)
     {
         $query = parent::setKeysForSaveQuery($query);
 
-        if (!isset(static::$setKeysForSaveQueryMethods[static::class])) {
+        if (! isset(static::$setKeysForSaveQueryMethods[static::class])) {
             static::$setKeysForSaveQueryMethods[static::class] = Collection::make(class_uses_recursive($this))
                 ->map(fn ($trait) => 'setKeysForSaveQueryFrom'.class_basename($trait))
                 ->filter(fn ($method) => method_exists($this, $method))
@@ -85,15 +84,14 @@ trait Model
      *
      * 影响 refresh()、fresh() 等 SELECT 操作，确保分区表查询带上分区键。
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function setKeysForSelectQuery($query)
     {
         $query = parent::setKeysForSelectQuery($query);
 
-        if (!isset(static::$setKeysForSelectQueryMethods[static::class])) {
+        if (! isset(static::$setKeysForSelectQueryMethods[static::class])) {
             static::$setKeysForSelectQueryMethods[static::class] = Collection::make(class_uses_recursive($this))
                 ->map(fn ($trait) => 'setKeysForSelectQueryFrom'.class_basename($trait))
                 ->filter(fn ($method) => method_exists($this, $method))
@@ -108,9 +106,8 @@ trait Model
     }
 
     /**
-     * @param DateTimeInterface|int|float|string|null $date
-     * @param string|null                             $format
-     *
+     * @param  DateTimeInterface|int|float|string|null  $date
+     * @param  string|null  $format
      * @return Carbon|null
      */
     protected function toDateTime($date = null, ?string $format = null): ?Carbon
@@ -130,9 +127,8 @@ trait Model
     }
 
     /**
-     * @param DateTimeInterface|int|float|null $dateTime
-     * @param string                           $format
-     *
+     * @param  DateTimeInterface|int|float|null  $dateTime
+     * @param  string  $format
      * @return string|null
      */
     protected function formatDateTime($dateTime, string $format = 'Y-m-d H:i:s'): ?string
@@ -143,8 +139,7 @@ trait Model
     }
 
     /**
-     * @param mixed $date
-     *
+     * @param  mixed  $date
      * @return null|Carbon
      */
     public function getCreatedAtAttribute($date)
@@ -153,8 +148,7 @@ trait Model
     }
 
     /**
-     * @param mixed $date
-     *
+     * @param  mixed  $date
      * @return null|Carbon
      */
     public function getUpdatedAtAttribute($date)
@@ -163,8 +157,7 @@ trait Model
     }
 
     /**
-     * @param mixed $date
-     *
+     * @param  mixed  $date
      * @return null|Carbon
      */
     public function getDeletedAtAttribute($date)
@@ -244,8 +237,7 @@ trait Model
     }
 
     /**
-     * @param $query
-     *
+     * @param  $query
      * @return Builder
      */
     public function newEloquentBuilder($query): Builder
@@ -283,8 +275,7 @@ trait Model
     }
 
     /**
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeAvailable($query)
@@ -293,8 +284,7 @@ trait Model
     }
 
     /**
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeSort($query)
@@ -303,8 +293,7 @@ trait Model
     }
 
     /**
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeSortAvailable($query)
@@ -433,7 +422,7 @@ trait Model
             $name = is_numeric($name) ? $this->getKeyName() : $name;
 
             /** Builds the property value of the cache key */
-            if (!isset(static::$modelCacheKeyMakeCache['getMakeCacheKeyColumnValue'][$class][$name])) {
+            if (! isset(static::$modelCacheKeyMakeCache['getMakeCacheKeyColumnValue'][$class][$name])) {
                 static::$modelCacheKeyMakeCache['getMakeCacheKeyColumnValue'][$class][$name] = sprintf('getMakeCacheKey%sValue', Str::studly($name));
             }
             $method = static::$modelCacheKeyMakeCache['getMakeCacheKeyColumnValue'][$class][$name];
@@ -444,7 +433,7 @@ trait Model
         ksort($cacheKey);
         $cacheKey = json_encode($cacheKey);
 
-        if (!isset(static::$modelCacheKeyMakeCache['classCacheKeyPrefix'][$class])) {
+        if (! isset(static::$modelCacheKeyMakeCache['classCacheKeyPrefix'][$class])) {
             static::$modelCacheKeyMakeCache['classCacheKeyPrefix'][$class] = sprintf(
                 '%s-%s',
                 Str::snake(Str::afterLast($class, '\\')),
@@ -463,8 +452,7 @@ trait Model
     }
 
     /**
-     * @param mixed $id
-     *
+     * @param  mixed  $id
      * @return null|static
      */
     public static function findById($id)
@@ -473,8 +461,7 @@ trait Model
     }
 
     /**
-     * @param array|Arrayable|Traversable $ids
-     *
+     * @param  array|Arrayable|Traversable  $ids
      * @return EloquentCollection<int, static>
      */
     public static function findByIds($ids): EloquentCollection
@@ -485,13 +472,12 @@ trait Model
     /**
      * Is a primary key value.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return bool
      */
     public static function isMatchPk($value): bool
     {
-        return !empty($value);
+        return ! empty($value);
     }
 
     /**
@@ -501,7 +487,7 @@ trait Model
      */
     public function isAvailable(): bool
     {
-        return !$this->isDeleted();
+        return ! $this->isDeleted();
     }
 
     /**
@@ -582,13 +568,12 @@ trait Model
      * 与 Laravel 的 is() 不同, is() 只判断是否同一条记录(同表同主键),
      * 本方法还会比较所有原始属性值是否完全一致.
      *
-     * @param mixed $model
-     *
+     * @param  mixed  $model
      * @return bool
      */
     public function hasSameAttributes($model): bool
     {
-        if (!$model instanceof EloquentModel || !$this->is($model)) {
+        if (! $model instanceof EloquentModel || ! $this->is($model)) {
             return false;
         }
 
@@ -606,7 +591,7 @@ trait Model
             ->unique()->values();
 
         foreach ($names as $name) {
-            if (!array_key_exists($name, $attributes) || !array_key_exists($name, $thisAttributes)) {
+            if (! array_key_exists($name, $attributes) || ! array_key_exists($name, $thisAttributes)) {
                 return false;
             }
 
@@ -618,7 +603,7 @@ trait Model
             $b = $b instanceof DateTimeInterface ? $b->format('Y-m-d H:i:s') : $b;
 
             /** int vs numeric-string 用字符串比较 (如 PDO 返回 "1" vs int 1), 其他用 === 严格比较 */
-            if ((is_int($a) || is_int($b)) && (!is_int($a) || !is_int($b)) && (is_numeric($a) && is_numeric($b))) {
+            if ((is_int($a) || is_int($b)) && (! is_int($a) || ! is_int($b)) && (is_numeric($a) && is_numeric($b))) {
                 if (strval($a) !== strval($b)) {
                     return false;
                 }
@@ -631,8 +616,7 @@ trait Model
     }
 
     /**
-     * @param mixed $model
-     *
+     * @param  mixed  $model
      * @return bool
      *
      * @deprecated 请使用 hasSameAttributes()
@@ -653,8 +637,7 @@ trait Model
     }
 
     /**
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return mixed
      */
     protected function convertEmptyStringsToNull($value)

@@ -30,7 +30,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
     protected function cleanupTestTables(): void
     {
-        if (!$this->isPgsqlConfigured()) {
+        if (! $this->isPgsqlConfigured()) {
             return;
         }
 
@@ -94,7 +94,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -123,7 +123,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -153,7 +153,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $this->assertEquals(1, $exitCode);
@@ -183,7 +183,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -217,10 +217,10 @@ class DatabaseCheckSequencesCommandTest extends TestCase
         // 执行修复，growth=100
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--growth'     => 100,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--growth' => 100,
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -255,9 +255,9 @@ class DatabaseCheckSequencesCommandTest extends TestCase
         // 使用默认 growth=10
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--force' => true,
         ]);
 
         $seqValue = $connection->selectOne(
@@ -288,10 +288,10 @@ class DatabaseCheckSequencesCommandTest extends TestCase
         // growth=0
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--growth'     => 0,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--growth' => 0,
+            '--force' => true,
         ]);
 
         $seqValue = $connection->selectOne(
@@ -323,10 +323,10 @@ class DatabaseCheckSequencesCommandTest extends TestCase
         // 修复: seq = max_id(3) + growth(10) = 13
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--growth'     => 10,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--growth' => 10,
+            '--force' => true,
         ]);
 
         // 修复后应该能正常插入, nextval=14
@@ -365,10 +365,10 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_*',
-            '--fix'        => true,
-            '--growth'     => 50,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_*',
+            '--fix' => true,
+            '--growth' => 50,
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -401,9 +401,9 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -437,8 +437,8 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--alert'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--alert' => true,
         ]);
 
         $output = Artisan::output();
@@ -466,8 +466,8 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--alert'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--alert' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -495,7 +495,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
             // 不传 --alert
         ]);
 
@@ -524,7 +524,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $output = Artisan::output();
@@ -551,8 +551,8 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_*',
-            '--exclude'    => '*_logs',
+            '--pattern' => 'chkseq_test_*',
+            '--exclude' => '*_logs',
         ]);
 
         $output = Artisan::output();
@@ -584,7 +584,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => ['chkseq_test_users', 'chkseq_test_orders'],
+            '--pattern' => ['chkseq_test_users', 'chkseq_test_orders'],
         ]);
 
         $output = Artisan::output();
@@ -599,7 +599,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_nonexistent_*',
+            '--pattern' => 'chkseq_nonexistent_*',
         ]);
 
         $output = Artisan::output();
@@ -620,7 +620,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_no_pk',
+            '--pattern' => 'chkseq_test_no_pk',
         ]);
 
         $output = Artisan::output();
@@ -638,7 +638,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_no_pk',
+            '--pattern' => 'chkseq_test_no_pk',
         ]);
 
         $output = Artisan::output();
@@ -663,7 +663,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
         // 空表: max_id=0, sequence last_value=1 (初始值)
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_empty',
+            '--pattern' => 'chkseq_test_empty',
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -809,7 +809,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -834,7 +834,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $this->assertEquals(1, $exitCode);
@@ -860,9 +860,9 @@ class DatabaseCheckSequencesCommandTest extends TestCase
         // 即使修复了，exit code 仍然为 1 表示检测到了异常
         $exitCode = Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--force' => true,
         ]);
 
         $this->assertEquals(1, $exitCode);
@@ -889,7 +889,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_*',
+            '--pattern' => 'chkseq_test_*',
         ]);
 
         $output = Artisan::output();
@@ -917,7 +917,7 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
+            '--pattern' => 'chkseq_test_users',
         ]);
 
         $output = Artisan::output();
@@ -949,11 +949,11 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--alert'      => true,
-            '--growth'     => 20,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--alert' => true,
+            '--growth' => 20,
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -988,10 +988,10 @@ class DatabaseCheckSequencesCommandTest extends TestCase
 
         Artisan::call('database:check-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'chkseq_test_users',
-            '--fix'        => true,
-            '--growth'     => 1000000,
-            '--force'      => true,
+            '--pattern' => 'chkseq_test_users',
+            '--fix' => true,
+            '--growth' => 1000000,
+            '--force' => true,
         ]);
 
         $seqValue = $connection->selectOne('SELECT last_value FROM chkseq_test_users_id_seq')->last_value;

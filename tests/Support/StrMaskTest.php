@@ -63,12 +63,12 @@ class StrMaskTest extends TestCase
     public function testMaskMethodsMultiByteSafety()
     {
         $methods = [
-            'maskMobile'      => ['王从辉'],
+            'maskMobile' => ['王从辉'],
             'maskChinaIdCode' => ['王从辉'],
-            'maskEmail'       => ['王从辉@example.com'],
-            'maskBankCard'    => ['王从辉'],
-            'maskName'        => ['王从辉'],
-            'maskAddress'     => ['王从辉'],
+            'maskEmail' => ['王从辉@example.com'],
+            'maskBankCard' => ['王从辉'],
+            'maskName' => ['王从辉'],
+            'maskAddress' => ['王从辉'],
             'maskPlateNumber' => ['王从辉'],
         ];
 

@@ -68,7 +68,7 @@ class WatchOpcacheScriptsJobTest extends TestCase
         $this->setOpcacheInstance($fake);
 
         $job = new WatchOpcacheScriptsJobStub([
-            'timeout'     => 1,
+            'timeout' => 1,
             'use_app_url' => 0,
         ]);
         $this->callMethod($job, 'loadParameters');

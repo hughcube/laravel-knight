@@ -161,8 +161,12 @@ class ScheduleRunner
         }
 
         // 重置常驻内存下 Event 实例跨轮次可能残留的瞬态执行状态
-        $event->skippedBecauseOverlapping = false;
-        $event->exitCode = null;
+        if (property_exists($event, 'skippedBecauseOverlapping')) {
+            $event->skippedBecauseOverlapping = false;
+        }
+        if (property_exists($event, 'exitCode')) {
+            $event->exitCode = null;
+        }
 
         $taskSummary = $this->formatEventSummary($event);
         $definedMode = $event->runInBackground ? 'background' : 'sync';

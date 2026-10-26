@@ -16,10 +16,10 @@ class CleanFilesJob extends Job
     protected function rules(): array
     {
         return [
-            'items'            => ['array'],
-            'items.*.dir'      => ['required'],
-            'items.*.pattern'  => ['nullable'],
-            'items.*.exclude'  => ['nullable'],
+            'items' => ['array'],
+            'items.*.dir' => ['required'],
+            'items.*.pattern' => ['nullable'],
+            'items.*.exclude' => ['nullable'],
             'items.*.max_days' => ['required', 'integer', 'min:0'],
         ];
     }
@@ -54,9 +54,9 @@ class CleanFilesJob extends Job
     /**
      * 删除 dirs 下匹配 patterns 且 mtime 早于 maxDays 的文件, 返回 ['count' => int, 'bytes' => int].
      *
-     * @param string|array|Collection $dirs
-     * @param string|array|Collection $patterns
-     * @param string|array|Collection $excludes
+     * @param  string|array|Collection  $dirs
+     * @param  string|array|Collection  $patterns
+     * @param  string|array|Collection  $excludes
      */
     public static function pruneFiles($dirs, $patterns = '*', $excludes = [], int $maxDays = 30): array
     {
@@ -85,7 +85,7 @@ class CleanFilesJob extends Job
 
         foreach ($files as $file) {
             $mDate = Carbon::createFromTimestamp($file->getMTime());
-            if (!$mDate->addDays($maxDays)->isPast()) {
+            if (! $mDate->addDays($maxDays)->isPast()) {
                 continue;
             }
 

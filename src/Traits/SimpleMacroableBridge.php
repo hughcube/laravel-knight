@@ -22,7 +22,7 @@ trait SimpleMacroableBridge
     public static function mixin(string $target, bool $replace = true)
     {
         foreach (static::getMacros() as $method) {
-            if ($replace || !$target::hasMacro($method)) {
+            if ($replace || ! $target::hasMacro($method)) {
                 $target::macro($method, static::{$method}());
             }
         }

@@ -44,7 +44,7 @@ call_user_func(function () use ($basePath, $skipBootstrap) {
 
     // 查找 public/index.php 或直接使用 bootstrap
     $indexFile = $basePath.'/public/index.php';
-    if (!is_file($indexFile)) {
+    if (! is_file($indexFile)) {
         // Lumen 或其他结构
         $indexFile = $basePath.'/index.php';
     }
@@ -92,7 +92,7 @@ call_user_func(function () use ($basePath) {
 
         foreach ($uniqueFiles as $file) {
             try {
-                if (!is_file($file)) {
+                if (! is_file($file)) {
                     $skippedFiles++;
                     continue;
                 }
@@ -109,7 +109,7 @@ call_user_func(function () use ($basePath) {
                 }
 
                 $stmts = $parser->parse($content);
-                if (!$stmts) {
+                if (! $stmts) {
                     $skippedFiles++;
                     continue;
                 }
@@ -171,10 +171,10 @@ $loads = Collection::empty()
         $relativeFile = $file ? str_replace(base_path().'/', '', $file) : 'unknown';
 
         return [
-            'class'        => $class,
-            'file'         => $relativeFile,
+            'class' => $class,
+            'file' => $relativeFile,
             'is_interface' => $reflection->isInterface(),
-            'is_trait'     => $reflection->isTrait(),
+            'is_trait' => $reflection->isTrait(),
         ];
     })
     /** 按类型排序: Interface -> Trait -> Class */
@@ -195,8 +195,8 @@ $loads = Collection::empty()
 // 统计信息
 $stats = [
     'interfaces' => $loads->filter(fn ($i) => $i['is_interface'])->count(),
-    'traits'     => $loads->filter(fn ($i) => $i['is_trait'])->count(),
-    'classes'    => $loads->filter(fn ($i) => !$i['is_interface'] && !$i['is_trait'])->count(),
+    'traits' => $loads->filter(fn ($i) => $i['is_trait'])->count(),
+    'classes' => $loads->filter(fn ($i) => ! $i['is_interface'] && ! $i['is_trait'])->count(),
 ];
 
 echo sprintf('Collected %d items: %d interfaces, %d traits, %d classes', $loads->count(), $stats['interfaces'], $stats['traits'], $stats['classes']), PHP_EOL;

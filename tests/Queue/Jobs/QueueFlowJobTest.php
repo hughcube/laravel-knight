@@ -139,8 +139,8 @@ class QueueFlowJobTest extends TestCase
     {
         $job = new QueueFlowJobStub([
             'from_connection' => 'sync',
-            'to_connection'   => 'sync',
-            'max_time'        => 1,
+            'to_connection' => 'sync',
+            'max_time' => 1,
         ]);
         $job->idsQueue = ['job1', 'job2', null];
 
@@ -155,15 +155,15 @@ class QueueFlowJobTest extends TestCase
     {
         $job = new QueueFlowJobStub([
             'from_connection' => 'sync',
-            'to_connection'   => 'sync',
+            'to_connection' => 'sync',
         ]);
         $this->callMethod($job, 'loadParameters');
         $this->assertSame(60, $this->callMethod($job, 'getMaxTime'));
 
         $job = new QueueFlowJobStub([
             'from_connection' => 'sync',
-            'to_connection'   => 'sync',
-            'max_time'        => 5,
+            'to_connection' => 'sync',
+            'max_time' => 5,
         ]);
         $this->callMethod($job, 'loadParameters');
         $this->assertSame(5, $this->callMethod($job, 'getMaxTime'));
@@ -173,7 +173,7 @@ class QueueFlowJobTest extends TestCase
     {
         $job = new QueueFlowJobStub([
             'from_connection' => 'sync',
-            'to_connection'   => 'sync',
+            'to_connection' => 'sync',
         ]);
 
         $payload = json_encode([
@@ -193,12 +193,12 @@ class QueueFlowJobTest extends TestCase
         $toConnection = new QueueFlowJobFakeConnection('to', null);
         $this->app->instance(QueueManager::class, new QueueFlowJobFakeManager([
             'from' => $fromConnection,
-            'to'   => $toConnection,
+            'to' => $toConnection,
         ], $this->app));
 
         $job = new QueueFlowJob([
             'from_connection' => 'from',
-            'to_connection'   => 'to',
+            'to_connection' => 'to',
         ]);
         $this->callMethod($job, 'loadParameters');
 
@@ -221,14 +221,14 @@ class QueueFlowJobTest extends TestCase
 
         $this->app->instance(QueueManager::class, new QueueFlowJobFakeManager([
             'from' => $fromConnection,
-            'to'   => $toConnection,
+            'to' => $toConnection,
         ], $this->app));
 
         $job = new QueueFlowJob([
             'from_connection' => 'from',
-            'to_connection'   => 'to',
-            'from_queue'      => 'from-queue',
-            'to_queue'        => 'to-queue',
+            'to_connection' => 'to',
+            'from_queue' => 'from-queue',
+            'to_queue' => 'to-queue',
         ]);
         $this->callMethod($job, 'loadParameters');
 
@@ -256,12 +256,12 @@ class QueueFlowJobTest extends TestCase
 
         $this->app->instance(QueueManager::class, new QueueFlowJobFakeManager([
             'from' => $fromConnection,
-            'to'   => $toConnection,
+            'to' => $toConnection,
         ], $this->app));
 
         $job = new QueueFlowJob([
             'from_connection' => 'from',
-            'to_connection'   => 'to',
+            'to_connection' => 'to',
         ]);
         $this->callMethod($job, 'loadParameters');
 

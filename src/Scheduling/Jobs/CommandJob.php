@@ -74,8 +74,12 @@ class CommandJob extends Job implements ShouldQueue
     protected function action(): void
     {
         $event = $this->resolveEvent();
-        $event->skippedBecauseOverlapping = false;
-        $event->exitCode = null;
+        if (property_exists($event, 'skippedBecauseOverlapping')) {
+            $event->skippedBecauseOverlapping = false;
+        }
+        if (property_exists($event, 'exitCode')) {
+            $event->exitCode = null;
+        }
 
         // 1. 闭包事件：由 Laravel 原生 run() 自洽处理抢锁、before、执行、after 与解锁
         if ($event instanceof CallbackEvent) {

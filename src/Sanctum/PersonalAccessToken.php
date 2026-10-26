@@ -9,16 +9,16 @@ use Illuminate\Support\Carbon;
 /**
  * Class PersonalAccessToken.
  *
- * @property int               $id
- * @property string            $tokenable_type
- * @property int               $tokenable_id
- * @property string            $name
- * @property string            $token
+ * @property int $id
+ * @property string $tokenable_type
+ * @property int $tokenable_id
+ * @property string $name
+ * @property string $token
  * @property string|array|null $abilities
- * @property Carbon|null       $last_used_at
- * @property Carbon|null       $expires_at
- * @property Carbon|null       $created_at
- * @property Carbon|null       $updated_at
+ * @property Carbon|null $last_used_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @method static static findById($id)
  */
@@ -41,7 +41,7 @@ class PersonalAccessToken extends \Laravel\Sanctum\PersonalAccessToken
 
     public function isValidAccessToken(bool $isValid = true): bool
     {
-        if (!$this->last_used_at instanceof Carbon) {
+        if (! $this->last_used_at instanceof Carbon) {
             return true;
         }
 
@@ -70,7 +70,7 @@ class PersonalAccessToken extends \Laravel\Sanctum\PersonalAccessToken
      */
     public static function findToken($token): ?PersonalAccessToken
     {
-        if (!str_contains($token, '|')) {
+        if (! str_contains($token, '|')) {
             $token = static::query()->findUniqueRow(['token' => hash('sha256', $token)]);
 
             return $token instanceof static ? $token : null;

@@ -32,7 +32,8 @@ class HandlerTest extends TestCase
         $request = Request::create('/exception', 'GET');
         $response = new Response('ok', 418);
 
-        $exception = new class($response) extends \Exception implements ResponseExceptionInterface {
+        $exception = new class($response) extends \Exception implements ResponseExceptionInterface
+        {
             private Response $response;
 
             public function __construct(Response $response)
@@ -57,7 +58,8 @@ class HandlerTest extends TestCase
         $handler = $this->app->make(Handler::class);
         $request = Request::create('/exception', 'GET');
 
-        $dataException = new class('data-error', 499) extends \Exception implements DataExceptionInterface {
+        $dataException = new class('data-error', 499) extends \Exception implements DataExceptionInterface
+        {
             public function getData(): array
             {
                 return ['key' => 'value'];

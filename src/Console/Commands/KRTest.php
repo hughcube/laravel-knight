@@ -28,9 +28,9 @@ class KRTest extends Command
     /**
      * Execute the console command.
      *
-     * @throws BindingResolutionException
-     *
      * @return void
+     *
+     * @throws BindingResolutionException
      */
     public function handle()
     {
@@ -74,9 +74,9 @@ class KRTest extends Command
     }
 
     /**
-     * @throws BindingResolutionException
-     *
      * @return object
+     *
+     * @throws BindingResolutionException
      */
     protected function makeInstance()
     {
@@ -86,7 +86,7 @@ class KRTest extends Command
             throw new RuntimeException('The "--class" option does not exist.');
         }
 
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             throw new RuntimeException(sprintf('class "%s" is not defined.', $class));
         }
 
@@ -96,8 +96,7 @@ class KRTest extends Command
     /**
      * 内存单位换算为M.
      *
-     * @param int $memory
-     *
+     * @param  int  $memory
      * @return float
      */
     protected function formatMemory(int $memory): float

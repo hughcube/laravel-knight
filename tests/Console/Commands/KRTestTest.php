@@ -22,7 +22,8 @@ class KRTestTest extends TestCase
 
     public function testMakeInstanceThrowsWhenClassMissing()
     {
-        $command = new class() extends KRTest {
+        $command = new class() extends KRTest
+        {
             public function option($key = null)
             {
                 return null;
@@ -37,7 +38,8 @@ class KRTestTest extends TestCase
 
     public function testMakeInstanceThrowsWhenClassNotFound()
     {
-        $command = new class() extends KRTest {
+        $command = new class() extends KRTest
+        {
             public function option($key = null)
             {
                 return 'MissingClass';

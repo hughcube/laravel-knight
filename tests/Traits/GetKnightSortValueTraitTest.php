@@ -137,8 +137,8 @@ class TestSortValueObject implements GetKnightSortValue
     public $id;
 
     /**
-     * @param int $sort
-     * @param int $id
+     * @param  int  $sort
+     * @param  int  $id
      */
     public function __construct($sort, $id)
     {

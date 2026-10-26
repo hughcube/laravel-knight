@@ -82,7 +82,8 @@ class PostgresJsonOverlapsGrammarTest extends TestCase
 
     private function makeDbManager(array $connections): object
     {
-        return new class($connections) {
+        return new class($connections)
+        {
             private array $connections;
 
             public function __construct(array $connections)

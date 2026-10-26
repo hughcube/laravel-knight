@@ -18,7 +18,7 @@ class Str extends \Illuminate\Support\Str
 
     public static function checkMobile($mobile, $iddCode = null): bool
     {
-        if (!is_string($mobile) && !ctype_digit(strval($mobile))) {
+        if (! is_string($mobile) && ! ctype_digit(strval($mobile))) {
             return false;
         }
 
@@ -31,7 +31,7 @@ class Str extends \Illuminate\Support\Str
 
     public static function maskMobile($string, $offset = 3, $length = 4): string
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return '';
         }
 
@@ -42,7 +42,7 @@ class Str extends \Illuminate\Support\Str
 
     public static function maskChinaIdCode($string, $offset = 6, $length = 8): string
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return '';
         }
 
@@ -110,8 +110,7 @@ class Str extends \Illuminate\Support\Str
      * 做姓名/邮箱等相等性比对前, 调用方应自行 Normalizer::normalize($s, Normalizer::FORM_C),
      * 否则 "é" (U+00E9) 与 "é" (U+0065 U+0301) 会被判为不等.
      *
-     * @param string|null $value
-     *
+     * @param  string|null  $value
      * @return string|null
      */
     public static function stripAllSpaces(?string $value): ?string
@@ -145,8 +144,7 @@ class Str extends \Illuminate\Support\Str
      *
      * 注意: 同 stripAllSpaces, 本方法不做 Unicode 规范化(NFC/NFKC).
      *
-     * @param string|null $value
-     *
+     * @param  string|null  $value
      * @return string|null null/空串原样返回; 否则返回两端清洗后的字符串
      */
     public static function trimEdgeSpaces(?string $value): ?string
@@ -175,8 +173,7 @@ class Str extends \Illuminate\Support\Str
      * (如 "４１０５０４"), 不归一化会让 "４１０..." 与 "410..." 被判为不同, 实名/唯一性比对失败.
      * 依赖 mbstring 的 mb_convert_kana; 缺失时原样返回(降级不报错).
      *
-     * @param string|null $value
-     *
+     * @param  string|null  $value
      * @return string|null
      */
     public static function toHalfWidth(?string $value): ?string
@@ -185,7 +182,7 @@ class Str extends \Illuminate\Support\Str
             return $value;
         }
 
-        if (!function_exists('mb_convert_kana')) {
+        if (! function_exists('mb_convert_kana')) {
             return $value;
         }
 
@@ -205,8 +202,7 @@ class Str extends \Illuminate\Support\Str
      *
      * 注意: 本方法不校验证件号合法性, 只做规范化清洗; 也不做 Unicode NFC 归一化(证件号为纯 ASCII, 无需).
      *
-     * @param string|null $value
-     *
+     * @param  string|null  $value
      * @return string|null
      */
     public static function cleanIdCardNo(?string $value): ?string
@@ -224,8 +220,7 @@ class Str extends \Illuminate\Support\Str
      * 用于参与 === 匹配 / 唯一性反查的号码字段; 国际区号请单独存(见调用方的 idd_code 字段).
      * "138-0000 0000" → "13800000000".
      *
-     * @param string|null $value
-     *
+     * @param  string|null  $value
      * @return string|null
      */
     public static function cleanMobile(?string $value): ?string
@@ -243,8 +238,7 @@ class Str extends \Illuminate\Support\Str
     /**
      * 邮箱写入清洗: 去全部空白/不可见 → 全角转半角 → 统一小写(邮箱实务上大小写不敏感).
      *
-     * @param string|null $value
-     *
+     * @param  string|null  $value
      * @return string|null
      */
     public static function cleanEmail(?string $value): ?string
@@ -263,8 +257,7 @@ class Str extends \Illuminate\Support\Str
      *
      * 与 cleanIdCardNo 的区别: 不转大写(编码可能区分大小写), 不只留数字(编码可能含字母).
      *
-     * @param string|null $value
-     *
+     * @param  string|null  $value
      * @return string|null
      */
     public static function cleanExcelCode(?string $value): ?string
@@ -287,7 +280,7 @@ class Str extends \Illuminate\Support\Str
 
         $json = @json_encode([$string]);
 
-        return '[null]' !== $json && !empty($json);
+        return '[null]' !== $json && ! empty($json);
 
         // $temp1 = @iconv("GBK", "UTF-8", $string);
         // $temp2 = @iconv("UTF-8", "GBK", $temp1);
@@ -379,7 +372,7 @@ class Str extends \Illuminate\Support\Str
         $result = false !== filter_var($string, FILTER_VALIDATE_EMAIL);
 
         if ($result && $isStrict && function_exists('getmxrr')) {
-            list($prefix, $domain) = explode('@', $string);
+            [$prefix, $domain] = explode('@', $string);
             $result = getmxrr($domain, $mxhosts);
         }
 
@@ -434,7 +427,7 @@ class Str extends \Illuminate\Support\Str
      */
     public static function isPublicIp($string): bool
     {
-        return !static::isPrivateIp($string);
+        return ! static::isPrivateIp($string);
     }
 
     /**
@@ -501,7 +494,7 @@ class Str extends \Illuminate\Support\Str
      */
     public static function isCnCarLicensePlate($string): bool
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return false;
         }
 
@@ -552,7 +545,7 @@ class Str extends \Illuminate\Support\Str
         $from = $from == 'UTF8' ? 'utf-8' : $from;
         $to = $to == 'UTF8' ? 'utf-8' : $to;
 
-        if ($from === $to || empty($contents) || (is_scalar($contents) && !is_string($contents))) {
+        if ($from === $to || empty($contents) || (is_scalar($contents) && ! is_string($contents))) {
             return $contents;
         }
 
@@ -701,7 +694,7 @@ class Str extends \Illuminate\Support\Str
         $aChars = preg_split('//u', $a, -1, PREG_SPLIT_NO_EMPTY);
         $bChars = preg_split('//u', $b, -1, PREG_SPLIT_NO_EMPTY);
 
-        if (!$inOrder) {
+        if (! $inOrder) {
             return count(array_intersect($aChars, $bChars));
         }
 
@@ -782,7 +775,7 @@ class Str extends \Illuminate\Support\Str
      */
     public static function maskEmail($string): string
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return '';
         }
 
@@ -814,7 +807,7 @@ class Str extends \Illuminate\Support\Str
      */
     public static function maskBankCard($string): string
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return '';
         }
 
@@ -833,7 +826,7 @@ class Str extends \Illuminate\Support\Str
      */
     public static function maskName($string): string
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return '';
         }
 
@@ -856,7 +849,7 @@ class Str extends \Illuminate\Support\Str
      */
     public static function maskAddress($string, int $keepLength = 6): string
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return '';
         }
 
@@ -873,7 +866,7 @@ class Str extends \Illuminate\Support\Str
      */
     public static function maskPlateNumber($string): string
     {
-        if (!is_string($string) || empty($string)) {
+        if (! is_string($string) || empty($string)) {
             return '';
         }
 

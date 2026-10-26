@@ -18,9 +18,9 @@ use Illuminate\Contracts\Events\Dispatcher;
 trait GetDispatcher
 {
     /**
-     * @throws
-     *
      * @return Dispatcher
+     *
+     * @throws
      *
      * @phpstan-ignore-next-line
      */

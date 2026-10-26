@@ -16,11 +16,11 @@ class LogQuerySql
 {
     public function handle($event): void
     {
-        if (!$this->isEnable()) {
+        if (! $this->isEnable()) {
             return;
         }
 
-        if (!$event instanceof QueryExecuted || empty($event->sql)) {
+        if (! $event instanceof QueryExecuted || empty($event->sql)) {
             return;
         }
 
@@ -63,9 +63,8 @@ class LogQuerySql
     }
 
     /**
-     * @param string $sql
-     * @param array  $bindings
-     *
+     * @param  string  $sql
+     * @param  array  $bindings
      * @return string
      */
     protected function replaceBindings(string $sql, array $bindings): string
@@ -74,7 +73,7 @@ class LogQuerySql
         $result = $parts[0];
 
         foreach ($bindings as $i => $binding) {
-            if (!isset($parts[$i + 1])) {
+            if (! isset($parts[$i + 1])) {
                 break;
             }
 

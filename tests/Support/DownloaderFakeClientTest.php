@@ -11,7 +11,8 @@ class DownloaderFakeClientTest extends TestCase
 {
     public function testToAndDynamicMethodsWithFakeClient()
     {
-        $downloader = new class() extends Downloader {
+        $downloader = new class() extends Downloader
+        {
             protected function createHttpClient(): Client
             {
                 return new FakeClient();
@@ -63,13 +64,14 @@ class FakeClient extends Client
         if (isset($options[RequestOptions::SINK]) && is_string($options[RequestOptions::SINK])) {
             $file = $options[RequestOptions::SINK];
             $dir = dirname($file);
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 mkdir($dir, 0777, true);
             }
             file_put_contents($file, 'stub');
         }
 
-        return new class() {
+        return new class()
+        {
             public function getStatusCode(): int
             {
                 return 200;
@@ -77,7 +79,8 @@ class FakeClient extends Client
 
             public function getBody()
             {
-                return new class() {
+                return new class()
+                {
                     public function getContents(): string
                     {
                         return '';

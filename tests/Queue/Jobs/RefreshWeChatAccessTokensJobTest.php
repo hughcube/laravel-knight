@@ -17,7 +17,7 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 {
     public function testMiniAppResetHttpClientSkipsWhenNoProxy()
     {
-        if (!class_exists(MiniApp::class)) {
+        if (! class_exists(MiniApp::class)) {
             $this->markTestSkipped('MiniApp Application class is not available.');
         }
 
@@ -36,7 +36,7 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     public function testMiniAppResetHttpClientUsesProxy()
     {
-        if (!class_exists(MiniApp::class)) {
+        if (! class_exists(MiniApp::class)) {
             $this->markTestSkipped('MiniApp Application class is not available.');
         }
         $this->skipIfHttpClientMissing();
@@ -61,7 +61,7 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     public function testOfficialAccountResetHttpClientUsesProxy()
     {
-        if (!class_exists(OfficialAccount::class)) {
+        if (! class_exists(OfficialAccount::class)) {
             $this->markTestSkipped('OfficialAccount Application class is not available.');
         }
         $this->skipIfHttpClientMissing();
@@ -86,11 +86,11 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     public function testMiniAppActionRefreshesTokensAndSkipsEmptyAppId()
     {
-        if (!class_exists(MiniApp::class)) {
+        if (! class_exists(MiniApp::class)) {
             $this->markTestSkipped('MiniApp Application class is not available.');
         }
         $this->skipIfHttpClientMissing();
-        if (!interface_exists(AccessTokenInterface::class)) {
+        if (! interface_exists(AccessTokenInterface::class)) {
             $this->markTestSkipped('EasyWeChat AccessToken interface is not available.');
         }
 
@@ -112,11 +112,11 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     public function testOfficialAccountActionRefreshesTokens()
     {
-        if (!class_exists(OfficialAccount::class)) {
+        if (! class_exists(OfficialAccount::class)) {
             $this->markTestSkipped('OfficialAccount Application class is not available.');
         }
         $this->skipIfHttpClientMissing();
-        if (!interface_exists(AccessTokenInterface::class)) {
+        if (! interface_exists(AccessTokenInterface::class)) {
             $this->markTestSkipped('EasyWeChat AccessToken interface is not available.');
         }
 
@@ -207,7 +207,8 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     private function makeMiniAppAccount(string $appId): MiniAppAccount
     {
-        return new class($appId) implements MiniAppAccount {
+        return new class($appId) implements MiniAppAccount
+        {
             private string $appId;
 
             public function __construct(string $appId)
@@ -239,7 +240,8 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     private function makeOfficialAccountAccount(string $appId): OfficialAccountAccount
     {
-        return new class($appId) implements OfficialAccountAccount {
+        return new class($appId) implements OfficialAccountAccount
+        {
             private string $appId;
 
             public function __construct(string $appId)
@@ -271,7 +273,7 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     private function skipIfHttpClientMissing(): void
     {
-        if (!$this->isGuzzleHttpClient() && !$this->isSymfonyHttpClient()) {
+        if (! $this->isGuzzleHttpClient() && ! $this->isSymfonyHttpClient()) {
             $this->markTestSkipped('Neither Guzzle nor Symfony HTTP client interface is available.');
         }
     }
@@ -288,11 +290,11 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
     private function usesSymfonyHttpClient(): bool
     {
-        if (!class_exists(MiniApp::class)) {
+        if (! class_exists(MiniApp::class)) {
             return false;
         }
 
-        if (!method_exists(MiniApp::class, 'getHttpClient')) {
+        if (! method_exists(MiniApp::class, 'getHttpClient')) {
             return false;
         }
 
@@ -344,11 +346,11 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
             }
         }
 
-        if (!empty($existing)) {
+        if (! empty($existing)) {
             $builder->onlyMethods($existing);
         }
 
-        if (!empty($missing)) {
+        if (! empty($missing)) {
             $builder->addMethods($missing);
         }
 
@@ -365,7 +367,7 @@ class RefreshWeChatAccessTokensJobTest extends TestCase
 
             // For Guzzle HTTP Client (EasyWeChat 5.x)
             if ($client instanceof GuzzleClientInterface) {
-                if (!method_exists($client, 'getConfig')) {
+                if (! method_exists($client, 'getConfig')) {
                     return false;
                 }
 

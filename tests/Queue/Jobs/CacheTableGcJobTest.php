@@ -47,7 +47,7 @@ class CacheTableGcJobTest extends TestCase
 
         $job = new CacheTableGcJob([
             'cache_table' => 'cache_items',
-            'lock_table'  => 'cache_locks',
+            'lock_table' => 'cache_locks',
         ]);
         $job->handle();
 

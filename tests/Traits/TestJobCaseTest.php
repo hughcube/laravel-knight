@@ -15,8 +15,9 @@ class TestJobCaseTest extends TestCase
 
     public function getJob(): object
     {
-        if (!isset($this->job)) {
-            $this->job = new class() {
+        if (! isset($this->job)) {
+            $this->job = new class()
+            {
                 public ?string $logChannel = null;
                 public bool $handled = false;
 

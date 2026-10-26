@@ -25,9 +25,9 @@ class CreatePreloadCommand extends Command
     /**
      * Execute the console command.
      *
-     * @throws Exception
-     *
      * @return void
+     *
+     * @throws Exception
      */
     public function handle()
     {
@@ -41,8 +41,8 @@ class CreatePreloadCommand extends Command
             base_path(),
             [
                 'WITH_REMOTE_SCRIPTS' => strval(intval($this->option('with-remote-scripts'))),
-                'SKIP_BOOTSTRAP'      => strval(intval($this->option('skip-bootstrap'))),
-                'OUTPUT_PATH'         => $outputPath,
+                'SKIP_BOOTSTRAP' => strval(intval($this->option('skip-bootstrap'))),
+                'OUTPUT_PATH' => $outputPath,
             ]
         );
 

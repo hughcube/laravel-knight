@@ -42,7 +42,7 @@ class DownloaderTest extends TestCase
         $file = $this->tempFilePath('to.txt');
 
         $this->assertSame($file, $downloader->to('get', 'https://www.example.com/', $file, [
-            RequestOptions::VERIFY      => false,
+            RequestOptions::VERIFY => false,
             RequestOptions::HTTP_ERRORS => false,
         ]));
         $this->assertFileExists($file);
@@ -54,7 +54,7 @@ class DownloaderTest extends TestCase
         $this->makeDownloaderWithStatus(200);
 
         $file = TestDownloader::get('https://www.example.com/', null, [
-            RequestOptions::VERIFY      => false,
+            RequestOptions::VERIFY => false,
             RequestOptions::HTTP_ERRORS => false,
         ]);
         $this->assertFileExists($file);
@@ -66,7 +66,7 @@ class DownloaderTest extends TestCase
         $this->makeDownloaderWithStatus(200);
 
         $file = TestDownloader::save('https://www.example.com/', null, [
-            RequestOptions::VERIFY      => false,
+            RequestOptions::VERIFY => false,
             RequestOptions::HTTP_ERRORS => false,
         ]);
         $this->assertFileExists($file);
@@ -80,7 +80,7 @@ class DownloaderTest extends TestCase
 
         try {
             $downloader->to('get', 'https://www.example.com/', $file, [
-                RequestOptions::VERIFY      => false,
+                RequestOptions::VERIFY => false,
                 RequestOptions::HTTP_ERRORS => false,
             ]);
             $this->fail('Expected Exception was not thrown.');
@@ -101,7 +101,7 @@ class DownloaderTest extends TestCase
     private function tempFilePath(string $name): string
     {
         $dir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'knight-downloader-'.Carbon::now()->format('YmdHis').'-'.random_int(1000, 9999);
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
 
@@ -147,13 +147,14 @@ class StubClient extends Client
         if (isset($options[RequestOptions::SINK]) && is_string($options[RequestOptions::SINK])) {
             $file = $options[RequestOptions::SINK];
             $dir = dirname($file);
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 mkdir($dir, 0777, true);
             }
             file_put_contents($file, $this->body);
         }
 
-        return new class($this->statusCode) {
+        return new class($this->statusCode)
+        {
             private int $statusCode;
 
             public function __construct(int $statusCode)

@@ -70,7 +70,7 @@ class CollectionMixin
             }
 
             foreach ($this->getIterator() as $item) {
-                if (!in_array($item, $values, $strict)) {
+                if (! in_array($item, $values, $strict)) {
                     return false;
                 }
             }
@@ -87,7 +87,7 @@ class CollectionMixin
                     return true;
                 } elseif ($strict && $item === $needle) {
                     return true;
-                } elseif (!$strict && $item == $needle) {
+                } elseif (! $strict && $item == $needle) {
                     return true;
                 }
             }
@@ -111,7 +111,7 @@ class CollectionMixin
             }
 
             foreach ($this->all() as $index => $value) {
-                if (!is_int($index)) {
+                if (! is_int($index)) {
                     return false;
                 }
             }
@@ -166,7 +166,7 @@ class CollectionMixin
                     $searched = true;
                 } elseif ($strict && $item === $value) {
                     $searched = true;
-                } elseif (!$strict && $item == $value) {
+                } elseif (! $strict && $item == $value) {
                     $searched = true;
                 }
 
@@ -199,7 +199,7 @@ class CollectionMixin
                     $searched = true;
                 } elseif ($strict && $item === $value) {
                     $searched = true;
-                } elseif (!$strict && $item == $value) {
+                } elseif (! $strict && $item == $value) {
                     $searched = true;
                 }
 

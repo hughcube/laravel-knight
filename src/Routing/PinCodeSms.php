@@ -20,9 +20,9 @@ trait PinCodeSms
     use GetMobile;
 
     /**
-     * @throws UserException
-     *
      * @return mixed|void
+     *
+     * @throws UserException
      */
     protected function action()
     {
@@ -33,7 +33,7 @@ trait PinCodeSms
             return $this->emptyMobileResponse();
         }
 
-        if (!$this->checkMobile($mobile, $iddCode)) {
+        if (! $this->checkMobile($mobile, $iddCode)) {
             return $this->invalidMobileResponse();
         }
 
@@ -52,18 +52,16 @@ trait PinCodeSms
     }
 
     /**
-     * @param int|string $mobile
-     * @param int|string $iddCode
-     *
+     * @param  int|string  $mobile
+     * @param  int|string  $iddCode
      * @return string
      */
     abstract protected function getPinCode($mobile, $iddCode): string;
 
     /**
-     * @param int|string $mobile
-     * @param int|string $iddCode
-     * @param mixed      $pinCode
-     *
+     * @param  int|string  $mobile
+     * @param  int|string  $iddCode
+     * @param  mixed  $pinCode
      * @return void
      */
     abstract protected function send($mobile, $iddCode, $pinCode): void;

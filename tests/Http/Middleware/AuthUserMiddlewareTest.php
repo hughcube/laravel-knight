@@ -76,7 +76,8 @@ class AuthUserMiddlewareTest extends TestCase
     {
         $request = Request::create('/auth', 'GET');
         $request->setUserResolver(function () {
-            return new class() {
+            return new class()
+            {
                 public function isAvailable(): bool
                 {
                     return true;
@@ -96,7 +97,8 @@ class AuthUserMiddlewareTest extends TestCase
     {
         $request = Request::create('/auth', 'GET');
         $request->setUserResolver(function () {
-            return new class() {
+            return new class()
+            {
                 public function isAvailable(): bool
                 {
                     return false;

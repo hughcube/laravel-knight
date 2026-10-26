@@ -24,11 +24,10 @@ trait ValidatePinCodeSms
     }
 
     /**
-     * @param bool $deleteAfterSuccess
+     * @param  bool  $deleteAfterSuccess
+     * @return void
      *
      * @throws ValidatePinCodeException
-     *
-     * @return void
      */
     protected function validatePinCode(bool $deleteAfterSuccess = true)
     {
@@ -37,11 +36,11 @@ trait ValidatePinCodeSms
         $pincode = $this->getPinCode();
 
         $ok = false;
-        if (!empty($mobile) && !empty($iddCode) && !empty($pincode) && $this->checkMobile($mobile, $iddCode)) {
+        if (! empty($mobile) && ! empty($iddCode) && ! empty($pincode) && $this->checkMobile($mobile, $iddCode)) {
             $ok = $this->runValidatePinCode($mobile, $iddCode, $pincode, $deleteAfterSuccess);
         }
 
-        if (!$ok) {
+        if (! $ok) {
             throw new ValidatePinCodeException('请输入正确的验证码!');
         }
     }

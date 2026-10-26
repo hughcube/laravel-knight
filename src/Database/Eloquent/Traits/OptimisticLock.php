@@ -50,7 +50,7 @@ trait OptimisticLock
      *
      * 只在单个模型的 save() 操作时检查，不影响批量更新
      *
-     * @param int $affectedRows 影响的行数
+     * @param  int  $affectedRows  影响的行数
      *
      * @throws OptimisticLockException
      */
@@ -67,8 +67,7 @@ trait OptimisticLock
     /**
      * 为 setKeysForSaveQuery 添加乐观锁版本条件.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function setKeysForSaveQueryFromOptimisticLock($query)
@@ -103,7 +102,7 @@ trait OptimisticLock
      */
     public function isAutoIncrementDataVersion(): bool
     {
-        return !defined(static::class.'::AUTO_INCREMENT_DATA_VERSION') || static::AUTO_INCREMENT_DATA_VERSION;
+        return ! defined(static::class.'::AUTO_INCREMENT_DATA_VERSION') || static::AUTO_INCREMENT_DATA_VERSION;
     }
 
     /**
@@ -137,11 +136,10 @@ trait OptimisticLock
     /**
      * 启用乐观锁检查并保存模型.
      *
-     * @param array $options
+     * @param  array  $options
+     * @return bool
      *
      * @throws OptimisticLockException
-     *
-     * @return bool
      */
     public function useOptimisticLockSave(array $options = [])
     {
@@ -158,12 +156,11 @@ trait OptimisticLock
     /**
      * 启用乐观锁检查并更新模型.
      *
-     * @param array $attributes
-     * @param array $options
+     * @param  array  $attributes
+     * @param  array  $options
+     * @return bool
      *
      * @throws OptimisticLockException
-     *
-     * @return bool
      */
     public function useOptimisticLockUpdate(array $attributes = [], array $options = [])
     {

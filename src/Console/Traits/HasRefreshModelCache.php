@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 trait HasRefreshModelCache
 {
     /**
-     * @param Builder $query
-     * @param bool    $force 是否强制刷新, false 时仅在缓存与数据库不一致时刷新
+     * @param  Builder  $query
+     * @param  bool  $force  是否强制刷新, false 时仅在缓存与数据库不一致时刷新
      *
      * @throws Exception
      */
@@ -32,14 +32,14 @@ trait HasRefreshModelCache
             $modelClass = get_class($model);
 
             $cacheModel = $modelClass::findById($model->getKey());
-            $wasChanged = $force || !$model->hasSameAttributes($cacheModel);
+            $wasChanged = $force || ! $model->hasSameAttributes($cacheModel);
 
             if ($wasChanged) {
                 $model->deleteRowCache();
                 $model->resetRowCache();
 
                 $cacheModel = $modelClass::findById($model->getKey());
-                if (!$model->hasSameAttributes($cacheModel)) {
+                if (! $model->hasSameAttributes($cacheModel)) {
                     throw new Exception(sprintf('重置 %s(%s) 后对比缓存失败!', $modelClass, $model->getKey()));
                 }
             }

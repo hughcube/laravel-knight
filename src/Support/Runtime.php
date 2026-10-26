@@ -19,7 +19,7 @@ class Runtime
      */
     public static function getCommand(): ?string
     {
-        if (!static::isConsole()) {
+        if (! static::isConsole()) {
             return null;
         }
 
@@ -28,7 +28,7 @@ class Runtime
         // 找到 artisan 脚本在 argv 中的位置
         // 兼容直接执行 `php artisan cmd` 和 stdin 执行(argv[0]="Standard input code") 等场景
         foreach ($argv as $index => $arg) {
-            if (!is_string($arg) || basename($arg) !== 'artisan') {
+            if (! is_string($arg) || basename($arg) !== 'artisan') {
                 continue;
             }
 
@@ -36,7 +36,7 @@ class Runtime
             // 取第一个非选项参数作为命令名
             $count = count($argv);
             for ($i = $index + 1; $i < $count; $i++) {
-                if (!is_string($argv[$i])) {
+                if (! is_string($argv[$i])) {
                     continue;
                 }
                 if (strncmp($argv[$i], '-', 1) === 0) {

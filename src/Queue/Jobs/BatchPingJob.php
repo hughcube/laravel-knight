@@ -26,13 +26,13 @@ class BatchPingJob extends Job
     public function rules(): array
     {
         return [
-            'options'     => ['array', 'nullable'],
+            'options' => ['array', 'nullable'],
             'concurrency' => ['integer', 'nullable'],
 
             'jobs' => ['array', 'min:1'],
 
-            'jobs.*.url'     => ['string', 'nullable'],
-            'jobs.*.method'  => ['string', 'nullable'],
+            'jobs.*.url' => ['string', 'nullable'],
+            'jobs.*.method' => ['string', 'nullable'],
             'jobs.*.headers' => ['array', 'nullable'],
         ];
     }
@@ -45,8 +45,8 @@ class BatchPingJob extends Job
         $requests = [];
         foreach ($this->p('jobs', []) as $index => $job) {
             $requests[$index] = [
-                'url'     => $this->parseUrl($job['url'] ?? 'knight.ping'),
-                'method'  => strtoupper($job['method'] ?? null ?: 'GET'),
+                'url' => $this->parseUrl($job['url'] ?? 'knight.ping'),
+                'method' => strtoupper($job['method'] ?? null ?: 'GET'),
                 'headers' => $job['headers'] ?? [] ?: [],
             ];
         }
@@ -58,7 +58,7 @@ class BatchPingJob extends Job
         $start = Carbon::now();
         $pool = new Pool($client, $this->makeRequests($requests), [
             'concurrency' => $this->p('concurrency') ?: 5,
-            'fulfilled'   => function (Response $response, $index) use ($requests, $start) {
+            'fulfilled' => function (Response $response, $index) use ($requests, $start) {
                 $url = $requests[$index]['url'];
                 $method = $requests[$index]['method'];
                 $duration = $start->diffInMilliseconds(Carbon::now());
@@ -143,13 +143,13 @@ class BatchPingJob extends Job
 
         /** parse url */
         $purl = PUrl::parse($url);
-        if (!$purl instanceof PUrl) {
+        if (! $purl instanceof PUrl) {
             throw new Exception('The requested url must be correct!');
         }
 
         /** with app url scheme */
         $appUrl = PUrl::parse($this->getContainerConfig('app.url'));
-        if ($appUrl instanceof PUrl && !empty($appUrl->getScheme())) {
+        if ($appUrl instanceof PUrl && ! empty($appUrl->getScheme())) {
             $purl = $purl->withScheme($appUrl->getScheme());
         }
 
@@ -158,7 +158,7 @@ class BatchPingJob extends Job
 
     protected function parseRequestId($response): ?string
     {
-        if (!$response instanceof Response) {
+        if (! $response instanceof Response) {
             return null;
         }
 

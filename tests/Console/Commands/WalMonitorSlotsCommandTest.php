@@ -57,15 +57,15 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('slot_a', [
-                'plugin'         => 'wal2json',
-                'active'         => true,
-                'active_pid'     => 12345,
+                'plugin' => 'wal2json',
+                'active' => true,
+                'active_pid' => 12345,
                 'retained_bytes' => 500 * 1024 * 1024,
             ]),
             $this->makeSlot('slot_b', [
-                'plugin'         => 'pgoutput',
-                'active'         => false,
-                'active_pid'     => null,
+                'plugin' => 'pgoutput',
+                'active' => false,
+                'active_pid' => null,
                 'retained_bytes' => 100 * 1024 * 1024,
             ]),
         ];
@@ -85,14 +85,14 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('big_slot', [
-                'plugin'              => 'wal2json',
-                'active'              => false,
-                'active_pid'          => null,
-                'retained_bytes'      => 2 * 1024 * 1024 * 1024,
-                'restart_lsn'         => '0/1500000',
+                'plugin' => 'wal2json',
+                'active' => false,
+                'active_pid' => null,
+                'retained_bytes' => 2 * 1024 * 1024 * 1024,
+                'restart_lsn' => '0/1500000',
                 'confirmed_flush_lsn' => '0/1400000',
-                'wal_status'          => 'reserved',
-                'database'            => 'mydb',
+                'wal_status' => 'reserved',
+                'database' => 'mydb',
             ]),
         ];
 
@@ -120,13 +120,13 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('ok_slot', [
-                'active'         => true,
-                'active_pid'     => 111,
+                'active' => true,
+                'active_pid' => 111,
                 'retained_bytes' => 50 * 1024 * 1024,
             ]),
             $this->makeSlot('bad_slot', [
-                'active'         => false,
-                'active_pid'     => null,
+                'active' => false,
+                'active_pid' => null,
                 'retained_bytes' => 1500 * 1024 * 1024,
             ]),
         ];
@@ -146,8 +146,8 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('boundary_slot', [
-                'active'         => true,
-                'active_pid'     => 999,
+                'active' => true,
+                'active_pid' => 999,
                 'retained_bytes' => 1024 * 1024 * 1024,
             ]),
         ];
@@ -163,8 +163,8 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('under_slot', [
-                'active'         => true,
-                'active_pid'     => 888,
+                'active' => true,
+                'active_pid' => 888,
                 'retained_bytes' => 1024 * 1024 * 1024 - 1,
             ]),
         ];
@@ -182,8 +182,8 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('small_slot', [
-                'active'         => true,
-                'active_pid'     => 100,
+                'active' => true,
+                'active_pid' => 100,
                 'retained_bytes' => 300 * 1024 * 1024,
             ]),
         ];
@@ -219,10 +219,10 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('physical_slot', [
-                'plugin'         => null,
-                'slot_type'      => 'physical',
-                'active'         => false,
-                'active_pid'     => null,
+                'plugin' => null,
+                'slot_type' => 'physical',
+                'active' => false,
+                'active_pid' => null,
                 'retained_bytes' => 10 * 1024 * 1024,
             ]),
         ];
@@ -239,8 +239,8 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('null_bytes_slot', [
-                'active'         => true,
-                'active_pid'     => 555,
+                'active' => true,
+                'active_pid' => 555,
                 'retained_bytes' => null,
             ]),
         ];
@@ -256,12 +256,12 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('null_lsn_slot', [
-                'active'              => false,
-                'retained_bytes'      => 2 * 1024 * 1024 * 1024,
-                'restart_lsn'         => null,
+                'active' => false,
+                'retained_bytes' => 2 * 1024 * 1024 * 1024,
+                'restart_lsn' => null,
                 'confirmed_flush_lsn' => null,
-                'wal_status'          => null,
-                'database'            => null,
+                'wal_status' => null,
+                'database' => null,
             ]),
         ];
 
@@ -281,15 +281,15 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('ok_detail_slot', [
-                'active'              => true,
-                'active_pid'          => 200,
-                'retained_bytes'      => 10 * 1024 * 1024,
-                'slot_type'           => 'logical',
-                'plugin'              => 'wal2json',
-                'database'            => 'staging',
-                'restart_lsn'         => '0/CC000000',
+                'active' => true,
+                'active_pid' => 200,
+                'retained_bytes' => 10 * 1024 * 1024,
+                'slot_type' => 'logical',
+                'plugin' => 'wal2json',
+                'database' => 'staging',
+                'restart_lsn' => '0/CC000000',
                 'confirmed_flush_lsn' => '0/CC001111',
-                'wal_status'          => 'reserved',
+                'wal_status' => 'reserved',
             ]),
         ];
 
@@ -311,13 +311,13 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('active_slot', [
-                'active'         => true,
-                'active_pid'     => 777,
+                'active' => true,
+                'active_pid' => 777,
                 'retained_bytes' => 10 * 1024 * 1024,
             ]),
             $this->makeSlot('inactive_slot', [
-                'active'         => false,
-                'active_pid'     => null,
+                'active' => false,
+                'active_pid' => null,
                 'retained_bytes' => 10 * 1024 * 1024,
             ]),
         ];
@@ -335,8 +335,8 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('logical_slot', [
-                'slot_type'      => 'logical',
-                'active'         => true,
+                'slot_type' => 'logical',
+                'active' => true,
                 'retained_bytes' => 10 * 1024 * 1024,
             ]),
         ];
@@ -353,8 +353,8 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('pid_slot', [
-                'active'         => true,
-                'active_pid'     => 42,
+                'active' => true,
+                'active_pid' => 42,
                 'retained_bytes' => 2 * 1024 * 1024 * 1024,
             ]),
         ];
@@ -369,8 +369,8 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('no_pid_slot', [
-                'active'         => false,
-                'active_pid'     => null,
+                'active' => false,
+                'active_pid' => null,
                 'retained_bytes' => 2 * 1024 * 1024 * 1024,
             ]),
         ];
@@ -385,14 +385,14 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('detail_slot', [
-                'active'              => true,
-                'active_pid'          => 100,
-                'retained_bytes'      => 2 * 1024 * 1024 * 1024,
-                'restart_lsn'         => '0/AABB0000',
+                'active' => true,
+                'active_pid' => 100,
+                'retained_bytes' => 2 * 1024 * 1024 * 1024,
+                'restart_lsn' => '0/AABB0000',
                 'confirmed_flush_lsn' => '0/AABB1111',
-                'wal_status'          => 'extended',
-                'database'            => 'production',
-                'slot_type'           => 'logical',
+                'wal_status' => 'extended',
+                'database' => 'production',
+                'slot_type' => 'logical',
             ]),
         ];
 
@@ -413,7 +413,7 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('tiny_slot', [
-                'active'         => false,
+                'active' => false,
                 'retained_bytes' => 2 * 1024 * 1024,
             ]),
         ];
@@ -429,7 +429,7 @@ class WalMonitorSlotsCommandTest extends TestCase
     {
         $slots = [
             $this->makeSlot('neg_slot', [
-                'active'         => false,
+                'active' => false,
                 'retained_bytes' => 2 * 1024 * 1024,
             ]),
         ];
@@ -479,38 +479,37 @@ class WalMonitorSlotsCommandTest extends TestCase
     /**
      * Build a slot object with defaults.
      *
-     * @param string $name
-     * @param array  $overrides
-     *
+     * @param  string  $name
+     * @param  array  $overrides
      * @return object
      */
     private function makeSlot($name, array $overrides = [])
     {
         $defaults = [
-            'slot_name'           => $name,
-            'plugin'              => 'wal2json',
-            'slot_type'           => 'logical',
-            'database'            => 'testdb',
-            'active'              => false,
-            'active_pid'          => null,
-            'restart_lsn'         => '0/1000000',
+            'slot_name' => $name,
+            'plugin' => 'wal2json',
+            'slot_type' => 'logical',
+            'database' => 'testdb',
+            'active' => false,
+            'active_pid' => null,
+            'restart_lsn' => '0/1000000',
             'confirmed_flush_lsn' => '0/1000000',
-            'wal_status'          => 'reserved',
-            'retained_bytes'      => 0,
+            'wal_status' => 'reserved',
+            'retained_bytes' => 0,
         ];
 
         return (object) array_merge($defaults, $overrides);
     }
 
     /**
-     * @param array $slots
-     * @param array $options
-     *
+     * @param  array  $slots
+     * @param  array  $options
      * @return WalMonitorSlotsCommand
      */
     private function makeCommandWithMockConnection(array $slots, array $options = [])
     {
-        $connection = new class($slots) {
+        $connection = new class($slots)
+        {
             private $slots;
 
             public function __construct(array $slots)
@@ -528,16 +527,16 @@ class WalMonitorSlotsCommandTest extends TestCase
     }
 
     /**
-     * @param \Throwable $exception
-     * @param array      $options
-     *
+     * @param  \Throwable  $exception
+     * @param  array  $options
      * @return WalMonitorSlotsCommand
      */
     private function makeCommandWithFailingConnection(
         \Throwable $exception,
         array $options = []
     ) {
-        $connection = new class($exception) {
+        $connection = new class($exception)
+        {
             private $exception;
 
             public function __construct(\Throwable $exception)
@@ -555,14 +554,14 @@ class WalMonitorSlotsCommandTest extends TestCase
     }
 
     /**
-     * @param object $connection
-     * @param array  $options
-     *
+     * @param  object  $connection
+     * @param  array  $options
      * @return WalMonitorSlotsCommand
      */
     private function makeCommandWithConnection($connection, array $options = [])
     {
-        $command = new class() extends WalMonitorSlotsCommand {
+        $command = new class() extends WalMonitorSlotsCommand
+        {
             public $mockConnection = null;
 
             protected function getConnection()

@@ -107,7 +107,7 @@ class PartitionKeyTest extends TestCase
     {
         $model = TestPartitionKeyWithOptimisticLockModel::create([
             'tenant_id' => 100,
-            'name'      => 'Test',
+            'name' => 'Test',
         ]);
 
         $this->assertEquals(1, $model->data_version);
@@ -126,7 +126,7 @@ class PartitionKeyTest extends TestCase
     {
         $model = TestPartitionKeyWithOptimisticLockModel::create([
             'tenant_id' => 100,
-            'name'      => 'Test',
+            'name' => 'Test',
         ]);
 
         // 模拟版本冲突

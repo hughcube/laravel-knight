@@ -25,7 +25,8 @@ class JobTest extends TestCase
     public function testWriteLog()
     {
         /** @var Job $job */
-        $job = new class() extends Job {
+        $job = new class() extends Job
+        {
             protected function action(): void
             {
             }
@@ -44,11 +45,12 @@ class JobTest extends TestCase
 
     public function testDataHelpersAndParameterAccess()
     {
-        $job = new class(['name' => 'Ada', 'count' => 1]) extends Job {
+        $job = new class(['name' => 'Ada', 'count' => 1]) extends Job
+        {
             protected function rules(): array
             {
                 return [
-                    'name'  => ['string'],
+                    'name' => ['string'],
                     'count' => ['integer'],
                 ];
             }
@@ -91,7 +93,8 @@ class JobTest extends TestCase
 
     public function testActionTimingAndDelays()
     {
-        $job = new class() extends Job {
+        $job = new class() extends Job
+        {
             protected function action(): void
             {
             }
@@ -113,7 +116,8 @@ class JobTest extends TestCase
     {
         $this->expectException(BadMethodCallException::class);
 
-        $job = new class() extends Job {
+        $job = new class() extends Job
+        {
             protected function action(): void
             {
             }
