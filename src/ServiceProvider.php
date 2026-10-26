@@ -28,28 +28,18 @@ use HughCube\Laravel\Knight\Console\Commands\WalMonitorSlotsCommand;
 use HughCube\Laravel\Knight\Database\Eloquent\Model;
 use HughCube\Laravel\Knight\Database\Migrations\Mixin\BlueprintMixin as MigrationBlueprintMixin;
 use HughCube\Laravel\Knight\Database\Migrations\Mixin\PostgresGrammarMixin as MigrationPostgresGrammarMixin;
-use HughCube\Laravel\Knight\Http\Actions\DevopsSystemAction;
-use HughCube\Laravel\Knight\Http\Actions\PhpInfoAction;
-use HughCube\Laravel\Knight\Http\Actions\PingAction;
-use HughCube\Laravel\Knight\Http\Actions\RequestLogAction;
-use HughCube\Laravel\Knight\Http\Actions\RequestShowAction;
 use HughCube\Laravel\Knight\Mixin\Database\Query\BuilderMixin;
 use HughCube\Laravel\Knight\Mixin\Database\Query\Grammars\GrammarMixin;
 use HughCube\Laravel\Knight\Mixin\Http\RequestMixin;
 use HughCube\Laravel\Knight\Mixin\Support\CarbonMixin;
 use HughCube\Laravel\Knight\Mixin\Support\CollectionMixin;
-use HughCube\Laravel\Knight\OPcache\Actions\ResetAction as OPcacheResetAction;
-use HughCube\Laravel\Knight\OPcache\Actions\ScriptsAction as OPcacheScriptsAction;
-use HughCube\Laravel\Knight\OPcache\Actions\StatesAction as OPcacheStatesAction;
 use HughCube\Laravel\Knight\OPcache\Commands\ClearCliCacheCommand as OPcacheClearCliCacheCommand;
 use HughCube\Laravel\Knight\OPcache\Commands\CompileFilesCommand as OPcacheCompileFilesCommand;
 use HughCube\Laravel\Knight\OPcache\Commands\CreatePreloadCommand as OPcacheCreatePreloadCommand;
-use HughCube\Laravel\Knight\Scheduling\Actions\ScheduleAction;
 use HughCube\Laravel\Knight\Scheduling\Commands\DaemonCommand;
 use HughCube\Laravel\Knight\Scheduling\Commands\JobPayloadCommand;
 use HughCube\Laravel\Knight\Scheduling\Mixin\EventMixin as ScheduleEventMixin;
 use HughCube\Laravel\Knight\Support\Runtime;
-use Illuminate\Config\Repository;
 use Illuminate\Console\Scheduling\Event as ScheduleEvent;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -61,7 +51,6 @@ use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
 use ReflectionException;
@@ -135,107 +124,15 @@ class ServiceProvider extends IlluminateServiceProvider
                 WalMonitorSlotsCommand::class,
                 DaemonCommand::class,
                 JobPayloadCommand::class,
-            ]);
-        }
-
-        $this->bootDevops();
-        $this->bootOpCache();
-        $this->bootRequest();
-        $this->bootPhpInfo();
-        $this->bootHealthCheck();
-
-        $this->configureAuthUserProvider();
-
-        $this->registerModelChangedEvent();
-    }
-
-    protected function bootOpCache()
-    {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
                 OPcacheCompileFilesCommand::class,
                 OPcacheClearCliCacheCommand::class,
                 OPcacheCreatePreloadCommand::class,
             ]);
         }
 
-        /** @var Repository $config */
-        $config = $this->app->make('config');
-        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.opcache.route_prefix', false))) {
-            Route::group(['prefix' => $prefix], function () use ($config) {
-                if (false !== ($action = $config->get('knight.opcache.action.scripts'))) {
-                    Route::any('/opcache/scripts', $action ?: OPcacheScriptsAction::class)->name('knight.opcache.scripts');
-                }
+        $this->configureAuthUserProvider();
 
-                if (false !== ($action = $config->get('knight.opcache.action.states'))) {
-                    Route::any('/opcache/states', $action ?: OPcacheStatesAction::class)->name('knight.opcache.states');
-                }
-
-                if (false !== ($action = $config->get('knight.opcache.action.reset'))) {
-                    Route::any('/opcache/reset', $action ?: OPcacheResetAction::class)->name('knight.opcache.reset');
-                }
-            });
-        }
-    }
-
-    protected function bootRequest()
-    {
-        /** @var Repository $config */
-        $config = $this->app->make('config');
-        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.request.route_prefix', false))) {
-            Route::group(['prefix' => $prefix], function () use ($config) {
-                if (false !== ($action = $config->get('knight.request.action.log'))) {
-                    Route::any('/request/log', $action ?: RequestLogAction::class)->name('knight.request.log');
-                }
-
-                if (false !== ($action = $config->get('knight.request.action.show'))) {
-                    Route::any('/request/show', $action ?: RequestShowAction::class)->name('knight.request.show');
-                }
-            });
-        }
-    }
-
-    protected function bootHealthCheck()
-    {
-        /** @var Repository $config */
-        $config = $this->app->make('config');
-        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.healthcheck.route_prefix'))) {
-            Route::group(['prefix' => $prefix], function () use ($config) {
-                if (false !== ($action = $config->get('knight.healthcheck.action.healthcheck'))) {
-                    Route::any('/healthcheck', $action ?: PingAction::class)->name('knight.healthcheck');
-                }
-            });
-        }
-    }
-
-    protected function bootPhpInfo()
-    {
-        /** @var Repository $config */
-        $config = $this->app->make('config');
-        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.phpinfo.route_prefix', false))) {
-            Route::group(['prefix' => $prefix], function () use ($config) {
-                if (false !== ($action = $config->get('knight.phpinfo.action.phpinfo'))) {
-                    Route::any('/phpinfo', $action ?: PhpInfoAction::class)->name('knight.phpinfo');
-                }
-            });
-        }
-    }
-
-    protected function bootDevops()
-    {
-        /** @var Repository $config */
-        $config = $this->app->make('config');
-        if (! $this->app->routesAreCached() && false !== ($prefix = $config->get('knight.devops.route_prefix', false))) {
-            Route::group(['prefix' => $prefix], function () use ($config) {
-                if (false !== ($action = $config->get('knight.devops.action.system'))) {
-                    Route::any('/devops/system', $action ?: DevopsSystemAction::class)->name('knight.devops.system');
-                }
-
-                if (false !== ($action = $config->get('knight.devops.action.schedule'))) {
-                    Route::any('/devops/schedule', $action ?: ScheduleAction::class)->name('knight.devops.schedule');
-                }
-            });
-        }
+        $this->registerModelChangedEvent();
     }
 
     /**

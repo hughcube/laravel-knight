@@ -1,18 +1,11 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: hugh.li
- * Date: 2021/12/17
- * Time: 21:36.
- */
-
-namespace HughCube\Laravel\Knight\Http\Actions;
+namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class DevopsSystemAction extends Controller
+class SystemAction extends Controller
 {
     /**
      * @return Response

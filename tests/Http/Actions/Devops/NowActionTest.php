@@ -1,8 +1,8 @@
 <?php
 
-namespace HughCube\Laravel\Knight\Tests\Http\Actions;
+namespace HughCube\Laravel\Knight\Tests\Http\Actions\Devops;
 
-use HughCube\Laravel\Knight\Http\Actions\NowAction;
+use HughCube\Laravel\Knight\Http\Actions\Devops\NowAction;
 use HughCube\Laravel\Knight\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -15,10 +15,10 @@ class NowActionTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
 
-        $data = json_decode($response->getContent(), true);
+        $payload = json_decode($response->getContent(), true);
 
-        $this->assertSame('Success', $data['Code']);
-        $this->assertArrayHasKey('timestamp', $data['Data']);
-        $this->assertArrayHasKey('rfc3339', $data['Data']);
+        $this->assertSame('Success', $payload['Code']);
+        $this->assertArrayHasKey('timestamp', $payload['Data']);
+        $this->assertArrayHasKey('rfc3339', $payload['Data']);
     }
 }

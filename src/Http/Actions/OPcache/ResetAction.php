@@ -1,13 +1,6 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: hugh.li
- * Date: 2021/4/15
- * Time: 8:42 下午.
- */
-
-namespace HughCube\Laravel\Knight\OPcache\Actions;
+namespace HughCube\Laravel\Knight\Http\Actions\OPcache;
 
 use Exception;
 use HughCube\Laravel\Knight\OPcache\LoadedOPcacheExtension;
@@ -29,7 +22,7 @@ class ResetAction extends Controller
 
         $this->loadedOPcacheExtension();
 
-        if (!opcache_reset()) {
+        if (! opcache_reset()) {
             throw new Exception('Failed to reset OPcache.');
         }
 

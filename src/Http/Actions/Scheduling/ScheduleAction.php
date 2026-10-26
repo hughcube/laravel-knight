@@ -1,6 +1,6 @@
 <?php
 
-namespace HughCube\Laravel\Knight\Scheduling\Actions;
+namespace HughCube\Laravel\Knight\Http\Actions\Scheduling;
 
 use HughCube\Laravel\Knight\Routing\Controller;
 use HughCube\Laravel\Knight\Scheduling\ScheduleRunner;

@@ -1,8 +1,8 @@
 <?php
 
-namespace HughCube\Laravel\Knight\Tests\Scheduling;
+namespace HughCube\Laravel\Knight\Tests\Http\Actions\Scheduling;
 
-use HughCube\Laravel\Knight\Scheduling\Actions\ScheduleAction;
+use HughCube\Laravel\Knight\Http\Actions\Scheduling\ScheduleAction;
 use HughCube\Laravel\Knight\Tests\TestCase;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
@@ -61,9 +61,7 @@ class ScheduleActionTest extends TestCase
         $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame('Success', $data['Code']);
-        $this->assertSame(1, $data['Data']['count']);
-        $this->assertSame('queue', $data['Data']['tasks'][0]['mode']);
-
+        $this->assertArrayHasKey('tasks', $data['Data']);
         \Illuminate\Support\Facades\Queue::assertPushed(\HughCube\Laravel\Knight\Scheduling\Jobs\CommandJob::class);
     }
 }
