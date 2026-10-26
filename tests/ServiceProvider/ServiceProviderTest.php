@@ -13,7 +13,6 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use ReflectionProperty;
 
 class ServiceProviderTest extends TestCase
@@ -35,7 +34,8 @@ class ServiceProviderTest extends TestCase
         $dispatcher = EloquentModel::getEventDispatcher();
         $this->assertInstanceOf(Dispatcher::class, $dispatcher);
 
-        $model = new class() extends KnightModel {
+        $model = new class() extends KnightModel
+        {
             /** @var int */
             public static $modelChangedCalls = 0;
 
@@ -59,7 +59,8 @@ class ServiceProviderTest extends TestCase
         $dispatcher = EloquentModel::getEventDispatcher();
         $this->assertInstanceOf(Dispatcher::class, $dispatcher);
 
-        $model = new class() extends EloquentModel {
+        $model = new class() extends EloquentModel
+        {
             /** @var int */
             public static $deleteCalls = 0;
 

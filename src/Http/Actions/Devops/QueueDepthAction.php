@@ -16,7 +16,7 @@ class QueueDepthAction extends Controller
     {
         return [
             'x-connection' => ['nullable', 'string'],
-            'x-queues'     => ['nullable', 'string'],
+            'x-queues' => ['nullable', 'string'],
         ];
     }
 
@@ -41,16 +41,16 @@ class QueueDepthAction extends Controller
         }
 
         $response = $this->asSuccess([
-            'value'  => array_sum($sizes),
+            'value' => array_sum($sizes),
             'queues' => $sizes,
         ]);
 
         Log::info('QueueDepth', [
-            'ip'         => $this->getRequest()->getClientIp(),
-            'ua'         => $this->getRequest()->userAgent(),
+            'ip' => $this->getRequest()->getClientIp(),
+            'ua' => $this->getRequest()->userAgent(),
             'connection' => $connection,
-            'queues'     => $queuesParam,
-            'status'     => $response->getStatusCode(),
+            'queues' => $queuesParam,
+            'status' => $response->getStatusCode(),
         ]);
 
         return $response;

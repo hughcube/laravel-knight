@@ -31,9 +31,8 @@ class VerifyDevopsToken
     }
 
     /**
-     * @param Request $request
-     * @param Closure $next
-     *
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return Response
      *
      * @throws AccessDeniedHttpException
@@ -61,7 +60,7 @@ class VerifyDevopsToken
     }
 
     /**
-     * 获取鉴权模式 (直接从 OS 环境变量动态获取，脱离镜像与 config:cache)
+     * 获取鉴权模式 (直接从 OS 环境变量动态获取，脱离镜像与 config:cache).
      */
     public static function getAuthMode(): string
     {
@@ -77,7 +76,7 @@ class VerifyDevopsToken
     }
 
     /**
-     * 获取服务端期望配置的 Token (直接从 OS 环境变量动态获取)
+     * 获取服务端期望配置的 Token (直接从 OS 环境变量动态获取).
      */
     public static function getExpectedToken(): ?string
     {
@@ -93,7 +92,7 @@ class VerifyDevopsToken
     }
 
     /**
-     * 校验阿里云 FC 内部调用
+     * 校验阿里云 FC 内部调用.
      */
     protected function validateAliFc(Request $request): void
     {
@@ -108,7 +107,7 @@ class VerifyDevopsToken
     }
 
     /**
-     * 校验 X-Devops-Token
+     * 校验 X-Devops-Token.
      */
     protected function validateToken(Request $request): void
     {
@@ -127,7 +126,7 @@ class VerifyDevopsToken
     }
 
     /**
-     * 解析请求携带的 Token (优先从 Query 提取，兼容 Header)
+     * 解析请求携带的 Token (优先从 Query 提取，兼容 Header).
      */
     protected function parseToken(Request $request): ?string
     {

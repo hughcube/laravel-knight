@@ -39,8 +39,8 @@ class StatusAction extends Controller
         }
 
         $data = [
-            'healthy'   => $allHealthy ? 1 : 0,
-            'checks'    => $checks,
+            'healthy' => $allHealthy ? 1 : 0,
+            'checks' => $checks,
             'timestamp' => Carbon::now()->toIso8601String(),
         ];
 
@@ -52,7 +52,7 @@ class StatusAction extends Controller
     }
 
     /**
-     * @param array{healthy: int, checks: array<string, array{status: string, latency_ms?: float, message?: string}>, timestamp: string} $data
+     * @param  array{healthy: int, checks: array<string, array{status: string, latency_ms?: float, message?: string}>, timestamp: string}  $data
      */
     private function renderHtml(array $data): string
     {

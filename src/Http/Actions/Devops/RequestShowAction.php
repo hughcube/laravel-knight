@@ -26,15 +26,15 @@ class RequestShowAction extends Controller
         $request = $this->getRequest();
 
         $data = [
-            'uri'       => $request->getUri(),
-            'https'     => $request->isSecure(),
-            'method'    => $request->getMethod(),
-            'host'      => $request->getHost(),
+            'uri' => $request->getUri(),
+            'https' => $request->isSecure(),
+            'method' => $request->getMethod(),
+            'host' => $request->getHost(),
             'client_ip' => $request->getClientIp(),
-            'server'    => $request->server->all(),
-            'env'       => $_ENV,
-            'headers'   => $request->headers->all(),
-            'content'   => serialize($request->getContent()),
+            'server' => $request->server->all(),
+            'env' => $_ENV,
+            'headers' => $request->headers->all(),
+            'content' => serialize($request->getContent()),
         ];
 
         if (1 == $this->p('x-log') || '1' === $request->header('x-log')) {

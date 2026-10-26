@@ -6,14 +6,14 @@ require_once __DIR__.'/../../../OPcache/Support/OpcacheOverrides.php';
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 
-if (!function_exists(__NAMESPACE__.'\extension_loaded')) {
+if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
     function extension_loaded($name): bool
     {
         return OpcacheTestOverrides::$extensionLoaded;
     }
 }
 
-if (!function_exists(__NAMESPACE__.'\opcache_get_status')) {
+if (! function_exists(__NAMESPACE__.'\opcache_get_status')) {
     function opcache_get_status()
     {
         return OpcacheTestOverrides::$opcacheStatusEnabled ? [
@@ -167,7 +167,8 @@ class StatesActionTest extends TestCase
         OpcacheTestOverrides::$extensionLoaded = true;
         OpcacheTestOverrides::$opcacheStatusEnabled = true;
 
-        $action = new class() extends StatesAction {
+        $action = new class() extends StatesAction
+        {
             protected function renderView(string $file): string
             {
                 return 'ok';

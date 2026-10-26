@@ -18,7 +18,7 @@ class StatesAction extends Controller
     protected function rules(): array
     {
         return [
-            'x-format'  => ['nullable', 'string'],
+            'x-format' => ['nullable', 'string'],
             'x-as-json' => ['nullable', 'boolean'],
             'x-scripts' => ['nullable', 'boolean'],
         ];
@@ -49,15 +49,15 @@ class StatesAction extends Controller
             $withScripts = 1 == $this->p('x-scripts') || '1' === $this->getRequest()->header('x-scripts');
 
             $data = [
-                'opcache_enabled'     => $status['opcache_enabled'] ?? true,
-                'cache_full'          => $status['cache_full'] ?? false,
-                'restart_pending'     => $status['restart_pending'] ?? false,
+                'opcache_enabled' => $status['opcache_enabled'] ?? true,
+                'cache_full' => $status['cache_full'] ?? false,
+                'restart_pending' => $status['restart_pending'] ?? false,
                 'restart_in_progress' => $status['restart_in_progress'] ?? false,
-                'memory_usage'        => $status['memory_usage'] ?? [],
-                'interned_strings'    => $status['interned_strings_usage'] ?? [],
-                'statistics'          => $status['opcache_statistics'] ?? [],
-                'scripts_count'       => count($scripts),
-                'scripts'             => $withScripts ? array_keys($scripts) : null,
+                'memory_usage' => $status['memory_usage'] ?? [],
+                'interned_strings' => $status['interned_strings_usage'] ?? [],
+                'statistics' => $status['opcache_statistics'] ?? [],
+                'scripts_count' => count($scripts),
+                'scripts' => $withScripts ? array_keys($scripts) : null,
             ];
 
             return $this->asSuccess($data);

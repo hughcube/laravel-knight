@@ -6,7 +6,7 @@ require_once __DIR__.'/../../../OPcache/Support/OpcacheOverrides.php';
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 
-if (!function_exists(__NAMESPACE__.'\extension_loaded')) {
+if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
     function extension_loaded($name): bool
     {
         return OpcacheTestOverrides::$extensionLoaded;
@@ -17,14 +17,14 @@ namespace HughCube\Laravel\Knight\Http\Actions\OPcache;
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 
-if (!function_exists(__NAMESPACE__.'\extension_loaded')) {
+if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
     function extension_loaded($name): bool
     {
         return OpcacheTestOverrides::$extensionLoaded;
     }
 }
 
-if (!function_exists(__NAMESPACE__.'\opcache_reset')) {
+if (! function_exists(__NAMESPACE__.'\opcache_reset')) {
     function opcache_reset(): bool
     {
         return OpcacheTestOverrides::$opcacheResetResult;

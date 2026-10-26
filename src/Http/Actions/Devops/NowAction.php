@@ -19,7 +19,7 @@ class NowAction extends Controller
             /** @phpstan-ignore-next-line */
             'timestamp' => $now->getTimestampAsFloat(),
             /** @phpstan-ignore-next-line */
-            'rfc3339'   => $now->toRfc3339ExtendedString(),
+            'rfc3339' => $now->toRfc3339ExtendedString(),
         ]);
     }
 }
