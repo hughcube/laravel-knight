@@ -18,9 +18,9 @@ class BusinessRuleException extends \RuntimeException
     protected $stringCode;
 
     /**
-     * @param string         $message
-     * @param int            $code
-     * @param Throwable|null $previous
+     * @param  string  $message
+     * @param  int  $code
+     * @param  Throwable|null  $previous
      */
     public function __construct($message = '', $code = 0, $previous = null)
     {
@@ -28,8 +28,7 @@ class BusinessRuleException extends \RuntimeException
     }
 
     /**
-     * @param string $stringCode
-     *
+     * @param  string  $stringCode
      * @return $this
      */
     public function setStringCode($stringCode)

@@ -20,8 +20,7 @@ trait SimpleListQuery
     use ListQuery;
 
     /**
-     * @param mixed $results
-     *
+     * @param  mixed  $results
      * @return mixed
      */
     protected function createResponse($results)

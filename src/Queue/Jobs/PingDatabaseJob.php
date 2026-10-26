@@ -29,7 +29,7 @@ class PingDatabaseJob extends Job
         $writeResultMessage = $this->pingResultMessage($connection, false);
 
         $readResultMessage = null;
-        if (!empty($connection->getConfig('read'))) {
+        if (! empty($connection->getConfig('read'))) {
             $readResultMessage = $this->pingResultMessage($connection, false);
         }
 

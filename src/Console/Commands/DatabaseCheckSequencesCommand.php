@@ -157,12 +157,12 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
         ));
 
         // 发送告警
-        if ($alert && !empty($anomalies)) {
+        if ($alert && ! empty($anomalies)) {
             $this->sendAlert($anomalies, $connection);
         }
 
         // 修复异常
-        if ($fix && !empty($anomalies)) {
+        if ($fix && ! empty($anomalies)) {
             $this->newLine();
             $this->fixAnomalies($connection, $anomalies, $growth, $force);
         }
@@ -173,8 +173,7 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 获取所有表.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return Collection
      */
     protected function getTables(Connection $connection): Collection
@@ -192,8 +191,7 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 根据 pattern 和 exclude 过滤表.
      *
-     * @param Collection $tables
-     *
+     * @param  Collection  $tables
      * @return Collection
      */
     protected function filterTables(Collection $tables): Collection
@@ -205,18 +203,18 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
         $excludes = is_array($excludes) ? $excludes : [$excludes];
 
         $patterns = array_filter($patterns, function ($p) {
-            return !empty($p);
+            return ! empty($p);
         });
         $excludes = array_filter($excludes, function ($e) {
-            return !empty($e);
+            return ! empty($e);
         });
 
         return $tables->filter(function ($table) use ($patterns, $excludes) {
-            if (!empty($patterns) && !Str::is($patterns, $table)) {
+            if (! empty($patterns) && ! Str::is($patterns, $table)) {
                 return false;
             }
 
-            if (!empty($excludes) && Str::is($excludes, $table)) {
+            if (! empty($excludes) && Str::is($excludes, $table)) {
                 return false;
             }
 
@@ -227,9 +225,8 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 检查单个表的主键最大值与序列值.
      *
-     * @param Connection $connection
-     * @param string     $table
-     *
+     * @param  Connection  $connection
+     * @param  string  $table
      * @return array|null
      */
     protected function checkTable(Connection $connection, $table)
@@ -254,21 +251,20 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
         $sequenceValue = $this->getSequenceCurrentValue($connection, $sequenceName);
 
         return [
-            'table'          => $table,
-            'primary_key'    => $primaryKey,
-            'sequence_name'  => $sequenceName,
-            'max_id'         => $maxId,
+            'table' => $table,
+            'primary_key' => $primaryKey,
+            'sequence_name' => $sequenceName,
+            'max_id' => $maxId,
             'sequence_value' => $sequenceValue,
-            'is_anomaly'     => $maxId > $sequenceValue,
+            'is_anomaly' => $maxId > $sequenceValue,
         ];
     }
 
     /**
      * 获取表的主键列名.
      *
-     * @param Connection $connection
-     * @param string     $table
-     *
+     * @param  Connection  $connection
+     * @param  string  $table
      * @return string|null
      */
     protected function getPrimaryKeyColumn(Connection $connection, $table)
@@ -280,7 +276,7 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
             WHERE i.indrelid = ?::regclass AND i.indisprimary
         ', [$table]);
 
-        if (!empty($rows)) {
+        if (! empty($rows)) {
             return $rows[0]->column_name;
         }
 
@@ -290,10 +286,9 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 获取序列名称.
      *
-     * @param Connection $connection
-     * @param string     $table
-     * @param string     $column
-     *
+     * @param  Connection  $connection
+     * @param  string  $table
+     * @param  string  $column
      * @return string|null
      */
     protected function getSequenceName(Connection $connection, $table, $column)
@@ -304,7 +299,7 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
             [$table, $column]
         );
 
-        if (!empty($result->sequence_name)) {
+        if (! empty($result->sequence_name)) {
             return $result->sequence_name;
         }
 
@@ -316,7 +311,7 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
             WHERE a.attrelid = ?::regclass AND a.attname = ?
         ', [$table, $column]);
 
-        if (!empty($result->column_default)) {
+        if (! empty($result->column_default)) {
             if (preg_match("/nextval\\('([^']+)'(?:::regclass)?\\)/", $result->column_default, $matches)) {
                 return $matches[1];
             }
@@ -346,7 +341,7 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
               AND a.attname = ?
         ", [$table, $column]);
 
-        if (!empty($result->sequence_name)) {
+        if (! empty($result->sequence_name)) {
             return $result->sequence_name;
         }
 
@@ -356,10 +351,9 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 获取表中主键的最大值.
      *
-     * @param Connection $connection
-     * @param string     $table
-     * @param string     $primaryKey
-     *
+     * @param  Connection  $connection
+     * @param  string  $table
+     * @param  string  $primaryKey
      * @return int
      */
     protected function getMaxId(Connection $connection, $table, $primaryKey): int
@@ -376,9 +370,8 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 获取序列当前值.
      *
-     * @param Connection $connection
-     * @param string     $sequenceName
-     *
+     * @param  Connection  $connection
+     * @param  string  $sequenceName
      * @return int
      */
     protected function getSequenceCurrentValue(Connection $connection, $sequenceName): int
@@ -401,9 +394,8 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 发送告警日志.
      *
-     * @param array      $anomalies
-     * @param Connection $connection
-     *
+     * @param  array  $anomalies
+     * @param  Connection  $connection
      * @return void
      */
     protected function sendAlert(array $anomalies, Connection $connection): void
@@ -433,11 +425,10 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
     /**
      * 修复异常的序列值.
      *
-     * @param Connection $connection
-     * @param array      $anomalies
-     * @param int        $growth
-     * @param bool       $force
-     *
+     * @param  Connection  $connection
+     * @param  array  $anomalies
+     * @param  int  $growth
+     * @param  bool  $force
      * @return void
      */
     protected function fixAnomalies(Connection $connection, array $anomalies, int $growth, bool $force): void
@@ -445,7 +436,7 @@ class DatabaseCheckSequencesCommand extends \HughCube\Laravel\Knight\Console\Com
         $this->info(sprintf('Fixing %d anomaly(ies) with growth=%d...', count($anomalies), $growth));
         $this->newLine();
 
-        if (!$force && !$this->confirm('Proceed with fixing sequences?')) {
+        if (! $force && ! $this->confirm('Proceed with fixing sequences?')) {
             $this->info('Fix cancelled.');
 
             return;

@@ -18,7 +18,7 @@ class ClearModelCacheTest extends TestCase
         parent::setUp();
 
         $this->modelDir = app_path('Models');
-        if (!is_dir($this->modelDir)) {
+        if (! is_dir($this->modelDir)) {
             $this->createdModelDir = true;
             mkdir($this->modelDir, 0777, true);
         }
@@ -140,7 +140,8 @@ PHP, $this->modelClass);
         $class::$rows = [new $class(1), new $class(2), new $class(3)];
         $class::$deletedIds = [];
 
-        $command = new class($class, '1,3') extends ClearModelCache {
+        $command = new class($class, '1,3') extends ClearModelCache
+        {
             public array $choices = [];
             public array $infoMessages = [];
             private string $model;
@@ -183,7 +184,8 @@ PHP, $this->modelClass);
         $class::$rows = [new $class(10), new $class(20)];
         $class::$deletedIds = [];
 
-        $command = new class($class, '*') extends ClearModelCache {
+        $command = new class($class, '*') extends ClearModelCache
+        {
             private string $model;
             private string $scopes;
 

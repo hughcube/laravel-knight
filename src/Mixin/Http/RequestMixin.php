@@ -266,7 +266,7 @@ class RequestMixin
         return function (): bool {
             $ua = $this->userAgent();
 
-            return str_contains($ua, 'QQ/') && !str_contains($ua, 'MQQBrowser');
+            return str_contains($ua, 'QQ/') && ! str_contains($ua, 'MQQBrowser');
         };
     }
 

@@ -75,8 +75,7 @@ class MultipleModelBatchFinder
     /**
      * 静态方法：按主键批量查询.
      *
-     * @param array<class-string<Model>, array> $queries [模型类名 => [id1, id2, ...], ...]
-     *
+     * @param  array<class-string<Model>, array>  $queries  [模型类名 => [id1, id2, ...], ...]
      * @return MultipleModelBatchResult
      */
     public static function find(array $queries): MultipleModelBatchResult
@@ -92,8 +91,7 @@ class MultipleModelBatchFinder
     /**
      * 静态方法：按唯一键批量查询.
      *
-     * @param array<class-string<Model>, array> $queries [模型类名 => [[条件1], [条件2], ...], ...]
-     *
+     * @param  array<class-string<Model>, array>  $queries  [模型类名 => [[条件1], [条件2], ...], ...]
      * @return MultipleModelBatchResult
      */
     public static function findByUniqueKeys(array $queries): MultipleModelBatchResult
@@ -109,9 +107,8 @@ class MultipleModelBatchFinder
     /**
      * 添加按主键查询.
      *
-     * @param class-string<Model> $class 模型类名
-     * @param array|Collection    $ids   主键 ID 数组
-     *
+     * @param  class-string<Model>  $class  模型类名
+     * @param  array|Collection  $ids  主键 ID 数组
      * @return $this
      */
     public function with(string $class, $ids): self
@@ -131,9 +128,8 @@ class MultipleModelBatchFinder
     /**
      * 添加按唯一键查询.
      *
-     * @param class-string<Model> $class      模型类名
-     * @param array|Collection    $conditions 条件数组
-     *
+     * @param  class-string<Model>  $class  模型类名
+     * @param  array|Collection  $conditions  条件数组
      * @return $this
      */
     public function withUniqueKeys(string $class, $conditions): self
@@ -180,7 +176,7 @@ class MultipleModelBatchFinder
             $cache = $this->getQuery($class)->getCache();
             $groupKey = spl_object_id($cache);
 
-            if (!isset($groups[$groupKey])) {
+            if (! isset($groups[$groupKey])) {
                 $groups[$groupKey] = ['cache' => $cache, 'models' => []];
             }
 
@@ -193,9 +189,8 @@ class MultipleModelBatchFinder
     /**
      * 执行单个缓存组的查询.
      *
-     * @param CacheInterface $cache
-     * @param array          $models [class => conditions]
-     *
+     * @param  CacheInterface  $cache
+     * @param  array  $models  [class => conditions]
      * @return array<string, array>
      */
     protected function executeGroup(CacheInterface $cache, array $models): array
@@ -225,7 +220,7 @@ class MultipleModelBatchFinder
                     /** @var Model $cachedValue */
                     $cachedValue->setIsFromCache();
                     $results[$class][] = $cachedValue;
-                } elseif (!$model->isCachePlaceholder($cachedValue)) {
+                } elseif (! $model->isCachePlaceholder($cachedValue)) {
                     $missed[$class]['conditions'][$index] = $condition;
                     $missed[$class]['cacheKeys'][$index] = $cacheKey;
                 }
@@ -233,7 +228,7 @@ class MultipleModelBatchFinder
         }
 
         // 查询未命中的数据并写入缓存
-        if (!empty($missed)) {
+        if (! empty($missed)) {
             $this->fetchMissedAndCache($cache, $missed, $results);
         }
 
@@ -243,8 +238,7 @@ class MultipleModelBatchFinder
     /**
      * 构建缓存键映射.
      *
-     * @param array $models [class => conditions]
-     *
+     * @param  array  $models  [class => conditions]
      * @return array{keys: array, map: array}
      */
     protected function buildCacheKeyMap(array $models): array
@@ -270,9 +264,9 @@ class MultipleModelBatchFinder
     /**
      * 查询未命中数据并写入缓存.
      *
-     * @param CacheInterface $cache
-     * @param array          $missed
-     * @param array          $results
+     * @param  CacheInterface  $cache
+     * @param  array  $missed
+     * @param  array  $results
      */
     protected function fetchMissedAndCache(CacheInterface $cache, array $missed, array &$results): void
     {
@@ -312,7 +306,7 @@ class MultipleModelBatchFinder
         }
 
         // 批量写入缓存
-        if (!empty($cacheItems)) {
+        if (! empty($cacheItems)) {
             $cache->setMultiple($cacheItems, $ttl ?? 3600);
         }
     }
@@ -320,8 +314,7 @@ class MultipleModelBatchFinder
     /**
      * 从数据库批量查询.
      *
-     * @param array<string, array> $models [class => conditions]
-     *
+     * @param  array<string, array>  $models  [class => conditions]
      * @return array<string, array>
      */
     protected function queryFromDatabase(array $models): array
@@ -340,16 +333,15 @@ class MultipleModelBatchFinder
     /**
      * 获取模型实例.
      *
-     * @param class-string<Model> $class 模型类名
-     *
+     * @param  class-string<Model>  $class  模型类名
      * @return Model
      */
     protected function getModel(string $class)
     {
-        if (!isset($this->models[$class])) {
+        if (! isset($this->models[$class])) {
             $model = $this->getQuery($class)->getModel();
 
-            if (!in_array(KnightModelTrait::class, class_uses_recursive($model), true)) {
+            if (! in_array(KnightModelTrait::class, class_uses_recursive($model), true)) {
                 throw new \InvalidArgumentException(sprintf('%s must use trait %s', get_class($model), KnightModelTrait::class));
             }
 
@@ -362,13 +354,12 @@ class MultipleModelBatchFinder
     /**
      * 获取 Query Builder（带缓存）.
      *
-     * @param class-string<Model> $class 模型类名
-     *
+     * @param  class-string<Model>  $class  模型类名
      * @return Builder
      */
     protected function getQuery(string $class)
     {
-        if (!isset($this->builders[$class])) {
+        if (! isset($this->builders[$class])) {
             $this->builders[$class] = $class::query();
         }
 

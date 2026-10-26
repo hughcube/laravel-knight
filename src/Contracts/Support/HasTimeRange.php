@@ -28,8 +28,7 @@ interface HasTimeRange
     /**
      * 是否已开始.
      *
-     * @param Carbon|null $now
-     *
+     * @param  Carbon|null  $now
      * @return bool
      */
     public function isStarted($now = null);
@@ -37,8 +36,7 @@ interface HasTimeRange
     /**
      * 是否已结束
      *
-     * @param Carbon|null $now
-     *
+     * @param  Carbon|null  $now
      * @return bool
      */
     public function isEnded($now = null);
@@ -46,8 +44,7 @@ interface HasTimeRange
     /**
      * 是否在有效时间内（已开始且未结束）.
      *
-     * @param Carbon|null $now
-     *
+     * @param  Carbon|null  $now
      * @return bool
      */
     public function isInProgress($now = null);
@@ -55,8 +52,7 @@ interface HasTimeRange
     /**
      * 距离开始还有多少秒，已开始返回0.
      *
-     * @param Carbon|null $now
-     *
+     * @param  Carbon|null  $now
      * @return int
      */
     public function getStartRemaining($now = null);
@@ -64,8 +60,7 @@ interface HasTimeRange
     /**
      * 距离结束还有多少秒，已结束返回0.
      *
-     * @param Carbon|null $now
-     *
+     * @param  Carbon|null  $now
      * @return int
      */
     public function getEndRemaining($now = null);

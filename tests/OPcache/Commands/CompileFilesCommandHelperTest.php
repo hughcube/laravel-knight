@@ -96,7 +96,7 @@ class CompileFilesCommandHelperTest extends TestCase
         $configDir = base_path('config');
         $createdDir = false;
 
-        if (!is_dir($configDir)) {
+        if (! is_dir($configDir)) {
             mkdir($configDir, 0777, true);
             $createdDir = true;
         }
@@ -159,7 +159,7 @@ class CompileFilesCommandHelperTest extends TestCase
 
             $command = $this->makeCommand([
                 'with-composer-files' => 1,
-                'without-vendor'      => 1,
+                'without-vendor' => 1,
             ]);
 
             $files = array_map('realpath', $this->callMethod($command, 'getComposerFiles'));
@@ -206,7 +206,8 @@ class CompileFilesCommandHelperTest extends TestCase
         $property->setAccessible(true);
         $previous = $property->getValue();
 
-        $stub = new class() extends OPcache {
+        $stub = new class() extends OPcache
+        {
             public function getRemoteScripts($url = null, $timeout = 5, $useAppHost = true): array
             {
                 return ['foo.php', 'bar/baz.php'];
@@ -233,7 +234,8 @@ class CompileFilesCommandHelperTest extends TestCase
         $property->setAccessible(true);
         $previous = $property->getValue();
 
-        $stub = new class() extends OPcache {
+        $stub = new class() extends OPcache
+        {
             public function getRemoteScripts($url = null, $timeout = 5, $useAppHost = true): array
             {
                 throw new \RuntimeException('remote failure');
@@ -242,7 +244,8 @@ class CompileFilesCommandHelperTest extends TestCase
 
         $property->setValue(null, $stub);
 
-        $command = new class(['with-remote-scripts' => 1]) extends CompileFilesCommand {
+        $command = new class(['with-remote-scripts' => 1]) extends CompileFilesCommand
+        {
             public array $warnings = [];
             private array $options;
 
@@ -278,14 +281,15 @@ class CompileFilesCommandHelperTest extends TestCase
     public function testHandleCompilesFilesWithStubbedProcess()
     {
         $storageDir = storage_path();
-        if (!is_dir($storageDir)) {
+        if (! is_dir($storageDir)) {
             mkdir($storageDir, 0777, true);
         }
 
         $tempFile = tempnam(sys_get_temp_dir(), 'compile-');
         file_put_contents($tempFile, '<?php echo "ok";');
 
-        $command = new class([$tempFile]) extends CompileFilesCommand {
+        $command = new class([$tempFile]) extends CompileFilesCommand
+        {
             public array $messages = [];
             private array $files;
 
@@ -359,7 +363,7 @@ class CompileFilesCommandHelperTest extends TestCase
     public function testHandleReportsRemoteVendorAndOctaneFiles()
     {
         $storageDir = storage_path();
-        if (!is_dir($storageDir)) {
+        if (! is_dir($storageDir)) {
             mkdir($storageDir, 0777, true);
         }
 
@@ -373,7 +377,8 @@ class CompileFilesCommandHelperTest extends TestCase
         file_put_contents($vendorFile, '<?php echo "vendor";');
         file_put_contents($octaneFile, '<?php echo "octane";');
 
-        $command = new class([$appFile], [$remoteFile], [$vendorFile], [$octaneFile]) extends CompileFilesCommand {
+        $command = new class([$appFile], [$remoteFile], [$vendorFile], [$octaneFile]) extends CompileFilesCommand
+        {
             public array $messages = [];
             private array $appFiles;
             private array $remoteFiles;
@@ -459,7 +464,8 @@ class CompileFilesCommandHelperTest extends TestCase
 
     public function testHandleWarnsWhenNoFiles()
     {
-        $command = new class() extends CompileFilesCommand {
+        $command = new class() extends CompileFilesCommand
+        {
             public array $messages = [];
 
             protected function getAppFiles(): array
@@ -549,8 +555,8 @@ class CompileFilesCommandHelperTest extends TestCase
         return [
             'classmap' => $classmapFile,
             'autoload' => $autoloadFile,
-            'psr4'     => $psr4File,
-            'vendor'   => $vendorFile,
+            'psr4' => $psr4File,
+            'vendor' => $vendorFile,
         ];
     }
 
@@ -572,7 +578,7 @@ class CompileFilesCommandHelperTest extends TestCase
 
     private function removeDirectory(string $path): void
     {
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return;
         }
 
@@ -619,7 +625,8 @@ class CompileFilesCommandHelperTest extends TestCase
 
     private function makeCommand(array $options = []): CompileFilesCommand
     {
-        return new class($options) extends CompileFilesCommand {
+        return new class($options) extends CompileFilesCommand
+        {
             private array $options;
 
             public function __construct(array $options)

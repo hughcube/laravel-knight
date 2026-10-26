@@ -14,7 +14,8 @@ class GetRequestDispatcherTraitTest extends TestCase
     public function testGetDispatcherUsesContainerWhenAvailable()
     {
         $events = new EventsDispatcher($this->app);
-        $container = new class($events) {
+        $container = new class($events)
+        {
             private $events;
 
             public function __construct($events)
@@ -28,7 +29,8 @@ class GetRequestDispatcherTraitTest extends TestCase
             }
         };
 
-        $instance = new class($container) {
+        $instance = new class($container)
+        {
             use GetDispatcher;
 
             private $container;
@@ -49,7 +51,8 @@ class GetRequestDispatcherTraitTest extends TestCase
 
     public function testGetDispatcherFallsBackToApp()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use GetDispatcher;
         };
 
@@ -60,7 +63,8 @@ class GetRequestDispatcherTraitTest extends TestCase
     public function testGetRequestUsesContainerWhenAvailable()
     {
         $request = Request::create('/test', 'GET');
-        $container = new class($request) {
+        $container = new class($request)
+        {
             private $request;
 
             public function __construct($request)
@@ -74,7 +78,8 @@ class GetRequestDispatcherTraitTest extends TestCase
             }
         };
 
-        $instance = new class($container) {
+        $instance = new class($container)
+        {
             use GetRequest;
 
             private $container;
@@ -95,7 +100,8 @@ class GetRequestDispatcherTraitTest extends TestCase
 
     public function testGetRequestFallsBackToApp()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use GetRequest;
         };
 

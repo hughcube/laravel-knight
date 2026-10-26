@@ -28,7 +28,7 @@ class PgArrayTest extends TestCase
     {
         parent::setUp();
 
-        if (!$this->isPgsqlConfigured() || self::$arrayTablePrepared) {
+        if (! $this->isPgsqlConfigured() || self::$arrayTablePrepared) {
             return;
         }
 
@@ -103,36 +103,36 @@ class PgArrayTest extends TestCase
     {
         return [
             [
-                'id'     => 1,
-                'name'   => 'record1',
-                'tags'   => ['php', 'laravel', 'mysql'],
+                'id' => 1,
+                'name' => 'record1',
+                'tags' => ['php', 'laravel', 'mysql'],
                 'scores' => [80, 90],
                 'prices' => [1.5, 2.5],
-                'flags'  => ['true', 'false'],
+                'flags' => ['true', 'false'],
             ],
             [
-                'id'     => 2,
-                'name'   => 'record2',
-                'tags'   => ['java', 'spring'],
+                'id' => 2,
+                'name' => 'record2',
+                'tags' => ['java', 'spring'],
                 'scores' => [95, 100],
                 'prices' => [3.5],
-                'flags'  => ['true'],
+                'flags' => ['true'],
             ],
             [
-                'id'     => 3,
-                'name'   => 'record3',
-                'tags'   => ['php', 'symfony', 'django'],
+                'id' => 3,
+                'name' => 'record3',
+                'tags' => ['php', 'symfony', 'django'],
                 'scores' => [70, 85],
                 'prices' => [4.0],
-                'flags'  => ['false'],
+                'flags' => ['false'],
             ],
             [
-                'id'     => 4,
-                'name'   => 'record4',
-                'tags'   => ['php', 'laravel'],
+                'id' => 4,
+                'name' => 'record4',
+                'tags' => ['php', 'laravel'],
                 'scores' => [1, 2, 3],
                 'prices' => [1.0, 2.0],
-                'flags'  => ['true', 'false'],
+                'flags' => ['true', 'false'],
             ],
         ];
     }

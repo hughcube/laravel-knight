@@ -127,16 +127,15 @@ class UniqueId
      * 唯一性: 仅在单个进程内保证唯一
      * 适用: 脚本、单线程任务、临时文件名等无需跨进程唯一的场景
      *
-     * @param string $encoding    编码字符集, 默认 BASE36
-     * @param bool   $fixedLength 是否返回固定长度字符串, 默认 true
+     * @param  string  $encoding  编码字符集, 默认 BASE36
+     * @param  bool  $fixedLength  是否返回固定长度字符串, 默认 true
+     * @return string
      *
      * @throws
-     *
-     * @return string
      */
     public static function short(string $encoding = self::BASE36, bool $fixedLength = true): string
     {
-        list($time, $counter) = static::tick();
+        [$time, $counter] = static::tick();
 
         $decimal = Base::toStringWithPad($time, 14)
             .Base::toStringWithPad($counter, 5);
@@ -154,16 +153,15 @@ class UniqueId
      * 唯一性: 同一台机器上多进程间保证唯一, 含种子防 PID 复用碰撞, fork 安全
      * 适用: 队列 worker、多进程 CLI 任务等同机器多进程场景
      *
-     * @param string $encoding    编码字符集, 默认 BASE36
-     * @param bool   $fixedLength 是否返回固定长度字符串, 默认 true
+     * @param  string  $encoding  编码字符集, 默认 BASE36
+     * @param  bool  $fixedLength  是否返回固定长度字符串, 默认 true
+     * @return string
      *
      * @throws
-     *
-     * @return string
      */
     public static function process(string $encoding = self::BASE36, bool $fixedLength = true): string
     {
-        list($time, $counter) = static::tick();
+        [$time, $counter] = static::tick();
 
         $decimal = Base::toStringWithPad($time, 14)
             .Base::toStringWithPad(static::getProcessId(), 10)
@@ -185,16 +183,15 @@ class UniqueId
      * 适用: 分布式系统、微服务、多节点部署等需要全局唯一的场景
      * 注意: 本模式的 ~46 bit 随机不足以防枚举, 对外暴露的 ID 请使用 secure() 模式
      *
-     * @param string $encoding    编码字符集, 默认 BASE36
-     * @param bool   $fixedLength 是否返回固定长度字符串, 默认 true
+     * @param  string  $encoding  编码字符集, 默认 BASE36
+     * @param  bool  $fixedLength  是否返回固定长度字符串, 默认 true
+     * @return string
      *
      * @throws
-     *
-     * @return string
      */
     public static function distributed(string $encoding = self::BASE36, bool $fixedLength = true): string
     {
-        list($time, $counter) = static::tick();
+        [$time, $counter] = static::tick();
 
         $decimal = Base::toStringWithPad($time, 14)
             .Base::toStringWithPad(static::getMachineId(), 19)
@@ -217,16 +214,15 @@ class UniqueId
      * 唯一性: 分布式唯一 + 39位随机数防枚举(~130 bit 熵, 暴力枚举需 10^39 次)
      * 适用: 对外暴露的 ID(如订单号、文件URL)、防止用户猜测和遍历的场景
      *
-     * @param string $encoding    编码字符集, 默认 BASE36
-     * @param bool   $fixedLength 是否返回固定长度字符串, 默认 true
+     * @param  string  $encoding  编码字符集, 默认 BASE36
+     * @param  bool  $fixedLength  是否返回固定长度字符串, 默认 true
+     * @return string
      *
      * @throws
-     *
-     * @return string
      */
     public static function secure(string $encoding = self::BASE36, bool $fixedLength = true): string
     {
-        list($time, $counter) = static::tick();
+        [$time, $counter] = static::tick();
 
         $decimal = Base::toStringWithPad($time, 14)
             .Base::toStringWithPad(static::getMachineId(), 19)
@@ -270,7 +266,7 @@ class UniqueId
                 $interfaces = net_get_interfaces();
                 if (is_array($interfaces)) {
                     foreach ($interfaces as $iface) {
-                        if (!empty($iface['mac']) && $iface['mac'] !== '00:00:00:00:00:00') {
+                        if (! empty($iface['mac']) && $iface['mac'] !== '00:00:00:00:00:00') {
                             $macAddresses[] = strtolower((string) $iface['mac']);
                         }
                     }
@@ -346,9 +342,9 @@ class UniqueId
      *
      * 12 位十进制(~40 bit 熵), 生日碰撞阈值约 100 万个进程.
      *
-     * @throws
-     *
      * @return int
+     *
+     * @throws
      */
     protected static function getProcessSeed(): int
     {
@@ -366,9 +362,9 @@ class UniqueId
      * 某些 SAPI 中 getmypid() 可能返回 false. 这时退化为进程内随机 PID,
      * 避免类型错误和固定 PID(如 0) 带来的碰撞放大.
      *
-     * @throws
-     *
      * @return int
+     *
+     * @throws
      */
     protected static function getProcessId(): int
     {
@@ -395,9 +391,9 @@ class UniqueId
      *
      * machineId 不重置: 它是机器级标识, 父子进程在同一台机器上, 相同是正确语义.
      *
-     * @throws
-     *
      * @return void
+     *
+     * @throws
      */
     protected static function checkFork(): void
     {
@@ -427,9 +423,9 @@ class UniqueId
      * - 计数器溢出: 同毫秒超出上限时自旋等待到下一毫秒, 避免回绕碰撞
      * - 计数器随机化: 每毫秒随机起始值(0-49999), 降低多进程同毫秒首个 ID 碰撞概率
      *
-     * @throws
-     *
      * @return array [int $relativeTime, int $counter]
+     *
+     * @throws
      */
     protected static function tick(): array
     {
@@ -470,10 +466,9 @@ class UniqueId
      * - 所有 ID 长度固定, 适合数据库定长字段存储
      * - 补齐字符 '0' 是字典序最小字符, 不影响排序, ID 仍保持时间递增有序
      *
-     * @param string $encoded       编码后的字符串
-     * @param int    $decimalDigits 原始十进制数的位数
-     * @param string $encoding      编码字符集
-     *
+     * @param  string  $encoded  编码后的字符串
+     * @param  int  $decimalDigits  原始十进制数的位数
+     * @param  string  $encoding  编码字符集
      * @return string
      */
     protected static function padToFixedLength(string $encoded, int $decimalDigits, string $encoding): string

@@ -30,7 +30,7 @@ class BlueprintMixinTest extends TestCase
     {
         parent::setUp();
 
-        if (!self::$mixinRegistered) {
+        if (! self::$mixinRegistered) {
             Blueprint::mixin(new BlueprintMixin());
             PostgresSchemaGrammar::mixin(new PostgresGrammarMixin());
             self::$mixinRegistered = true;
@@ -2720,7 +2720,7 @@ class BlueprintMixinTest extends TestCase
 
     protected function skipIfBtreeGinExtensionNotAvailable(): void
     {
-        if (!$this->isPgsqlConfigured()) {
+        if (! $this->isPgsqlConfigured()) {
             return;
         }
 
@@ -2730,7 +2730,7 @@ class BlueprintMixinTest extends TestCase
                 "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'btree_gin') as exists"
             );
 
-            if (!$result->exists) {
+            if (! $result->exists) {
                 // Try to create extension
                 try {
                     $connection->statement('CREATE EXTENSION IF NOT EXISTS btree_gin');

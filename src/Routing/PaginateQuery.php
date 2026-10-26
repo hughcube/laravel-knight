@@ -84,9 +84,8 @@ trait PaginateQuery
     }
 
     /**
-     * @param int|null $page
-     * @param int|null $pageSize
-     *
+     * @param  int|null  $page
+     * @param  int|null  $pageSize
      * @return int|null
      */
     protected function getOffset(?int $page, ?int $pageSize): ?int
@@ -104,7 +103,7 @@ trait PaginateQuery
     abstract protected function makeQuery(): ?object;
 
     /**
-     * @param mixed $query
+     * @param  mixed  $query
      */
     protected function isBuilder($query): bool
     {
@@ -120,13 +119,12 @@ trait PaginateQuery
     }
 
     /**
-     * @param QueryBuilder|EloquentBuilder|mixed $query
-     *
+     * @param  QueryBuilder|EloquentBuilder|mixed  $query
      * @return null|int
      */
     protected function queryCount($query): ?int
     {
-        if (!$this->isBuilder($query)) {
+        if (! $this->isBuilder($query)) {
             return 0;
         }
 
@@ -134,15 +132,14 @@ trait PaginateQuery
     }
 
     /**
-     * @param QueryBuilder|EloquentBuilder|mixed $query
-     * @param int|null                           $offset
-     * @param int|null                           $limit
-     *
+     * @param  QueryBuilder|EloquentBuilder|mixed  $query
+     * @param  int|null  $offset
+     * @param  int|null  $limit
      * @return Collection|array
      */
     protected function queryCollection($query, ?int $offset, ?int $limit)
     {
-        if (!$this->isBuilder($query)) {
+        if (! $this->isBuilder($query)) {
             return Collection::make();
         }
 
@@ -158,8 +155,7 @@ trait PaginateQuery
     }
 
     /**
-     * @param Collection $rows
-     *
+     * @param  Collection  $rows
      * @return Collection|array
      */
     protected function formatCollection(Collection $rows)
@@ -168,8 +164,7 @@ trait PaginateQuery
     }
 
     /**
-     * @param mixed $results
-     *
+     * @param  mixed  $results
      * @return mixed
      */
     protected function createResponse($results)

@@ -16,7 +16,8 @@ class DeprecatedTraitsTest extends TestCase
 {
     public function testSupportGetOrSetTraitCachesValues()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use GetOrSet;
         };
 
@@ -62,7 +63,8 @@ class DeprecatedTraitsTest extends TestCase
 
     public function testSupportParameterBagTraitLoadsParameters()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use ParameterBagTrait;
 
             protected function loadParameters()
@@ -80,7 +82,8 @@ class DeprecatedTraitsTest extends TestCase
 
     public function testSupportValidationTraitUsesRules()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use Validation;
 
             protected function rules(): array
@@ -96,7 +99,8 @@ class DeprecatedTraitsTest extends TestCase
 
     public function testSupportMultipleHandlerTraitExecutesHandlers()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use MultipleHandler;
 
             public array $done = [];
@@ -130,7 +134,8 @@ class DeprecatedTraitsTest extends TestCase
 
     public function testSupportHttpClientTraitUsesCustomCreator()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use HttpClient;
 
             protected function createHttpClient(): Client
@@ -146,7 +151,8 @@ class DeprecatedTraitsTest extends TestCase
 
     public function testSupportHttpClientTraitFallsBackToDefault()
     {
-        $instance = new class() {
+        $instance = new class()
+        {
             use HttpClient;
         };
 

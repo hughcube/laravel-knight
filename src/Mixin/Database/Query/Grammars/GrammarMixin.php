@@ -548,7 +548,7 @@ class GrammarMixin
 
             // Validate operator
             $validOperators = ['=', '!=', '<>', '<', '>', '<=', '>='];
-            if (!in_array($operator, $validOperators, true)) {
+            if (! in_array($operator, $validOperators, true)) {
                 $operator = '=';
             }
 

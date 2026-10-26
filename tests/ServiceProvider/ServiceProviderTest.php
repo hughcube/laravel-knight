@@ -21,19 +21,19 @@ class ServiceProviderTest extends TestCase
     public function testBootRegistersRoutes()
     {
         config([
-            'knight.opcache.route_prefix'           => 'knight-opcache',
-            'knight.opcache.action.scripts'         => null,
-            'knight.opcache.action.states'          => null,
-            'knight.opcache.action.reset'           => null,
-            'knight.request.route_prefix'           => 'knight-request',
-            'knight.request.action.log'             => null,
-            'knight.request.action.show'            => null,
-            'knight.healthcheck.route_prefix'       => 'knight-health',
+            'knight.opcache.route_prefix' => 'knight-opcache',
+            'knight.opcache.action.scripts' => null,
+            'knight.opcache.action.states' => null,
+            'knight.opcache.action.reset' => null,
+            'knight.request.route_prefix' => 'knight-request',
+            'knight.request.action.log' => null,
+            'knight.request.action.show' => null,
+            'knight.healthcheck.route_prefix' => 'knight-health',
             'knight.healthcheck.action.healthcheck' => null,
-            'knight.phpinfo.route_prefix'           => 'knight-phpinfo',
-            'knight.phpinfo.action.phpinfo'         => null,
-            'knight.devops.route_prefix'            => 'knight-devops',
-            'knight.devops.action.system'           => null,
+            'knight.phpinfo.route_prefix' => 'knight-phpinfo',
+            'knight.phpinfo.action.phpinfo' => null,
+            'knight.devops.route_prefix' => 'knight-devops',
+            'knight.devops.action.system' => null,
         ]);
 
         $provider = new ServiceProvider($this->app);
@@ -65,7 +65,8 @@ class ServiceProviderTest extends TestCase
         $dispatcher = EloquentModel::getEventDispatcher();
         $this->assertInstanceOf(Dispatcher::class, $dispatcher);
 
-        $model = new class() extends KnightModel {
+        $model = new class() extends KnightModel
+        {
             /** @var int */
             public static $modelChangedCalls = 0;
 
@@ -89,7 +90,8 @@ class ServiceProviderTest extends TestCase
         $dispatcher = EloquentModel::getEventDispatcher();
         $this->assertInstanceOf(Dispatcher::class, $dispatcher);
 
-        $model = new class() extends EloquentModel {
+        $model = new class() extends EloquentModel
+        {
             /** @var int */
             public static $deleteCalls = 0;
 

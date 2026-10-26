@@ -19,8 +19,8 @@ class AutoCleanFileJob extends Job
     protected function rules(): array
     {
         return [
-            'dir'      => ['required'],
-            'pattern'  => ['nullable'],
+            'dir' => ['required'],
+            'pattern' => ['nullable'],
             'max_days' => ['integer', 'min:0'],
         ];
     }
@@ -35,7 +35,7 @@ class AutoCleanFileJob extends Job
         $count = 0;
         foreach ($files as $file) {
             $mDate = Carbon::createFromTimestamp($file->getMTime());
-            if (!$mDate->addDays($this->getMaxDays())->isPast()) {
+            if (! $mDate->addDays($this->getMaxDays())->isPast()) {
                 continue;
             }
 

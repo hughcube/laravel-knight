@@ -10,12 +10,11 @@ trait AssertCacheTrait
     /**
      * 断言缓存中存在指定 key.
      *
-     * @param string      $key
-     * @param string|null $store
+     * @param  string  $key
+     * @param  string|null  $store
+     * @return void
      *
      * @throws InvalidArgumentException
-     *
-     * @return void
      */
     protected function assertCacheHas(string $key, ?string $store = null): void
     {
@@ -26,12 +25,11 @@ trait AssertCacheTrait
     /**
      * 断言缓存中不存在指定 key.
      *
-     * @param string      $key
-     * @param string|null $store
+     * @param  string  $key
+     * @param  string|null  $store
+     * @return void
      *
      * @throws InvalidArgumentException
-     *
-     * @return void
      */
     protected function assertCacheMissing(string $key, ?string $store = null): void
     {
@@ -42,13 +40,12 @@ trait AssertCacheTrait
     /**
      * 断言缓存中指定 key 的值等于期望值
      *
-     * @param mixed       $expected
-     * @param string      $key
-     * @param string|null $store
+     * @param  mixed  $expected
+     * @param  string  $key
+     * @param  string|null  $store
+     * @return void
      *
      * @throws InvalidArgumentException
-     *
-     * @return void
      */
     protected function assertCacheEquals($expected, string $key, ?string $store = null): void
     {

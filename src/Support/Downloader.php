@@ -30,8 +30,7 @@ class Downloader implements StaticInstanceInterface
     use StaticInstanceTrait;
 
     /**
-     * @param string $url
-     *
+     * @param  string  $url
      * @return string
      */
     public static function path(string $url): string
@@ -48,20 +47,19 @@ class Downloader implements StaticInstanceInterface
     }
 
     /**
-     * @param string      $method
-     * @param string      $url
-     * @param string|null $file
-     * @param array       $options
+     * @param  string  $method
+     * @param  string  $url
+     * @param  string|null  $file
+     * @param  array  $options
+     * @return string
      *
      * @throws GuzzleException
      * @throws Exception
-     *
-     * @return string
      */
     public function to(string $method, string $url, ?string $file = null, array $options = []): string
     {
         $file = $file ?: $this->path($url);
-        if (!is_dir($dir = dirname($file))) {
+        if (! is_dir($dir = dirname($file))) {
             File::makeDirectory($dir, 0777, true);
         }
 
@@ -78,13 +76,12 @@ class Downloader implements StaticInstanceInterface
     }
 
     /**
-     * @param string $name
-     * @param array  $args
+     * @param  string  $name
+     * @param  array  $args
+     * @return string
      *
      * @throws Exception
      * @throws GuzzleException
-     *
-     * @return string
      */
     public function __call(string $name, array $args): string
     {
@@ -104,12 +101,11 @@ class Downloader implements StaticInstanceInterface
     /**
      * Handle dynamic, static calls to the object.
      *
-     * @param string $method
-     * @param array  $args
+     * @param  string  $method
+     * @param  array  $args
+     * @return mixed
      *
      * @throws RuntimeException
-     *
-     * @return mixed
      */
     public static function __callStatic(string $method, array $args)
     {

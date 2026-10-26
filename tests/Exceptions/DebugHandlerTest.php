@@ -1,13 +1,13 @@
 <?php
 
 namespace HughCube\Laravel\EasySms\Exceptions {
-    if (!class_exists(MobileInvalidException::class, false)) {
+    if (! class_exists(MobileInvalidException::class, false)) {
         class MobileInvalidException extends \Exception
         {
         }
     }
 
-    if (!class_exists(ThrottleRequestsException::class, false)) {
+    if (! class_exists(ThrottleRequestsException::class, false)) {
         class ThrottleRequestsException extends \Exception
         {
         }
@@ -42,7 +42,8 @@ namespace HughCube\Laravel\Knight\Tests\Exceptions {
             $request = Request::create('/exception', 'GET');
             $response = new Response('ok', 418);
 
-            $exception = new class($response) extends \Exception implements ResponseExceptionInterface {
+            $exception = new class($response) extends \Exception implements ResponseExceptionInterface
+            {
                 private Response $response;
 
                 public function __construct(Response $response)
@@ -67,14 +68,16 @@ namespace HughCube\Laravel\Knight\Tests\Exceptions {
             $handler = $this->app->make(DebugHandler::class);
             $request = Request::create('/exception', 'GET');
 
-            $dataException = new class('data-error', 499) extends \Exception implements DataExceptionInterface {
+            $dataException = new class('data-error', 499) extends \Exception implements DataExceptionInterface
+            {
                 public function getData(): array
                 {
                     return ['key' => 'value'];
                 }
             };
 
-            $emptyDataException = new class('empty', 0) extends \Exception implements DataExceptionInterface {
+            $emptyDataException = new class('empty', 0) extends \Exception implements DataExceptionInterface
+            {
                 public function getData(): array
                 {
                     return [];
@@ -134,11 +137,12 @@ namespace HughCube\Laravel\Knight\Tests\Exceptions {
 
         public function testBuildResultsUsesCustomConversionAndDefaultsData()
         {
-            $handler = new class($this->app) extends DebugHandler {
+            $handler = new class($this->app) extends DebugHandler
+            {
                 protected function convertExceptionToResults(Throwable $e): ?array
                 {
                     return [
-                        'Code'    => 'Custom',
+                        'Code' => 'Custom',
                         'Message' => 'Converted',
                     ];
                 }

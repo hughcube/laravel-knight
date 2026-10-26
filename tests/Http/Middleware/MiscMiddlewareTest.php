@@ -32,7 +32,7 @@ class MiscMiddlewareTest extends TestCase
 
     public function testHandleAllPathCorsMatchesAnyPath()
     {
-        if (!class_exists(CorsService::class)) {
+        if (! class_exists(CorsService::class)) {
             $this->markTestSkipped('Fruitcake CorsService is not available.');
         }
 
@@ -69,15 +69,16 @@ class MiscMiddlewareTest extends TestCase
             '/signed',
             'POST',
             [
-                'Date'         => 'Mon, 02 Jan 2006 15:04:05 GMT',
+                'Date' => 'Mon, 02 Jan 2006 15:04:05 GMT',
                 'Content-Type' => 'application/json',
-                'Nonce'        => '1234567890',
+                'Nonce' => '1234567890',
             ],
             '{"a":1}'
         );
 
         $request->setUserResolver(function () {
-            return new class() implements GetUserLoginAccessSecret {
+            return new class() implements GetUserLoginAccessSecret
+            {
                 public function getUserLoginAccessSecret(): ?string
                 {
                     return 'secret';
@@ -102,16 +103,17 @@ class MiscMiddlewareTest extends TestCase
             '/signed',
             'POST',
             [
-                'Date'         => 'Mon, 02 Jan 2006 15:04:05 GMT',
+                'Date' => 'Mon, 02 Jan 2006 15:04:05 GMT',
                 'Content-Type' => 'application/json',
-                'Nonce'        => '1234567890',
-                'Signature'    => 'invalid',
+                'Nonce' => '1234567890',
+                'Signature' => 'invalid',
             ],
             '{"a":1}'
         );
 
         $request->setUserResolver(function () {
-            return new class() implements GetUserLoginAccessSecret {
+            return new class() implements GetUserLoginAccessSecret
+            {
                 public function getUserLoginAccessSecret(): ?string
                 {
                     return 'secret';
@@ -156,7 +158,7 @@ class MiscMiddlewareTest extends TestCase
     {
         $middleware = new RequestSignatureValidate();
         $request = $this->makeSignedRequest('/signed', 'GET', [
-            'Nonce'     => 'short',
+            'Nonce' => 'short',
             'Signature' => 'any',
         ], '');
 
@@ -197,7 +199,8 @@ class MiscMiddlewareTest extends TestCase
     {
         $middleware = new RequestSignatureValidate();
 
-        $request = new class() extends KnightRequest {
+        $request = new class() extends KnightRequest
+        {
             public function getClientHeaderPrefix(): string
             {
                 return 'X-Client-';

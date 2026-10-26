@@ -35,10 +35,10 @@ class UniqueIdTest extends TestCase
     public function testLengthByMethod()
     {
         $expectedLengths = [
-            'short'       => 13,
-            'process'     => 27,
+            'short' => 13,
+            'process' => 27,
             'distributed' => 48,
-            'secure'      => 64,
+            'secure' => 64,
         ];
 
         foreach ($this->methodProvider() as $name => $args) {
@@ -261,25 +261,25 @@ class UniqueIdTest extends TestCase
     {
         return [
             // short = time(14) + counter(5) = 19 位十进制
-            'short_base36'            => [19, UniqueId::BASE36, 13],
-            'short_base62'            => [19, UniqueId::BASE62, 11],
-            'short_unordered36'       => [19, UniqueId::UNORDERED_BASE36, 13],
-            'short_unordered62'       => [19, UniqueId::UNORDERED_BASE62, 11],
+            'short_base36' => [19, UniqueId::BASE36, 13],
+            'short_base62' => [19, UniqueId::BASE62, 11],
+            'short_unordered36' => [19, UniqueId::UNORDERED_BASE36, 13],
+            'short_unordered62' => [19, UniqueId::UNORDERED_BASE62, 11],
             // process = time(14) + pid(10) + seed(12) + counter(5) = 41 位十进制
-            'process_base36'          => [41, UniqueId::BASE36, 27],
-            'process_base62'          => [41, UniqueId::BASE62, 23],
-            'process_unordered36'     => [41, UniqueId::UNORDERED_BASE36, 27],
-            'process_unordered62'     => [41, UniqueId::UNORDERED_BASE62, 23],
+            'process_base36' => [41, UniqueId::BASE36, 27],
+            'process_base62' => [41, UniqueId::BASE62, 23],
+            'process_unordered36' => [41, UniqueId::UNORDERED_BASE36, 27],
+            'process_unordered62' => [41, UniqueId::UNORDERED_BASE62, 23],
             // distributed = time(14) + machine(19) + pid(10) + seed(12) + counter(5) + random(14) = 74 位十进制
-            'distributed_base36'      => [74, UniqueId::BASE36, 48],
-            'distributed_base62'      => [74, UniqueId::BASE62, 42],
+            'distributed_base36' => [74, UniqueId::BASE36, 48],
+            'distributed_base62' => [74, UniqueId::BASE62, 42],
             'distributed_unordered36' => [74, UniqueId::UNORDERED_BASE36, 48],
             'distributed_unordered62' => [74, UniqueId::UNORDERED_BASE62, 42],
             // secure = time(14) + machine(19) + pid(10) + seed(12) + counter(5) + random(39) = 99 位十进制
-            'secure_base36'           => [99, UniqueId::BASE36, 64],
-            'secure_base62'           => [99, UniqueId::BASE62, 56],
-            'secure_unordered36'      => [99, UniqueId::UNORDERED_BASE36, 64],
-            'secure_unordered62'      => [99, UniqueId::UNORDERED_BASE62, 56],
+            'secure_base36' => [99, UniqueId::BASE36, 64],
+            'secure_base62' => [99, UniqueId::BASE62, 56],
+            'secure_unordered36' => [99, UniqueId::UNORDERED_BASE36, 64],
+            'secure_unordered62' => [99, UniqueId::UNORDERED_BASE62, 56],
         ];
     }
 
@@ -367,7 +367,7 @@ class UniqueIdTest extends TestCase
             [99999999999999, 14],
         ];
 
-        foreach ($fields as list($value, $width)) {
+        foreach ($fields as [$value, $width]) {
             $padded = Base::toStringWithPad($value, $width);
             $this->assertSame(
                 $width,
@@ -670,11 +670,10 @@ class UniqueIdTest extends TestCase
     }
 
     /**
-     * @param mixed ...$args
+     * @param  mixed  ...$args
+     * @return mixed
      *
      * @throws \ReflectionException
-     *
-     * @return mixed
      */
     protected function callUniqueIdMethod(string $method, ...$args)
     {
@@ -686,9 +685,9 @@ class UniqueIdTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     *
      * @return mixed
+     *
+     * @throws \ReflectionException
      */
     protected function getUniqueIdState(string $property)
     {
@@ -700,7 +699,7 @@ class UniqueIdTest extends TestCase
     }
 
     /**
-     * @param mixed $value
+     * @param  mixed  $value
      *
      * @throws \ReflectionException
      */
@@ -715,10 +714,10 @@ class UniqueIdTest extends TestCase
     public function methodProvider()
     {
         return [
-            'short'       => ['short'],
-            'process'     => ['process'],
+            'short' => ['short'],
+            'process' => ['process'],
             'distributed' => ['distributed'],
-            'secure'      => ['secure'],
+            'secure' => ['secure'],
         ];
     }
 }

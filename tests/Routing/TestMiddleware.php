@@ -19,7 +19,7 @@ class TestMiddleware
     protected $name;
 
     /**
-     * @param string $name
+     * @param  string  $name
      */
     public function __construct($name = 'default')
     {
@@ -27,9 +27,8 @@ class TestMiddleware
     }
 
     /**
-     * @param mixed   $action
-     * @param Closure $next
-     *
+     * @param  mixed  $action
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle($action, Closure $next)

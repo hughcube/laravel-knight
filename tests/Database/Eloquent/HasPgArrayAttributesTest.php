@@ -890,8 +890,8 @@ class TestPgArrayModel extends Model
     protected $table = 'test_pg_array';
 
     protected $casts = [
-        'id'     => 'integer',
-        'tags'   => 'ARRAY',
+        'id' => 'integer',
+        'tags' => 'ARRAY',
         'scores' => 'ARRAY',
     ];
 }
@@ -906,8 +906,8 @@ class TestPgArrayModelPreserveCasts extends Model
     protected $table = 'test_pg_array';
 
     protected $casts = [
-        'id'     => 'integer',
-        'tags'   => 'ARRAY',
+        'id' => 'integer',
+        'tags' => 'ARRAY',
         'scores' => 'ARRAY',
     ];
 

@@ -19,7 +19,7 @@ class CheckAuthUserInstanceOf
      */
     public function handle($request, $next, ...$expects): Response
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             return $next($request);
         }
 

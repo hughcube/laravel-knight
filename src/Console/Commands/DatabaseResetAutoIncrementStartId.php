@@ -42,13 +42,13 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
         $connection = DB::connection($this->option('connection') ?: null);
         $driver = $connection->getDriverName();
 
-        if (!in_array($driver, ['mysql', 'pgsql'])) {
+        if (! in_array($driver, ['mysql', 'pgsql'])) {
             $this->error(sprintf('Unsupported database driver: %s. Only mysql and pgsql are supported.', $driver));
 
             return;
         }
 
-        if ('mysql' === $driver && !empty($database = $this->option('database'))) {
+        if ('mysql' === $driver && ! empty($database = $this->option('database'))) {
             $connection->getPdo()->exec(sprintf('use `%s`;', $database));
         }
 
@@ -61,7 +61,7 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
         }
 
         $specificTable = $this->option('table');
-        if (!empty($specificTable)) {
+        if (! empty($specificTable)) {
             $tables = $tables->filter(function ($table) use ($specificTable) {
                 return $table === $specificTable;
             });
@@ -90,9 +90,8 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
     }
 
     /**
-     * @param Connection $connection
-     * @param string     $driver
-     *
+     * @param  Connection  $connection
+     * @param  string  $driver
      * @return Collection
      */
     protected function getTables(Connection $connection, $driver): Collection
@@ -118,17 +117,16 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
     }
 
     /**
-     * @param Connection $connection
-     * @param string     $driver
-     * @param string     $table
-     *
+     * @param  Connection  $connection
+     * @param  string  $driver
+     * @param  string  $table
      * @return string|null
      */
     protected function getPrimaryKeyColumn(Connection $connection, $driver, $table)
     {
         if ('mysql' === $driver) {
             $rows = $connection->select(sprintf("SHOW KEYS FROM `%s` WHERE Key_name = 'PRIMARY'", $table));
-            if (!empty($rows)) {
+            if (! empty($rows)) {
                 return $rows[0]->Column_name;
             }
 
@@ -143,7 +141,7 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
             WHERE i.indrelid = ?::regclass AND i.indisprimary
         ', [$table]);
 
-        if (!empty($rows)) {
+        if (! empty($rows)) {
             return $rows[0]->column_name;
         }
 
@@ -151,11 +149,10 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
     }
 
     /**
-     * @param Connection $connection
-     * @param string     $driver
-     * @param string     $table
-     * @param string     $primaryKey
-     *
+     * @param  Connection  $connection
+     * @param  string  $driver
+     * @param  string  $table
+     * @param  string  $primaryKey
      * @return int
      */
     protected function getMaxId(Connection $connection, $driver, $table, $primaryKey): int
@@ -170,13 +167,12 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
     }
 
     /**
-     * @param Connection $connection
-     * @param string     $driver
-     * @param string     $table
-     * @param int        $min
-     * @param int        $offset
-     * @param bool       $force
-     *
+     * @param  Connection  $connection
+     * @param  string  $driver
+     * @param  string  $table
+     * @param  int  $min
+     * @param  int  $offset
+     * @param  bool  $force
      * @return void
      */
     protected function processTable(Connection $connection, $driver, $table, $min, $offset, $force): void
@@ -200,7 +196,7 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
             $newStartId
         );
 
-        if (!$force && true !== $this->confirm($message.' — Proceed?')) {
+        if (! $force && true !== $this->confirm($message.' — Proceed?')) {
             $this->line(sprintf('Skipped: %s', $table));
 
             return;
@@ -211,12 +207,11 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
     }
 
     /**
-     * @param Connection $connection
-     * @param string     $driver
-     * @param string     $table
-     * @param string     $primaryKey
-     * @param int        $startId
-     *
+     * @param  Connection  $connection
+     * @param  string  $driver
+     * @param  string  $table
+     * @param  string  $primaryKey
+     * @param  int  $startId
      * @return void
      */
     protected function setAutoIncrement(Connection $connection, $driver, $table, $primaryKey, $startId): void
@@ -240,10 +235,9 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
     }
 
     /**
-     * @param Connection $connection
-     * @param string     $table
-     * @param string     $column
-     *
+     * @param  Connection  $connection
+     * @param  string  $table
+     * @param  string  $column
      * @return string|null
      */
     protected function getSequenceName(Connection $connection, $table, $column)
@@ -254,7 +248,7 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
             [$table, $column]
         );
 
-        if (!empty($result->sequence_name)) {
+        if (! empty($result->sequence_name)) {
             return $result->sequence_name;
         }
 
@@ -266,7 +260,7 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
             WHERE a.attrelid = ?::regclass AND a.attname = ?
         ', [$table, $column]);
 
-        if (!empty($result->column_default)) {
+        if (! empty($result->column_default)) {
             // Extract sequence name from nextval('schema.sequence_name'::regclass) or nextval('sequence_name')
             if (preg_match("/nextval\\('([^']+)'(?:::regclass)?\\)/", $result->column_default, $matches)) {
                 return $matches[1];
@@ -297,7 +291,7 @@ class DatabaseResetAutoIncrementStartId extends \HughCube\Laravel\Knight\Console
               AND a.attname = ?
         ", [$table, $column]);
 
-        if (!empty($result->sequence_name)) {
+        if (! empty($result->sequence_name)) {
             return $result->sequence_name;
         }
 

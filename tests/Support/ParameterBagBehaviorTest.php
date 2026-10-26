@@ -41,24 +41,25 @@ class ParameterBagBehaviorTest extends TestCase
     public function testTypeConversions()
     {
         $bag = new ParameterBag([
-            'bool_yes'     => 'yes',
-            'bool_no'      => '0',
+            'bool_yes' => 'yes',
+            'bool_no' => '0',
             'bool_unknown' => 'maybe',
-            'int'          => '12',
-            'int_bad'      => '12.3',
-            'float'        => '12.3',
-            'alpha'        => 'abc',
-            'alnum'        => 'abc123',
-            'digits'       => '007',
-            'string_int'   => 42,
-            'string_bool'  => true,
-            'string_obj'   => new class() {
+            'int' => '12',
+            'int_bad' => '12.3',
+            'float' => '12.3',
+            'alpha' => 'abc',
+            'alnum' => 'abc123',
+            'digits' => '007',
+            'string_int' => 42,
+            'string_bool' => true,
+            'string_obj' => new class()
+            {
                 public function __toString()
                 {
                     return 'obj';
                 }
             },
-            'array'        => ['a'],
+            'array' => ['a'],
         ]);
 
         $this->assertTrue($bag->getBoolean('bool_yes'));
@@ -87,9 +88,9 @@ class ParameterBagBehaviorTest extends TestCase
     {
         $bag = new ParameterBag([
             'value' => 10,
-            'null'  => null,
+            'null' => null,
             'empty' => '',
-            'zero'  => '0',
+            'zero' => '0',
         ]);
 
         $result = $bag->when(true, 'value', function ($value, $key, $bag) {
@@ -136,7 +137,7 @@ class ParameterBagBehaviorTest extends TestCase
     {
         $bag = new ParameterBag([
             'value' => 'yes',
-            'null'  => null,
+            'null' => null,
             'empty' => '',
         ]);
 

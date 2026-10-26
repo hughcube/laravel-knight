@@ -27,8 +27,7 @@ class ParameterBag
     }
 
     /**
-     * @param array $parameters
-     *
+     * @param  array  $parameters
      * @return $this
      */
     public function replace(array $parameters = []): ParameterBag
@@ -49,8 +48,7 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     *
+     * @param  string|int  $key
      * @return bool
      */
     public function has($key): bool
@@ -69,9 +67,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param mixed      $default
-     *
+     * @param  string|int  $key
+     * @param  mixed  $default
      * @return mixed
      */
     public function get($key, $default = null)
@@ -80,9 +77,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param mixed      $value
-     *
+     * @param  string|int  $key
+     * @param  mixed  $value
      * @return $this
      */
     public function set($key, $value): ParameterBag
@@ -93,9 +89,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param mixed      $value
-     *
+     * @param  string|int  $key
+     * @param  mixed  $value
      * @return $this
      */
     public function add($key, $value): ParameterBag
@@ -108,8 +103,7 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     *
+     * @param  string|int  $key
      * @return $this
      */
     public function remove($key): ParameterBag
@@ -122,11 +116,10 @@ class ParameterBag
     }
 
     /**
-     * @param bool           $when
-     * @param int|string     $key
-     * @param callable       $callable
-     * @param callable|mixed $default
-     *
+     * @param  bool  $when
+     * @param  int|string  $key
+     * @param  callable  $callable
+     * @param  callable|mixed  $default
      * @return mixed
      */
     public function when(bool $when, $key, callable $callable, $default = null)
@@ -140,10 +133,9 @@ class ParameterBag
     }
 
     /**
-     * @param string|int     $key
-     * @param callable       $callable
-     * @param callable|mixed $default
-     *
+     * @param  string|int  $key
+     * @param  callable  $callable
+     * @param  callable|mixed  $default
      * @return mixed
      */
     public function whenHas($key, callable $callable, $default = null)
@@ -152,27 +144,25 @@ class ParameterBag
     }
 
     /**
-     * @param string|int     $key
-     * @param callable       $callable
-     * @param callable|mixed $default
-     *
+     * @param  string|int  $key
+     * @param  callable  $callable
+     * @param  callable|mixed  $default
      * @return mixed
      */
     public function whenNotNull($key, callable $callable, $default = null)
     {
-        return $this->when(!$this->isNull($key), $key, $callable, $default);
+        return $this->when(! $this->isNull($key), $key, $callable, $default);
     }
 
     /**
-     * @param string|int     $key
-     * @param callable       $callable
-     * @param callable|mixed $default
-     *
+     * @param  string|int  $key
+     * @param  callable  $callable
+     * @param  callable|mixed  $default
      * @return mixed
      */
     public function whenNotEmpty($key, callable $callable, $default = null)
     {
-        return $this->when(!$this->isEmpty($key), $key, $callable, $default);
+        return $this->when(! $this->isEmpty($key), $key, $callable, $default);
     }
 
     public function getIterator(): ArrayIterator
@@ -186,9 +176,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param mixed      $default
-     *
+     * @param  string|int  $key
+     * @param  mixed  $default
      * @return bool
      */
     public function getBoolean($key, $default = false): bool
@@ -207,9 +196,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param mixed      $default
-     *
+     * @param  string|int  $key
+     * @param  mixed  $default
      * @return int
      */
     public function getInt($key, $default = 0): int
@@ -228,9 +216,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param mixed      $default
-     *
+     * @param  string|int  $key
+     * @param  mixed  $default
      * @return float
      */
     public function getFloat($key, $default = 0): float
@@ -251,9 +238,8 @@ class ParameterBag
     /**
      * 获取一个由数字和字母组成的参数.
      *
-     * @param string|int $key
-     * @param string     $default
-     *
+     * @param  string|int  $key
+     * @param  string  $default
      * @return string
      */
     public function getAlpha($key, string $default = ''): string
@@ -266,9 +252,8 @@ class ParameterBag
     /**
      * 获取一个由数字和字母组成的参数.
      *
-     * @param string|int $key
-     * @param string     $default
-     *
+     * @param  string|int  $key
+     * @param  string  $default
      * @return string
      */
     public function getAlnum($key, string $default = ''): string
@@ -279,9 +264,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param string     $default
-     *
+     * @param  string|int  $key
+     * @param  string  $default
      * @return string
      */
     public function getDigits($key, string $default = '0'): string
@@ -295,9 +279,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param string     $default
-     *
+     * @param  string|int  $key
+     * @param  string  $default
      * @return string
      */
     public function getString($key, string $default = ''): string
@@ -332,9 +315,8 @@ class ParameterBag
     }
 
     /**
-     * @param string|int $key
-     * @param array      $default
-     *
+     * @param  string|int  $key
+     * @param  array  $default
      * @return array
      */
     public function getArray($key, array $default = []): array
@@ -345,16 +327,15 @@ class ParameterBag
     }
 
     /**
-     * @param bool                         $when
-     * @param int|string                   $key
-     * @param QueryBuilder|EloquentBuilder $query
-     * @param callable                     $callable
-     *
+     * @param  bool  $when
+     * @param  int|string  $key
+     * @param  QueryBuilder|EloquentBuilder  $query
+     * @param  callable  $callable
      * @return void
      */
     public function queryWhen(bool $when, $key, $query, callable $callable)
     {
-        if (!$when) {
+        if (! $when) {
             return;
         }
 
@@ -365,10 +346,9 @@ class ParameterBag
     }
 
     /**
-     * @param QueryBuilder|EloquentBuilder $query
-     * @param string|int                   $key
-     * @param callable                     $callable
-     *
+     * @param  QueryBuilder|EloquentBuilder  $query
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return void
      */
     public function queryWhenHas($key, $query, callable $callable)
@@ -377,26 +357,24 @@ class ParameterBag
     }
 
     /**
-     * @param QueryBuilder|EloquentBuilder $query
-     * @param string|int                   $key
-     * @param callable                     $callable
-     *
+     * @param  QueryBuilder|EloquentBuilder  $query
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return void
      */
     public function queryWhenNotNull($key, $query, callable $callable)
     {
-        $this->queryWhen(!$this->isNull($key), $key, $query, $callable);
+        $this->queryWhen(! $this->isNull($key), $key, $query, $callable);
     }
 
     /**
-     * @param QueryBuilder|EloquentBuilder $query
-     * @param string|int                   $key
-     * @param callable                     $callable
-     *
+     * @param  QueryBuilder|EloquentBuilder  $query
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return void
      */
     public function queryWhenNotEmpty($key, $query, callable $callable)
     {
-        $this->queryWhen(!$this->isEmpty($key), $key, $query, $callable);
+        $this->queryWhen(! $this->isEmpty($key), $key, $query, $callable);
     }
 }

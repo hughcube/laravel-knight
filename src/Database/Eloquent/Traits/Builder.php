@@ -27,13 +27,13 @@ use Traversable;
 /**
  * Trait Builder.
  *
- * @method EloquentCollection    get()
- * @method Model                 getModel()
+ * @method EloquentCollection get()
+ * @method Model getModel()
  * @method KnightEloquentBuilder kCanUsable()
  * @method KnightEloquentBuilder available()
  * @method KnightEloquentBuilder sort()
  * @method KnightEloquentBuilder sortAvailable()
- * @method Connection            getConnection()
+ * @method Connection getConnection()
  *
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
@@ -71,7 +71,7 @@ trait Builder
     {
         static $nullCache = null;
 
-        if (!$nullCache instanceof CacheInterface) {
+        if (! $nullCache instanceof CacheInterface) {
             $nullCache = new Repository(new NullStore());
         }
 
@@ -79,8 +79,7 @@ trait Builder
     }
 
     /**
-     * @param mixed $pk
-     *
+     * @param  mixed  $pk
      * @return IlluminateModel|Model|mixed|null
      */
     public function findByPk($pk)
@@ -89,8 +88,7 @@ trait Builder
     }
 
     /**
-     * @param array|Arrayable|Traversable $pks
-     *
+     * @param  array|Arrayable|Traversable  $pks
      * @return EloquentCollection
      */
     public function findByPks($pks): EloquentCollection
@@ -130,7 +128,7 @@ trait Builder
                     $cached->setIsFromCache();
                 }
                 $results[$index] = $cached;
-            } elseif (null === $cached || !$model->isCachePlaceholder($cached)) {
+            } elseif (null === $cached || ! $model->isCachePlaceholder($cached)) {
                 $missedIndexes[] = $index;
             }
             /** 占位符 → 跳过（已知不存在） */
@@ -165,7 +163,7 @@ trait Builder
                 $cacheItems[$cacheKey] = $model->getCachePlaceholder();
             }
         }
-        if (!empty($cacheItems)) {
+        if (! empty($cacheItems)) {
             $cache->setMultiple($cacheItems, $model->getCacheTtl());
         }
 
@@ -209,8 +207,7 @@ trait Builder
     }
 
     /**
-     * @param mixed $id
-     *
+     * @param  mixed  $id
      * @return IlluminateModel|Model|mixed|null
      */
     public function findUniqueRow($id)
@@ -221,11 +218,10 @@ trait Builder
     /**
      * 根据唯一建查找对象列表.
      *
-     * @param array|Arrayable|Traversable $ids 必需是keyValue的格式, [['id' => 1, 'id2' => 1], ['id' => 1, 'id2' => 1]]
+     * @param  array|Arrayable|Traversable  $ids  必需是keyValue的格式, [['id' => 1, 'id2' => 1], ['id' => 1, 'id2' => 1]]
+     * @return EloquentCollection
      *
      * @throws
-     *
-     * @return EloquentCollection
      *
      * @phpstan-ignore-next-line
      */
@@ -261,7 +257,7 @@ trait Builder
                 }
                 $rows->push($fromCacheRows[$cacheKey]);
                 /** @codingStandardsIgnoreStart */
-            } elseif (!isset($fromCacheRows[$cacheKey]) || !$model->isCachePlaceholder($fromCacheRows[$cacheKey])) {
+            } elseif (! isset($fromCacheRows[$cacheKey]) || ! $model->isCachePlaceholder($fromCacheRows[$cacheKey])) {
                 /** @codingStandardsIgnoreEnd */
                 $missIndexes[] = $cacheKeyIndex;
             }
@@ -288,7 +284,7 @@ trait Builder
                 $cacheItems[$cacheKey] = $model->getCachePlaceholder();
             }
         }
-        if (!empty($cacheItems)) {
+        if (! empty($cacheItems)) {
             $this->getCache()->setMultiple($cacheItems, $model->getCacheTtl());
         }
 
@@ -304,8 +300,7 @@ trait Builder
     /**
      * 根据唯一键条件查询数据库（不含缓存逻辑）.
      *
-     * @param Collection $conditions 条件数组 [['id' => 1], ['id' => 2], ...]
-     *
+     * @param  Collection  $conditions  条件数组 [['id' => 1], ['id' => 2], ...]
      * @return Collection 以缓存键为 key 的结果集
      */
     public function queryByUniqueConditions(Collection $conditions): Collection
@@ -363,15 +358,14 @@ trait Builder
      *
      * 处理数组值中包含 NULL 的情况，因为 SQL 的 IN 子句不能正确匹配 NULL 值。
      *
-     * @param self   $query
-     * @param string $name   字段名
-     * @param mixed  $values 值或值数组
-     *
+     * @param  self  $query
+     * @param  string  $name  字段名
+     * @param  mixed  $values  值或值数组
      * @return void
      */
     protected function applyConditionWithNullSupport(self $query, string $name, $values): void
     {
-        if (!is_array($values)) {
+        if (! is_array($values)) {
             if (null === $values) {
                 $query->whereNull($name);
             } else {
@@ -402,11 +396,10 @@ trait Builder
     }
 
     /**
-     * @param bool|int     $when
-     * @param ParameterBag $bag
-     * @param string|int   $key
-     * @param callable     $callable
-     *
+     * @param  bool|int  $when
+     * @param  ParameterBag  $bag
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return $this
      */
     public function whenParameterBag($when, ParameterBag $bag, $key, callable $callable)
@@ -421,10 +414,9 @@ trait Builder
     }
 
     /**
-     * @param ParameterBag $bag
-     * @param string|int   $key
-     * @param callable     $callable
-     *
+     * @param  ParameterBag  $bag
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return $this
      *
      * @deprecated
@@ -435,24 +427,22 @@ trait Builder
     }
 
     /**
-     * @param ParameterBag $bag
-     * @param string|int   $key
-     * @param callable     $callable
-     *
+     * @param  ParameterBag  $bag
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return $this
      *
      * @deprecated
      */
     public function whenParameterBagNotHas(ParameterBag $bag, $key, callable $callable)
     {
-        return $this->whenParameterBag(!$bag->has($key), $bag, $key, $callable);
+        return $this->whenParameterBag(! $bag->has($key), $bag, $key, $callable);
     }
 
     /**
-     * @param ParameterBag $bag
-     * @param string|int   $key
-     * @param callable     $callable
-     *
+     * @param  ParameterBag  $bag
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return $this
      *
      * @deprecated
@@ -463,24 +453,22 @@ trait Builder
     }
 
     /**
-     * @param ParameterBag $bag
-     * @param string|int   $key
-     * @param callable     $callable
-     *
+     * @param  ParameterBag  $bag
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return $this
      *
      * @deprecated
      */
     public function whenParameterBagNotNull(ParameterBag $bag, $key, callable $callable)
     {
-        return $this->whenParameterBag(!$bag->isNull($key), $bag, $key, $callable);
+        return $this->whenParameterBag(! $bag->isNull($key), $bag, $key, $callable);
     }
 
     /**
-     * @param ParameterBag $bag
-     * @param string|int   $key
-     * @param callable     $callable
-     *
+     * @param  ParameterBag  $bag
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return $this
      *
      * @deprecated
@@ -491,22 +479,20 @@ trait Builder
     }
 
     /**
-     * @param ParameterBag $bag
-     * @param string|int   $key
-     * @param callable     $callable
-     *
+     * @param  ParameterBag  $bag
+     * @param  string|int  $key
+     * @param  callable  $callable
      * @return $this
      *
      * @deprecated
      */
     public function whenParameterBagNotEmpty(ParameterBag $bag, $key, callable $callable)
     {
-        return $this->whenParameterBag(!$bag->isEmpty($key), $bag, $key, $callable);
+        return $this->whenParameterBag(! $bag->isEmpty($key), $bag, $key, $callable);
     }
 
     /**
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return static
      */
     public function whereDeletedAtColumn($value = null)
@@ -523,8 +509,7 @@ trait Builder
      *
      * 防止用户输入的通配符影响查询结果，避免 LIKE 通配符注入攻击。
      *
-     * @param string $value 需要转义的值
-     *
+     * @param  string  $value  需要转义的值
      * @return string 转义后的值
      */
     protected function escapeLikeValue(string $value): string
@@ -542,9 +527,8 @@ trait Builder
      * 示例:
      *   $query->whereLike('name', '%test%');
      *
-     * @param string $column 列名
-     * @param string $value  LIKE 模式
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  LIKE 模式
      * @return static
      */
     public function whereLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -569,9 +553,8 @@ trait Builder
      *
      * 注意: 不会转义通配符，如需转义请使用 whereEscapeLeftLike.
      *
-     * @param string $column 列名
-     * @param string $value  模式值
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
      * @return static
      *
      * @deprecated 使用 whereEscapeLeftLike 代替，当前实现与 Laravel 的 whereLike* 行为不一致。
@@ -590,9 +573,8 @@ trait Builder
      *
      * 注意: 不会转义通配符，如需转义请使用 whereEscapeRightLike.
      *
-     * @param string $column 列名
-     * @param string $value  模式值
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
      * @return static
      *
      * @deprecated 使用 whereEscapeRightLike 代替，当前实现与 Laravel 的 whereLike* 行为不一致。
@@ -609,9 +591,8 @@ trait Builder
     /**
      * OR 模糊查询：使用 LIKE 模式匹配.
      *
-     * @param string $column 列名
-     * @param string $value  LIKE 模式
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  LIKE 模式
      * @return static
      *
      * @deprecated 使用 orWhereEscapeLike 代替，当前实现与 Laravel 的 whereLike* 行为不一致。
@@ -624,9 +605,8 @@ trait Builder
     /**
      * OR 左模糊查询：匹配以指定模式开头的记录.
      *
-     * @param string $column 列名
-     * @param string $value  模式值
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
      * @return static
      *
      * @deprecated 使用 orWhereEscapeLeftLike 代替，当前实现与 Laravel 的 whereLike* 行为不一致。
@@ -639,9 +619,8 @@ trait Builder
     /**
      * OR 右模糊查询：匹配以指定模式结尾的记录.
      *
-     * @param string $column 列名
-     * @param string $value  模式值
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
      * @return static
      *
      * @deprecated 使用 orWhereEscapeRightLike 代替，当前实现与 Laravel 的 whereLike* 行为不一致。
@@ -654,9 +633,8 @@ trait Builder
     /**
      * 模糊查询：转义通配符并进行包含匹配.
      *
-     * @param string $column 列名
-     * @param string $value  搜索值（会自动转义特殊字符）
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值（会自动转义特殊字符）
      * @return static
      */
     public function whereEscapeLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -667,9 +645,8 @@ trait Builder
     /**
      * OR 模糊查询：转义通配符并进行包含匹配.
      *
-     * @param string $column 列名
-     * @param string $value  搜索值（会自动转义特殊字符）
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值（会自动转义特殊字符）
      * @return static
      */
     public function orWhereEscapeLike(string $column, string $value, bool $caseSensitive = false)
@@ -680,9 +657,8 @@ trait Builder
     /**
      * 左模糊查询：转义通配符并匹配以指定值开头的记录.
      *
-     * @param string $column 列名
-     * @param string $value  搜索值（会自动转义特殊字符）
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值（会自动转义特殊字符）
      * @return static
      */
     public function whereEscapeLeftLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -693,9 +669,8 @@ trait Builder
     /**
      * OR 左模糊查询：转义通配符并匹配以指定值开头的记录.
      *
-     * @param string $column 列名
-     * @param string $value  搜索值（会自动转义特殊字符）
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值（会自动转义特殊字符）
      * @return static
      */
     public function orWhereEscapeLeftLike(string $column, string $value, bool $caseSensitive = false)
@@ -706,9 +681,8 @@ trait Builder
     /**
      * 右模糊查询：转义通配符并匹配以指定值结尾的记录.
      *
-     * @param string $column 列名
-     * @param string $value  搜索值（会自动转义特殊字符）
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值（会自动转义特殊字符）
      * @return static
      */
     public function whereEscapeRightLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -719,9 +693,8 @@ trait Builder
     /**
      * OR 右模糊查询：转义通配符并匹配以指定值结尾的记录.
      *
-     * @param string $column 列名
-     * @param string $value  搜索值（会自动转义特殊字符）
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值（会自动转义特殊字符）
      * @return static
      */
     public function orWhereEscapeRightLike(string $column, string $value, bool $caseSensitive = false)
@@ -730,11 +703,10 @@ trait Builder
     }
 
     /**
-     * @param string   $column
-     * @param iterable $values
-     * @param string   $boolean
-     * @param bool     $not
-     *
+     * @param  string  $column
+     * @param  iterable  $values
+     * @param  string  $boolean
+     * @param  bool  $not
      * @return $this
      */
     public function whereRange(string $column, iterable $values, string $boolean = 'and', bool $not = false)
@@ -762,9 +734,8 @@ trait Builder
     }
 
     /**
-     * @param string   $column
-     * @param iterable $values
-     *
+     * @param  string  $column
+     * @param  iterable  $values
      * @return $this
      */
     public function orWhereRange(string $column, iterable $values)
@@ -773,9 +744,8 @@ trait Builder
     }
 
     /**
-     * @param string   $column
-     * @param iterable $values
-     *
+     * @param  string  $column
+     * @param  iterable  $values
      * @return $this
      */
     public function whereNotRange(string $column, iterable $values)
@@ -784,9 +754,8 @@ trait Builder
     }
 
     /**
-     * @param string   $column
-     * @param iterable $values
-     *
+     * @param  string  $column
+     * @param  iterable  $values
      * @return $this
      */
     public function orWhereNotRange(string $column, iterable $values)
@@ -797,8 +766,7 @@ trait Builder
     /**
      * 重写 update 方法，检查乐观锁
      *
-     * @param array $values
-     *
+     * @param  array  $values
      * @return int
      */
     public function update(array $values)

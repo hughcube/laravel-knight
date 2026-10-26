@@ -390,10 +390,10 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
             $this->artisan('database:reset-auto-increment-start-id', [
                 '--connection' => 'mysql',
-                '--table'      => $tableName,
-                '--min'        => 5000,
-                '--offset'     => 100,
-                '--force'      => true,
+                '--table' => $tableName,
+                '--min' => 5000,
+                '--offset' => 100,
+                '--force' => true,
             ]);
 
             $connection->insert("INSERT INTO `{$tableName}` (`name`) VALUES ('test3')");
@@ -426,10 +426,10 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
             $this->artisan('database:reset-auto-increment-start-id', [
                 '--connection' => 'pgsql',
-                '--table'      => $tableName,
-                '--min'        => 5000,
-                '--offset'     => 100,
-                '--force'      => true,
+                '--table' => $tableName,
+                '--min' => 5000,
+                '--offset' => 100,
+                '--force' => true,
             ]);
 
             $connection->insert("INSERT INTO \"{$tableName}\" (\"name\") VALUES ('test3')");
@@ -462,10 +462,10 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
             $this->artisan('database:reset-auto-increment-start-id', [
                 '--connection' => 'mysql',
-                '--table'      => $tableName,
-                '--min'        => 1000,
-                '--offset'     => 500,
-                '--force'      => true,
+                '--table' => $tableName,
+                '--min' => 1000,
+                '--offset' => 500,
+                '--force' => true,
             ]);
 
             $connection->insert("INSERT INTO `{$tableName}` (`name`) VALUES ('test2')");
@@ -481,13 +481,14 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
     {
         $this->artisan('database:reset-auto-increment-start-id', [
             '--connection' => 'sqlite',
-            '--force'      => true,
+            '--force' => true,
         ])->assertExitCode(0);
     }
 
     public function testHandleMysqlDatabaseOptionUsesDatabaseAndReturnsWhenNoTables(): void
     {
-        $pdo = new class() {
+        $pdo = new class()
+        {
             public array $queries = [];
 
             public function exec(string $sql)
@@ -511,8 +512,8 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
         $this->artisan('database:reset-auto-increment-start-id', [
             '--connection' => 'mysql',
-            '--database'   => 'local_test',
-            '--force'      => true,
+            '--database' => 'local_test',
+            '--force' => true,
         ])->assertExitCode(0);
 
         $this->assertContains('use `local_test`;', $pdo->queries);
@@ -534,8 +535,8 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
         $this->artisan('database:reset-auto-increment-start-id', [
             '--connection' => 'mysql',
-            '--table'      => 'not_exists',
-            '--force'      => true,
+            '--table' => 'not_exists',
+            '--force' => true,
         ])->assertExitCode(0);
     }
 
@@ -556,7 +557,8 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
     public function testProcessTableReturnsWhenPrimaryKeyMissing(): void
     {
-        $command = new class() extends DatabaseResetAutoIncrementStartId {
+        $command = new class() extends DatabaseResetAutoIncrementStartId
+        {
             public bool $setAutoIncrementCalled = false;
 
             protected function getPrimaryKeyColumn(Connection $connection, $driver, $table)
@@ -583,7 +585,8 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
     public function testProcessTableSkipsWhenNotForcedAndNotConfirmed(): void
     {
-        $command = new class() extends DatabaseResetAutoIncrementStartId {
+        $command = new class() extends DatabaseResetAutoIncrementStartId
+        {
             public bool $setAutoIncrementCalled = false;
 
             protected function getPrimaryKeyColumn(Connection $connection, $driver, $table)
@@ -620,7 +623,8 @@ class DatabaseResetAutoIncrementStartIdTest extends TestCase
 
     public function testSetAutoIncrementForPgsqlReturnsWhenNoSequenceFound(): void
     {
-        $command = new class() extends DatabaseResetAutoIncrementStartId {
+        $command = new class() extends DatabaseResetAutoIncrementStartId
+        {
             protected function getSequenceName(Connection $connection, $table, $column)
             {
                 return null;

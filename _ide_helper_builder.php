@@ -44,8 +44,7 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::findByPk()
      *
-     * @param mixed $pk 主键值
-     *
+     * @param  mixed  $pk  主键值
      * @return \Illuminate\Database\Eloquent\Model|\HughCube\Laravel\Knight\Database\Eloquent\Model|mixed|null
      */
     public function findByPk($pk)
@@ -57,8 +56,7 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::findByPks()
      *
-     * @param array|\Illuminate\Contracts\Support\Arrayable|\Traversable $pks 主键值集合
-     *
+     * @param  array|\Illuminate\Contracts\Support\Arrayable|\Traversable  $pks  主键值集合
      * @return \HughCube\Laravel\Knight\Database\Eloquent\Collection
      */
     public function findByPks($pks)
@@ -70,9 +68,8 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::findByOneUniqueColumnValues()
      *
-     * @param string $column 唯一列名
-     * @param mixed  $values 值集合
-     *
+     * @param  string  $column  唯一列名
+     * @param  mixed  $values  值集合
      * @return \HughCube\Laravel\Knight\Database\Eloquent\Collection
      */
     public function findByOneUniqueColumnValues($column, $values)
@@ -84,8 +81,7 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::findUniqueRow()
      *
-     * @param mixed $id 唯一键条件 (如 ['id' => 1])
-     *
+     * @param  mixed  $id  唯一键条件 (如 ['id' => 1])
      * @return \Illuminate\Database\Eloquent\Model|\HughCube\Laravel\Knight\Database\Eloquent\Model|mixed|null
      */
     public function findUniqueRow($id)
@@ -97,8 +93,7 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::findUniqueRows()
      *
-     * @param array|\Illuminate\Contracts\Support\Arrayable|\Traversable $ids 唯一键条件集合, 格式: [['id' => 1, 'id2' => 1], ...]
-     *
+     * @param  array|\Illuminate\Contracts\Support\Arrayable|\Traversable  $ids  唯一键条件集合, 格式: [['id' => 1, 'id2' => 1], ...]
      * @return \HughCube\Laravel\Knight\Database\Eloquent\Collection
      */
     public function findUniqueRows($ids)
@@ -110,8 +105,7 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::queryByUniqueConditions()
      *
-     * @param \Illuminate\Support\Collection $conditions 条件数组 [['id' => 1], ['id' => 2], ...]
-     *
+     * @param  \Illuminate\Support\Collection  $conditions  条件数组 [['id' => 1], ['id' => 2], ...]
      * @return \Illuminate\Support\Collection 以缓存键为 key 的结果集
      */
     public function queryByUniqueConditions(\Illuminate\Support\Collection $conditions)
@@ -123,11 +117,10 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whenParameterBag()
      *
-     * @param bool|int                                      $when     条件
-     * @param \HughCube\Laravel\Knight\Support\ParameterBag $bag      参数包
-     * @param string|int                                    $key      参数键名
-     * @param callable                                      $callable 回调函数
-     *
+     * @param  bool|int  $when  条件
+     * @param  \HughCube\Laravel\Knight\Support\ParameterBag  $bag  参数包
+     * @param  string|int  $key  参数键名
+     * @param  callable  $callable  回调函数
      * @return $this
      */
     public function whenParameterBag($when, \HughCube\Laravel\Knight\Support\ParameterBag $bag, $key, callable $callable)
@@ -139,10 +132,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whenParameterBagHas()
      *
-     * @param \HughCube\Laravel\Knight\Support\ParameterBag $bag      参数包
-     * @param string|int                                    $key      参数键名
-     * @param callable                                      $callable 回调函数
-     *
+     * @param  \HughCube\Laravel\Knight\Support\ParameterBag  $bag  参数包
+     * @param  string|int  $key  参数键名
+     * @param  callable  $callable  回调函数
      * @return $this
      *
      * @deprecated
@@ -156,10 +148,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whenParameterBagNotHas()
      *
-     * @param \HughCube\Laravel\Knight\Support\ParameterBag $bag      参数包
-     * @param string|int                                    $key      参数键名
-     * @param callable                                      $callable 回调函数
-     *
+     * @param  \HughCube\Laravel\Knight\Support\ParameterBag  $bag  参数包
+     * @param  string|int  $key  参数键名
+     * @param  callable  $callable  回调函数
      * @return $this
      *
      * @deprecated
@@ -173,10 +164,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whenParameterBagNull()
      *
-     * @param \HughCube\Laravel\Knight\Support\ParameterBag $bag      参数包
-     * @param string|int                                    $key      参数键名
-     * @param callable                                      $callable 回调函数
-     *
+     * @param  \HughCube\Laravel\Knight\Support\ParameterBag  $bag  参数包
+     * @param  string|int  $key  参数键名
+     * @param  callable  $callable  回调函数
      * @return $this
      *
      * @deprecated
@@ -190,10 +180,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whenParameterBagNotNull()
      *
-     * @param \HughCube\Laravel\Knight\Support\ParameterBag $bag      参数包
-     * @param string|int                                    $key      参数键名
-     * @param callable                                      $callable 回调函数
-     *
+     * @param  \HughCube\Laravel\Knight\Support\ParameterBag  $bag  参数包
+     * @param  string|int  $key  参数键名
+     * @param  callable  $callable  回调函数
      * @return $this
      *
      * @deprecated
@@ -207,10 +196,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whenParameterBagEmpty()
      *
-     * @param \HughCube\Laravel\Knight\Support\ParameterBag $bag      参数包
-     * @param string|int                                    $key      参数键名
-     * @param callable                                      $callable 回调函数
-     *
+     * @param  \HughCube\Laravel\Knight\Support\ParameterBag  $bag  参数包
+     * @param  string|int  $key  参数键名
+     * @param  callable  $callable  回调函数
      * @return $this
      *
      * @deprecated
@@ -224,10 +212,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whenParameterBagNotEmpty()
      *
-     * @param \HughCube\Laravel\Knight\Support\ParameterBag $bag      参数包
-     * @param string|int                                    $key      参数键名
-     * @param callable                                      $callable 回调函数
-     *
+     * @param  \HughCube\Laravel\Knight\Support\ParameterBag  $bag  参数包
+     * @param  string|int  $key  参数键名
+     * @param  callable  $callable  回调函数
      * @return $this
      *
      * @deprecated
@@ -241,8 +228,7 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereDeletedAtColumn()
      *
-     * @param mixed $value 值, null 表示 whereNull
-     *
+     * @param  mixed  $value  值, null 表示 whereNull
      * @return $this
      */
     public function whereDeletedAtColumn($value = null)
@@ -254,12 +240,11 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereLike()
      *
-     * @param string $column        列名
-     * @param string $value         LIKE 模式
-     * @param bool   $caseSensitive 是否区分大小写
-     * @param string $boolean       连接条件 (and/or)
-     * @param bool   $not           是否 NOT LIKE
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  LIKE 模式
+     * @param  bool  $caseSensitive  是否区分大小写
+     * @param  string  $boolean  连接条件 (and/or)
+     * @param  bool  $not  是否 NOT LIKE
      * @return $this
      */
     public function whereLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -271,12 +256,11 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereLeftLike()
      *
-     * @param string $column        列名
-     * @param string $value         模式值
-     * @param bool   $caseSensitive 是否区分大小写
-     * @param string $boolean       连接条件
-     * @param bool   $not           是否 NOT LIKE
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
+     * @param  bool  $caseSensitive  是否区分大小写
+     * @param  string  $boolean  连接条件
+     * @param  bool  $not  是否 NOT LIKE
      * @return $this
      *
      * @deprecated 使用 whereEscapeLeftLike 代替
@@ -290,12 +274,11 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereRightLike()
      *
-     * @param string $column        列名
-     * @param string $value         模式值
-     * @param bool   $caseSensitive 是否区分大小写
-     * @param string $boolean       连接条件
-     * @param bool   $not           是否 NOT LIKE
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
+     * @param  bool  $caseSensitive  是否区分大小写
+     * @param  string  $boolean  连接条件
+     * @param  bool  $not  是否 NOT LIKE
      * @return $this
      *
      * @deprecated 使用 whereEscapeRightLike 代替
@@ -309,10 +292,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereLike()
      *
-     * @param string $column        列名
-     * @param string $value         LIKE 模式
-     * @param bool   $caseSensitive 是否区分大小写
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  LIKE 模式
+     * @param  bool  $caseSensitive  是否区分大小写
      * @return $this
      *
      * @deprecated 使用 orWhereEscapeLike 代替
@@ -326,10 +308,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereLeftLike()
      *
-     * @param string $column        列名
-     * @param string $value         模式值
-     * @param bool   $caseSensitive 是否区分大小写
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
+     * @param  bool  $caseSensitive  是否区分大小写
      * @return $this
      *
      * @deprecated 使用 orWhereEscapeLeftLike 代替
@@ -343,10 +324,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereRightLike()
      *
-     * @param string $column        列名
-     * @param string $value         模式值
-     * @param bool   $caseSensitive 是否区分大小写
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  模式值
+     * @param  bool  $caseSensitive  是否区分大小写
      * @return $this
      *
      * @deprecated 使用 orWhereEscapeRightLike 代替
@@ -360,12 +340,11 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereEscapeLike()
      *
-     * @param string $column        列名
-     * @param string $value         搜索值 (会自动转义特殊字符)
-     * @param bool   $caseSensitive 是否区分大小写
-     * @param string $boolean       连接条件
-     * @param bool   $not           是否 NOT LIKE
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值 (会自动转义特殊字符)
+     * @param  bool  $caseSensitive  是否区分大小写
+     * @param  string  $boolean  连接条件
+     * @param  bool  $not  是否 NOT LIKE
      * @return $this
      */
     public function whereEscapeLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -377,10 +356,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereEscapeLike()
      *
-     * @param string $column        列名
-     * @param string $value         搜索值 (会自动转义特殊字符)
-     * @param bool   $caseSensitive 是否区分大小写
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值 (会自动转义特殊字符)
+     * @param  bool  $caseSensitive  是否区分大小写
      * @return $this
      */
     public function orWhereEscapeLike(string $column, string $value, bool $caseSensitive = false)
@@ -392,12 +370,11 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereEscapeLeftLike()
      *
-     * @param string $column        列名
-     * @param string $value         搜索值 (会自动转义特殊字符)
-     * @param bool   $caseSensitive 是否区分大小写
-     * @param string $boolean       连接条件
-     * @param bool   $not           是否 NOT LIKE
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值 (会自动转义特殊字符)
+     * @param  bool  $caseSensitive  是否区分大小写
+     * @param  string  $boolean  连接条件
+     * @param  bool  $not  是否 NOT LIKE
      * @return $this
      */
     public function whereEscapeLeftLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -409,10 +386,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereEscapeLeftLike()
      *
-     * @param string $column        列名
-     * @param string $value         搜索值 (会自动转义特殊字符)
-     * @param bool   $caseSensitive 是否区分大小写
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值 (会自动转义特殊字符)
+     * @param  bool  $caseSensitive  是否区分大小写
      * @return $this
      */
     public function orWhereEscapeLeftLike(string $column, string $value, bool $caseSensitive = false)
@@ -424,12 +400,11 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereEscapeRightLike()
      *
-     * @param string $column        列名
-     * @param string $value         搜索值 (会自动转义特殊字符)
-     * @param bool   $caseSensitive 是否区分大小写
-     * @param string $boolean       连接条件
-     * @param bool   $not           是否 NOT LIKE
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值 (会自动转义特殊字符)
+     * @param  bool  $caseSensitive  是否区分大小写
+     * @param  string  $boolean  连接条件
+     * @param  bool  $not  是否 NOT LIKE
      * @return $this
      */
     public function whereEscapeRightLike(string $column, string $value, bool $caseSensitive = false, string $boolean = 'and', bool $not = false)
@@ -441,10 +416,9 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereEscapeRightLike()
      *
-     * @param string $column        列名
-     * @param string $value         搜索值 (会自动转义特殊字符)
-     * @param bool   $caseSensitive 是否区分大小写
-     *
+     * @param  string  $column  列名
+     * @param  string  $value  搜索值 (会自动转义特殊字符)
+     * @param  bool  $caseSensitive  是否区分大小写
      * @return $this
      */
     public function orWhereEscapeRightLike(string $column, string $value, bool $caseSensitive = false)
@@ -456,11 +430,10 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereRange()
      *
-     * @param string   $column  列名
-     * @param iterable $values  范围值, 支持 [start, end]、['start' => x, 'end' => y] 或 CarbonPeriod
-     * @param string   $boolean 连接条件
-     * @param bool     $not     是否 NOT
-     *
+     * @param  string  $column  列名
+     * @param  iterable  $values  范围值, 支持 [start, end]、['start' => x, 'end' => y] 或 CarbonPeriod
+     * @param  string  $boolean  连接条件
+     * @param  bool  $not  是否 NOT
      * @return $this
      */
     public function whereRange(string $column, $values, string $boolean = 'and', bool $not = false)
@@ -472,9 +445,8 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereRange()
      *
-     * @param string   $column 列名
-     * @param iterable $values 范围值
-     *
+     * @param  string  $column  列名
+     * @param  iterable  $values  范围值
      * @return $this
      */
     public function orWhereRange(string $column, $values)
@@ -486,9 +458,8 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::whereNotRange()
      *
-     * @param string   $column 列名
-     * @param iterable $values 范围值
-     *
+     * @param  string  $column  列名
+     * @param  iterable  $values  范围值
      * @return $this
      */
     public function whereNotRange(string $column, $values)
@@ -500,9 +471,8 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::orWhereNotRange()
      *
-     * @param string   $column 列名
-     * @param iterable $values 范围值
-     *
+     * @param  string  $column  列名
+     * @param  iterable  $values  范围值
      * @return $this
      */
     public function orWhereNotRange(string $column, $values)
@@ -514,8 +484,7 @@ class Builder
      *
      * @see \HughCube\Laravel\Knight\Database\Eloquent\Traits\Builder::update()
      *
-     * @param array $values 更新值
-     *
+     * @param  array  $values  更新值
      * @return int 影响的行数
      */
     public function update(array $values)

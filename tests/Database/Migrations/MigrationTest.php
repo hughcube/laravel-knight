@@ -28,7 +28,8 @@ class MigrationTest extends TestCase
 
     public function testGetDbReturnsConfiguredConnection(): void
     {
-        $migration = new class() extends Migration {
+        $migration = new class() extends Migration
+        {
             protected $connection = 'sqlite';
         };
 

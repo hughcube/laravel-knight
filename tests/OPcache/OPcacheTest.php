@@ -43,7 +43,7 @@ class OPcacheTest extends TestCase
     public function testCacheKeyAndHistoryScripts()
     {
         config([
-            'cache.default'      => 'array',
+            'cache.default' => 'array',
             'cache.stores.array' => ['driver' => 'array'],
         ]);
 
@@ -60,12 +60,13 @@ class OPcacheTest extends TestCase
     public function testGetScriptsFiltersOldEntriesAndCaches()
     {
         config([
-            'cache.default'      => 'array',
+            'cache.default' => 'array',
             'cache.stores.array' => ['driver' => 'array'],
         ]);
 
         $now = time();
-        $opcache = new class($now) extends OPcache {
+        $opcache = new class($now) extends OPcache
+        {
             private int $now;
 
             public function __construct(int $now)
@@ -80,7 +81,7 @@ class OPcacheTest extends TestCase
             protected function getHistoryScripts(): array
             {
                 return [
-                    'old.php'    => $this->now - (181 * 24 * 3600),
+                    'old.php' => $this->now - (181 * 24 * 3600),
                     'recent.php' => $this->now - 60,
                 ];
             }
@@ -105,17 +106,20 @@ class OPcacheTest extends TestCase
 
     public function testGetRemoteScriptsUsesHttpClient()
     {
-        $client = new class() extends HttpClient {
+        $client = new class() extends HttpClient
+        {
             public array $requests = [];
 
             public function get($url, array $options)
             {
                 $this->requests[] = [$url, $options];
 
-                return new class() {
+                return new class()
+                {
                     public function getBody()
                     {
-                        return new class() {
+                        return new class()
+                        {
                             public function getContents()
                             {
                                 return json_encode(['Data' => ['scripts' => ['a.php', 'b.php']]]);
@@ -126,7 +130,8 @@ class OPcacheTest extends TestCase
             }
         };
 
-        $opcache = new class($client) extends OPcache {
+        $opcache = new class($client) extends OPcache
+        {
             private $client;
 
             public function __construct($client)
@@ -166,7 +171,8 @@ class OPcacheTest extends TestCase
 
     public function testGetRemoteScriptsThrowsWhenUrlCannotBeFound()
     {
-        $opcache = new class() extends OPcache {
+        $opcache = new class() extends OPcache
+        {
             public function getUrl($url = null, $useAppHost = true): ?PUrl
             {
                 return null;
@@ -182,7 +188,7 @@ class OPcacheTest extends TestCase
     public function testGetHistoryScriptsReturnsEmptyArrayForInvalidCacheValue()
     {
         config([
-            'cache.default'      => 'array',
+            'cache.default' => 'array',
             'cache.stores.array' => ['driver' => 'array'],
         ]);
 

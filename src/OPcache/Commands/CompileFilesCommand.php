@@ -43,11 +43,10 @@ class CompileFilesCommand extends Command
     protected $description = 'Compile PHP files into OPcache for better performance';
 
     /**
-     * @param Schedule $schedule
+     * @param  Schedule  $schedule
+     * @return void
      *
      * @throws Exception
-     *
-     * @return void
      */
     public function handle(Schedule $schedule)
     {
@@ -170,7 +169,7 @@ class CompileFilesCommand extends Command
 
     protected function getComposerFiles(): array
     {
-        if (!$this->option('with-composer-files')) {
+        if (! $this->option('with-composer-files')) {
             return [];
         }
 
@@ -225,7 +224,7 @@ class CompileFilesCommand extends Command
      */
     protected function getAppFiles(): array
     {
-        if (!$this->option('with-app-files')) {
+        if (! $this->option('with-app-files')) {
             return [];
         }
 
@@ -314,14 +313,13 @@ class CompileFilesCommand extends Command
      * 查找指定目录下的所有 PHP 脚本文件
      * 包括 .php 文件和包含 PHP shebang 的可执行脚本.
      *
-     * @param string $path        要搜索的目录路径
-     * @param bool   $followLinks 是否跟随符号链接（默认 false）
-     *
+     * @param  string  $path  要搜索的目录路径
+     * @param  bool  $followLinks  是否跟随符号链接（默认 false）
      * @return array
      */
     protected function findPhpScripts(string $path, bool $followLinks = false): array
     {
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return [];
         }
 
@@ -346,7 +344,7 @@ class CompileFilesCommand extends Command
                     $firstLine = fgets($handle);
                     fclose($handle);
 
-                    return !empty($firstLine) && preg_match('/^#!.*php/', $firstLine);
+                    return ! empty($firstLine) && preg_match('/^#!.*php/', $firstLine);
                 }
 
                 return false;

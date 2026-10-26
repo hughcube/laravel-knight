@@ -170,7 +170,7 @@ class WalChangesDispatchJobTest extends TestCase
 }
 
 /**
- * @property int    $id
+ * @property int $id
  * @property string $name
  */
 class WalDispatchJobTestModel extends Model implements HasWalHandler

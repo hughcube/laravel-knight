@@ -24,9 +24,8 @@ trait ParameterBag
     abstract protected function loadParameters();
 
     /**
-     * @param string|int $key
-     * @param mixed      $default
-     *
+     * @param  string|int  $key
+     * @param  mixed  $default
      * @return BaseParameterBag|mixed
      */
     protected function p($key = null, $default = null)

@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\Log;
 class LogMissedKey
 {
     /**
-     * @param CacheMissed $event
-     *
+     * @param  CacheMissed  $event
      * @return void
      */
     public function handle(CacheEvent $event)

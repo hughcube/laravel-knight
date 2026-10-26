@@ -72,13 +72,13 @@ class OPcache
     public function getRemoteScripts($url = null, $timeout = 5, $useAppHost = true): array
     {
         $url = $this->getUrl($url, $useAppHost);
-        if (!$url instanceof PUrl) {
+        if (! $url instanceof PUrl) {
             throw new Exception('Remote interface URL cannot be found!');
         }
 
         /** 发送请求 */
         $response = $this->getHttpClient()->get($url, [
-            RequestOptions::TIMEOUT         => floatval($timeout),
+            RequestOptions::TIMEOUT => floatval($timeout),
             RequestOptions::ALLOW_REDIRECTS => ['max' => 5, 'referer' => true, 'track_redirects' => true],
         ]);
 
@@ -92,7 +92,7 @@ class OPcache
         $url = $url ?? 'knight.opcache.scripts';
 
         $uri = PUrl::parse($url);
-        if (!$uri instanceof PUrl) {
+        if (! $uri instanceof PUrl) {
             $uri = PUrl::parse(Route::has($url) ? URL::route($url) : URL::to($url));
         }
 
@@ -110,9 +110,9 @@ class OPcache
     }
 
     /**
-     * @throws InvalidArgumentException
-     *
      * @return array
+     *
+     * @throws InvalidArgumentException
      */
     protected function getHistoryScripts(): array
     {
@@ -123,7 +123,7 @@ class OPcache
 
     protected function getOpCacheScripts(): array
     {
-        if (!function_exists('opcache_get_status')) {
+        if (! function_exists('opcache_get_status')) {
             return [];
         }
 
@@ -139,7 +139,7 @@ class OPcache
     }
 
     /**
-     * @param array<Stmt> $stmts
+     * @param  array<Stmt>  $stmts
      */
     public function getPHPParserStmtClasses(array $stmts, $namespace = null): Collection
     {

@@ -31,7 +31,8 @@ class TestMiddlewareCaseTest extends TestCase
 
     public function testAssertMiddlewarePasses()
     {
-        $middleware = new class() {
+        $middleware = new class()
+        {
             public function handle($request, $next)
             {
                 return $next($request);
@@ -45,7 +46,8 @@ class TestMiddlewareCaseTest extends TestCase
 
     public function testAssertMiddlewareBlocks()
     {
-        $middleware = new class() {
+        $middleware = new class()
+        {
             public function handle($request, $next)
             {
                 throw new AccessDeniedHttpException('Denied');
@@ -57,7 +59,8 @@ class TestMiddlewareCaseTest extends TestCase
 
     public function testAssertMiddlewarePassesWithCustomRequest()
     {
-        $middleware = new class() {
+        $middleware = new class()
+        {
             public function handle($request, $next)
             {
                 return $next($request);

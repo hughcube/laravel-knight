@@ -20,7 +20,7 @@ trait GetOrSet
 
     protected function getIHKCStore(): HKStore
     {
-        if (!$this->IHKCStore instanceof HKStore) {
+        if (! $this->IHKCStore instanceof HKStore) {
             $this->IHKCStore = new HKStore();
         }
 
@@ -34,9 +34,8 @@ trait GetOrSet
      *     return Model::findById($this->getParameter()->get('id'));
      * });
      *
-     * @param mixed    $name
-     * @param callable $callable
-     *
+     * @param  mixed  $name
+     * @param  callable  $callable
      * @return mixed
      */
     protected function getOrSet($name, callable $callable)

@@ -17,7 +17,7 @@ class OnlyTestEnvGuard
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!app()->environment('test')) {
+        if (! app()->environment('test')) {
             throw new AccessDeniedHttpException('Only accessible in test env!');
         }
 

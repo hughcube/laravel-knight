@@ -24,9 +24,8 @@ class PostgresGrammar extends BasePostgresGrammar
     /**
      * Compile a "JSON overlaps" statement into SQL.
      *
-     * @param string $column
-     * @param string $value
-     *
+     * @param  string  $column
+     * @param  string  $value
      * @return string
      */
     protected function compileJsonOverlaps($column, $value)
@@ -53,11 +52,11 @@ class PostgresGrammar extends BasePostgresGrammar
      */
     public static function registerConnectionResolver(): void
     {
-        if (!class_exists(PostgresConnection::class)) {
+        if (! class_exists(PostgresConnection::class)) {
             return;
         }
 
-        if (!method_exists(Connection::class, 'resolverFor')) {
+        if (! method_exists(Connection::class, 'resolverFor')) {
             return;
         }
 
@@ -83,12 +82,12 @@ class PostgresGrammar extends BasePostgresGrammar
      */
     public static function applyToExistingConnections(): void
     {
-        if (!function_exists('app') || !app()->resolved('db')) {
+        if (! function_exists('app') || ! app()->resolved('db')) {
             return;
         }
 
         $db = app('db');
-        if (!method_exists($db, 'getConnections')) {
+        if (! method_exists($db, 'getConnections')) {
             return;
         }
 
@@ -105,8 +104,7 @@ class PostgresGrammar extends BasePostgresGrammar
     /**
      * 创建 Grammar 实例, 兼容 Laravel 新版本和旧版本的构造函数签名.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return static
      */
     protected static function createInstance(Connection $connection)

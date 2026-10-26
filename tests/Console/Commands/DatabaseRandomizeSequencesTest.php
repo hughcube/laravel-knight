@@ -29,7 +29,7 @@ class DatabaseRandomizeSequencesTest extends TestCase
 
     protected function cleanupTestSequences(): void
     {
-        if (!$this->isPgsqlConfigured()) {
+        if (! $this->isPgsqlConfigured()) {
             return;
         }
 
@@ -91,8 +91,8 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run in dry-run mode
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--dry-run'    => true,
+            '--pattern' => 'randomize_test_*',
+            '--dry-run' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -129,10 +129,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run randomization
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_users_*',
-            '--min'        => 100,
-            '--max'        => 200,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_users_*',
+            '--min' => 100,
+            '--max' => 200,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -177,10 +177,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run randomization only on users sequence
         Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => '*_users_*',
-            '--min'        => 500,
-            '--max'        => 500,
-            '--force'      => true,
+            '--pattern' => '*_users_*',
+            '--min' => 500,
+            '--max' => 500,
+            '--force' => true,
         ]);
 
         $usersAfter = $connection->selectOne(
@@ -227,11 +227,11 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run randomization, excluding logs
         Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--exclude'    => '*_logs_*',
-            '--min'        => 300,
-            '--max'        => 300,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--exclude' => '*_logs_*',
+            '--min' => 300,
+            '--max' => 300,
+            '--force' => true,
         ]);
 
         $usersAfter = $connection->selectOne(
@@ -275,10 +275,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run with multiple patterns (users and orders, not logs)
         Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => ['*_users_*', '*_orders_*'],
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => ['*_users_*', '*_orders_*'],
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -298,8 +298,8 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Test min < 1
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--min'        => 0,
-            '--force'      => true,
+            '--min' => 0,
+            '--force' => true,
         ]);
 
         $this->assertEquals(1, $exitCode);
@@ -308,9 +308,9 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Test max < min
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--min'        => 100,
-            '--max'        => 50,
-            '--force'      => true,
+            '--min' => 100,
+            '--max' => 50,
+            '--force' => true,
         ]);
 
         $this->assertEquals(1, $exitCode);
@@ -323,8 +323,8 @@ class DatabaseRandomizeSequencesTest extends TestCase
 
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'nonexistent_pattern_xyz_*',
-            '--force'      => true,
+            '--pattern' => 'nonexistent_pattern_xyz_*',
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -359,10 +359,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Use * wildcard
         Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_u*',  // 匹配 users 开头
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_u*',  // 匹配 users 开头
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -419,9 +419,9 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run with --no-lock option
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--no-lock'    => true,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--no-lock' => true,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -460,10 +460,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Use exclude to limit to our test sequences only
         Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--exclude'    => ['*_test_logs_*'],  // 排除 logs，但不排除 users 和 orders
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--exclude' => ['*_test_logs_*'],  // 排除 logs，但不排除 users 和 orders
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -511,11 +511,11 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run with multiple exclude patterns
         Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--exclude'    => ['*_orders_*', '*_logs_*'],  // Exclude both orders and logs
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--exclude' => ['*_orders_*', '*_logs_*'],  // Exclude both orders and logs
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -565,10 +565,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run randomization on all test sequences
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 200,
-            '--max'        => 200,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 200,
+            '--max' => 200,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -615,10 +615,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // Run with min == max (fixed increment)
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 777,
-            '--max'        => 777,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 777,
+            '--max' => 777,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -645,10 +645,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
 
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -685,10 +685,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // min=1 是允许的最小值
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 1,
-            '--max'        => 1,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 1,
+            '--max' => 1,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -720,10 +720,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // 大增量值
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 1000000,
-            '--max'        => 1000000,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 1000000,
+            '--max' => 1000000,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -760,10 +760,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
 
             Artisan::call('database:randomize-sequences', [
                 '--connection' => 'pgsql',
-                '--pattern'    => 'randomize_test_*',
-                '--min'        => 1,
-                '--max'        => 10000,
-                '--force'      => true,
+                '--pattern' => 'randomize_test_*',
+                '--min' => 1,
+                '--max' => 10000,
+                '--force' => true,
             ]);
 
             $after = $connection->selectOne(
@@ -793,9 +793,9 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // 负数 min 值应该被拒绝
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--min'        => -1,
-            '--max'        => 100,
-            '--force'      => true,
+            '--min' => -1,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $this->assertEquals(1, $exitCode);
@@ -817,8 +817,8 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // 空字符串 pattern 不应该匹配任何序列
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => '',
-            '--force'      => true,
+            '--pattern' => '',
+            '--force' => true,
         ]);
 
         $output = Artisan::output();
@@ -842,9 +842,9 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // 排除所有 randomize_test_* 序列
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--exclude'    => 'randomize_test_*',  // 同时排除
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--exclude' => 'randomize_test_*',  // 同时排除
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -881,10 +881,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
 
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -920,10 +920,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // 正常的序列名
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_users_id_seq',  // 精确匹配
-            '--min'        => 50,
-            '--max'        => 50,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_users_id_seq',  // 精确匹配
+            '--min' => 50,
+            '--max' => 50,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -955,11 +955,11 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // pattern 匹配 randomize_test_*，但排除 *_logs_* 和 *_orders_*
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--exclude'    => ['*_logs_*', '*_orders_*'],
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--exclude' => ['*_logs_*', '*_orders_*'],
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -987,10 +987,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // 正常运行（带锁）
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -1021,10 +1021,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         for ($i = 0; $i < 3; $i++) {
             Artisan::call('database:randomize-sequences', [
                 '--connection' => 'pgsql',
-                '--pattern'    => 'randomize_test_*',
-                '--min'        => 100,
-                '--max'        => 100,
-                '--force'      => true,
+                '--pattern' => 'randomize_test_*',
+                '--min' => 100,
+                '--max' => 100,
+                '--force' => true,
             ]);
         }
 
@@ -1056,10 +1056,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
         // 使用固定增量便于验证输出
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 500,
-            '--max'        => 500,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 500,
+            '--max' => 500,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);
@@ -1084,10 +1084,10 @@ class DatabaseRandomizeSequencesTest extends TestCase
 
         $exitCode = Artisan::call('database:randomize-sequences', [
             '--connection' => 'pgsql',
-            '--pattern'    => 'randomize_test_*',
-            '--min'        => 100,
-            '--max'        => 100,
-            '--force'      => true,
+            '--pattern' => 'randomize_test_*',
+            '--min' => 100,
+            '--max' => 100,
+            '--force' => true,
         ]);
 
         $this->assertEquals(0, $exitCode);

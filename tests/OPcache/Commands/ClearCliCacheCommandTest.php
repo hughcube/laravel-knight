@@ -13,21 +13,21 @@ require_once __DIR__.'/../Support/OpcacheOverrides.php';
 
 use HughCube\Laravel\Knight\Tests\OPcache\OpcacheTestOverrides;
 
-if (!function_exists(__NAMESPACE__.'\extension_loaded')) {
+if (! function_exists(__NAMESPACE__.'\extension_loaded')) {
     function extension_loaded($name): bool
     {
         return OpcacheTestOverrides::$extensionLoaded;
     }
 }
 
-if (!function_exists(__NAMESPACE__.'\opcache_get_status')) {
+if (! function_exists(__NAMESPACE__.'\opcache_get_status')) {
     function opcache_get_status()
     {
         return OpcacheTestOverrides::$opcacheStatusEnabled ? ['enabled' => true] : false;
     }
 }
 
-if (!function_exists(__NAMESPACE__.'\opcache_reset')) {
+if (! function_exists(__NAMESPACE__.'\opcache_reset')) {
     function opcache_reset(): bool
     {
         return OpcacheTestOverrides::$opcacheResetResult;

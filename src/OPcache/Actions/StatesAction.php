@@ -31,7 +31,7 @@ class StatesAction extends Controller
      */
     protected function action(): Response
     {
-        if (!extension_loaded('Zend OPcache')) {
+        if (! extension_loaded('Zend OPcache')) {
             throw new UserException(
                 'You do not have the Zend OPcache extension loaded, sample data is being shown instead.'
             );

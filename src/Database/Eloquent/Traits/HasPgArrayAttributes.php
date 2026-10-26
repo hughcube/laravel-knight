@@ -26,7 +26,7 @@ trait HasPgArrayAttributes
      */
     public function initializeHasPgArrayAttributes(): void
     {
-        if (!method_exists($this, 'shouldPreserveUppercaseArrayCast') || !$this->shouldPreserveUppercaseArrayCast()) {
+        if (! method_exists($this, 'shouldPreserveUppercaseArrayCast') || ! $this->shouldPreserveUppercaseArrayCast()) {
             $this->casts = array_filter($this->casts, fn ($cast) => $cast !== 'ARRAY');
         }
     }
@@ -38,7 +38,7 @@ trait HasPgArrayAttributes
      */
     protected function parsePgIntArray($value): Collection
     {
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             return Collection::make(is_iterable($value) ? $value : []);
         }
 
@@ -61,7 +61,7 @@ trait HasPgArrayAttributes
      */
     protected function parsePgSimpleTextArray($value): Collection
     {
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             return Collection::make(is_iterable($value) ? $value : []);
         }
 

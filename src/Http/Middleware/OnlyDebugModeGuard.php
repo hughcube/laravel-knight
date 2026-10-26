@@ -17,7 +17,7 @@ class OnlyDebugModeGuard
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!app()->hasDebugModeEnabled()) {
+        if (! app()->hasDebugModeEnabled()) {
             throw new AccessDeniedHttpException('Only accessible in debug mode!');
         }
 

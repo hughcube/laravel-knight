@@ -11,17 +11,16 @@ use Symfony\Component\HttpFoundation\Response;
 class IdempotencyGuard
 {
     /**
-     * @param Request $request
-     * @param Closure $next
-     * @param int     $ttl
-     *
+     * @param  Request  $request
+     * @param  Closure  $next
+     * @param  int  $ttl
      * @return Response
      */
     public function handle(Request $request, Closure $next, $ttl = 86400)
     {
         $ttl = intval($ttl);
 
-        if (!$this->shouldApply($request)) {
+        if (! $this->shouldApply($request)) {
             return $next($request);
         }
 
@@ -49,8 +48,7 @@ class IdempotencyGuard
     }
 
     /**
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return string|null
      */
     protected function getIdempotencyKey(Request $request): ?string
@@ -61,8 +59,7 @@ class IdempotencyGuard
     }
 
     /**
-     * @param string $idempotencyKey
-     *
+     * @param  string  $idempotencyKey
      * @return string
      */
     protected function getCacheKey(string $idempotencyKey): string
@@ -79,8 +76,7 @@ class IdempotencyGuard
     }
 
     /**
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return bool
      */
     protected function shouldApply(Request $request): bool
@@ -89,22 +85,20 @@ class IdempotencyGuard
     }
 
     /**
-     * @param Response $response
-     *
+     * @param  Response  $response
      * @return string
      */
     protected function serializeResponse(Response $response): string
     {
         return serialize([
-            'status'  => $response->getStatusCode(),
+            'status' => $response->getStatusCode(),
             'headers' => $response->headers->all(),
             'content' => $response->getContent(),
         ]);
     }
 
     /**
-     * @param string $data
-     *
+     * @param  string  $data
      * @return Response
      */
     protected function unserializeResponse(string $data): Response

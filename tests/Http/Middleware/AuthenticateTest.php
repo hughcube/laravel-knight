@@ -12,7 +12,8 @@ class AuthenticateTest extends TestCase
 {
     private function makeMiddleware(array $optional): Authenticate
     {
-        return new class($optional) extends Authenticate {
+        return new class($optional) extends Authenticate
+        {
             public $optional = [];
 
             public function __construct(array $optional)
@@ -66,7 +67,8 @@ class AuthenticateTest extends TestCase
 
     public function testAuthenticatedRequestPassesThrough()
     {
-        $middleware = new class([]) extends Authenticate {
+        $middleware = new class([]) extends Authenticate
+        {
             public $optional = [];
 
             public function __construct(array $optional)

@@ -82,7 +82,7 @@ class HttpsGuardTest extends TestCase
     #[DataProvider('getCases')]
     public function testHandle(string $appUrl, Request $request, int $statusCode, $except = null)
     {
-        if (!empty($except)) {
+        if (! empty($except)) {
             HttpsGuard::customExcept(__METHOD__, $except);
         }
 

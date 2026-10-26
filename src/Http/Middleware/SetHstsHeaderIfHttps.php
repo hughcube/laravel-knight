@@ -15,10 +15,9 @@ use Symfony\Component\HttpFoundation\Response;
 class SetHstsHeaderIfHttps
 {
     /**
-     * @param Request     $request
-     * @param callable    $next
-     * @param string|null $hsts
-     *
+     * @param  Request  $request
+     * @param  callable  $next
+     * @param  string|null  $hsts
      * @return Response
      */
     public function handle(Request $request, callable $next, ?string $hsts = 'max-age=31536000'): Response

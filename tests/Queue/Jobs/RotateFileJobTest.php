@@ -26,7 +26,7 @@ class RotateFileJobTest extends TestCase
                             sprintf('%s/', $tempDir),
                             sprintf('%s/xxx/', $tempDir),
                         ],
-                        'pattern'     => 'FileRotateJobTest-*.test.log',
+                        'pattern' => 'FileRotateJobTest-*.test.log',
                         'date_format' => date('Y-m-d'),
                     ],
                 ],

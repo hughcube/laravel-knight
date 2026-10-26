@@ -27,17 +27,16 @@ class ClearCliCacheCommand extends Command
     protected $description = 'Clear OPcache for CLI environment';
 
     /**
-     * @param Schedule $schedule
+     * @param  Schedule  $schedule
+     * @return void
      *
      * @throws Exception
-     *
-     * @return void
      */
     public function handle(Schedule $schedule)
     {
         $startTime = microtime(true);
 
-        if (!extension_loaded('Zend OPcache')) {
+        if (! extension_loaded('Zend OPcache')) {
             $this->error('You do not have the Zend OPcache extension loaded, sample data is being shown instead.');
 
             Log::warning(sprintf(
@@ -61,7 +60,7 @@ class ClearCliCacheCommand extends Command
             return;
         }
 
-        if (!opcache_reset()) {
+        if (! opcache_reset()) {
             throw new Exception('Failed to reset OPcache.');
         }
 

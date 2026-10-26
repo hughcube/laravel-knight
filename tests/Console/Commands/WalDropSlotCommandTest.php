@@ -33,7 +33,7 @@ class WalDropSlotCommandTest extends TestCase
         $this->skipIfPgsqlNotConfigured();
 
         $exitCode = Artisan::call('wal:drop-slot', [
-            'slot'         => 'nonexistent_slot_'.time(),
+            'slot' => 'nonexistent_slot_'.time(),
             '--connection' => 'pgsql',
         ]);
 
@@ -65,7 +65,7 @@ class WalDropSlotCommandTest extends TestCase
 
             // Drop it
             Artisan::call('wal:drop-slot', [
-                'slot'         => $slotName,
+                'slot' => $slotName,
                 '--connection' => 'pgsql',
             ]);
 

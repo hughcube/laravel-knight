@@ -24,10 +24,10 @@ class QueueFlowJob extends Job
     {
         return [
             'from_connection' => ['required', 'string'],
-            'from_queue'      => ['string', 'min:1', 'nullable'],
+            'from_queue' => ['string', 'min:1', 'nullable'],
 
             'to_connection' => ['required', 'string'],
-            'to_queue'      => ['string', 'min:1', 'nullable'],
+            'to_queue' => ['string', 'min:1', 'nullable'],
 
             'max_time' => ['integer', 'min:1', 'nullable'],
         ];
@@ -75,7 +75,7 @@ class QueueFlowJob extends Job
             $job->setFlowJobDescribe($describe);
         }
 
-        if (!$job instanceof FromFlowJob || !$job->isDelayDeleteFlowJob()) {
+        if (! $job instanceof FromFlowJob || ! $job->isDelayDeleteFlowJob()) {
             $fromJob->delete();
         }
 

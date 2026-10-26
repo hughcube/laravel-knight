@@ -28,7 +28,7 @@ class CreatePreloadCommandTest extends TestCase
         $path = base_path('create_preload.php');
         $existed = file_exists($path);
 
-        if (!$existed) {
+        if (! $existed) {
             file_put_contents($path, '<?php echo "ok";');
         }
 
@@ -38,7 +38,7 @@ class CreatePreloadCommandTest extends TestCase
 
             $this->assertSame($path, $serverCommand[1]);
         } finally {
-            if (!$existed && file_exists($path)) {
+            if (! $existed && file_exists($path)) {
                 unlink($path);
             }
         }
@@ -58,7 +58,8 @@ if ($output) {
 echo "done";
 PHP);
 
-        $command = new class($script, $output) extends CreatePreloadCommand {
+        $command = new class($script, $output) extends CreatePreloadCommand
+        {
             private string $script;
             private string $outputPath;
 
@@ -116,7 +117,8 @@ fwrite(STDERR, 'boom');
 exit(1);
 PHP);
 
-        $command = new class($script, $output) extends CreatePreloadCommand {
+        $command = new class($script, $output) extends CreatePreloadCommand
+        {
             private string $script;
             private string $outputPath;
 

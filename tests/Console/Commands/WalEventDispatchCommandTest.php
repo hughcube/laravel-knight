@@ -14,8 +14,7 @@ class WalEventDispatchCommandTest extends TestCase
     /**
      * Create command with proper input/output initialized.
      *
-     * @param array $options
-     *
+     * @param  array  $options
      * @return WalEventDispatchCommand
      */
     protected function makeCommand(array $options = [])
@@ -38,7 +37,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand(['--no-add-tables' => true]);
 
-        list($placeholders) = self::callMethod($command, 'buildWal2jsonParams');
+        [$placeholders] = self::callMethod($command, 'buildWal2jsonParams');
         /** auto format-version=2 占一对占位符 */
         $this->assertSame(', ?, ?', $placeholders);
     }
@@ -47,7 +46,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand(['--wal2json-params' => ['filter-columns=content', 'add-tables=users'], '--no-add-tables' => true]);
 
-        list($placeholders) = self::callMethod($command, 'buildWal2jsonParams');
+        [$placeholders] = self::callMethod($command, 'buildWal2jsonParams');
         /** 2 user params + 1 auto(format-version) = 3 */
         $this->assertSame(', ?, ?, ?, ?, ?, ?', $placeholders);
     }
@@ -57,7 +56,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand(['--no-add-tables' => true]);
         self::setProperty($command, 'autoAddTables', 'public.users,public.orders');
 
-        list($placeholders) = self::callMethod($command, 'buildWal2jsonParams');
+        [$placeholders] = self::callMethod($command, 'buildWal2jsonParams');
         /** 0 user + 2 auto(format-version, add-tables) = 2 */
         $this->assertSame(', ?, ?, ?, ?', $placeholders);
     }
@@ -67,7 +66,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand(['--wal2json-params' => ['filter-columns=content'], '--no-add-tables' => true]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
-        list($placeholders) = self::callMethod($command, 'buildWal2jsonParams');
+        [$placeholders] = self::callMethod($command, 'buildWal2jsonParams');
         /** 1 user(filter-columns) + 2 auto(format-version, add-tables) = 3 */
         $this->assertSame(', ?, ?, ?, ?, ?, ?', $placeholders);
     }
@@ -76,7 +75,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand(['--no-add-tables' => true]);
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         /** auto format-version=2 */
         $this->assertSame(['format-version', '2'], $bindings);
     }
@@ -85,7 +84,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand(['--wal2json-params' => ['filter-columns=content,body', 'add-tables=users'], '--no-add-tables' => true]);
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         /** user params first, then auto format-version */
         $this->assertSame(['filter-columns', 'content,body', 'add-tables', 'users', 'format-version', '2'], $bindings);
     }
@@ -94,7 +93,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand(['--wal2json-params' => ['include-lsn'], '--no-add-tables' => true]);
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         $this->assertSame(['include-lsn', '', 'format-version', '2'], $bindings);
     }
 
@@ -103,7 +102,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand(['--no-add-tables' => true]);
         self::setProperty($command, 'autoAddTables', 'public.users,public.orders');
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         $this->assertSame(['format-version', '2', 'add-tables', 'public.users,public.orders'], $bindings);
     }
 
@@ -112,7 +111,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand(['--wal2json-params' => ['filter-columns=content'], '--no-add-tables' => true]);
         self::setProperty($command, 'autoAddTables', 'public.users,public.orders');
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         $this->assertSame(['filter-columns', 'content', 'format-version', '2', 'add-tables', 'public.users,public.orders'], $bindings);
     }
 
@@ -165,7 +164,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1'],
-            '--no-add-tables'   => true,
+            '--no-add-tables' => true,
         ]);
 
         $result = self::callMethod($command, 'collectAutoWal2jsonParams');
@@ -178,7 +177,7 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['add-tables=custom.table'],
-            '--no-add-tables'   => true,
+            '--no-add-tables' => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
@@ -192,8 +191,8 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['filter-tables=custom.table'],
-            '--filter-tables'   => ['telescope_entries'],
-            '--no-add-tables'   => true,
+            '--filter-tables' => ['telescope_entries'],
+            '--no-add-tables' => true,
         ]);
 
         $result = self::callMethod($command, 'collectAutoWal2jsonParams');
@@ -206,8 +205,8 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1', 'add-tables=foo', 'filter-tables=bar'],
-            '--filter-tables'   => ['telescope_entries'],
-            '--no-add-tables'   => true,
+            '--filter-tables' => ['telescope_entries'],
+            '--no-add-tables' => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
@@ -234,10 +233,10 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1'],
-            '--no-add-tables'   => true,
+            '--no-add-tables' => true,
         ]);
 
-        list($placeholders) = self::callMethod($command, 'buildWal2jsonParams');
+        [$placeholders] = self::callMethod($command, 'buildWal2jsonParams');
         /** 1 user(format-version) + 0 auto = 1 */
         $this->assertSame(', ?, ?', $placeholders);
     }
@@ -246,10 +245,10 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['format-version=1'],
-            '--no-add-tables'   => true,
+            '--no-add-tables' => true,
         ]);
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         /** 用户的 format-version=1 不会被 auto format-version=2 追加 */
         $this->assertSame(['format-version', '1'], $bindings);
     }
@@ -258,11 +257,11 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['add-tables=custom.foo'],
-            '--no-add-tables'   => true,
+            '--no-add-tables' => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
-        list($placeholders) = self::callMethod($command, 'buildWal2jsonParams');
+        [$placeholders] = self::callMethod($command, 'buildWal2jsonParams');
         /** 1 user(add-tables) + 1 auto(format-version) = 2 */
         $this->assertSame(', ?, ?, ?, ?', $placeholders);
     }
@@ -271,11 +270,11 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['add-tables=custom.foo'],
-            '--no-add-tables'   => true,
+            '--no-add-tables' => true,
         ]);
         self::setProperty($command, 'autoAddTables', 'public.users');
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         /** 用户 add-tables 优先，auto add-tables 被跳过 */
         $this->assertSame(['add-tables', 'custom.foo', 'format-version', '2'], $bindings);
     }
@@ -284,11 +283,11 @@ class WalEventDispatchCommandTest extends TestCase
     {
         $command = $this->makeCommand([
             '--wal2json-params' => ['filter-tables=custom.bar'],
-            '--filter-tables'   => ['telescope_entries'],
-            '--no-add-tables'   => true,
+            '--filter-tables' => ['telescope_entries'],
+            '--no-add-tables' => true,
         ]);
 
-        list(, $bindings) = self::callMethod($command, 'buildWal2jsonParams');
+        [, $bindings] = self::callMethod($command, 'buildWal2jsonParams');
         /** 用户 filter-tables 优先，--filter-tables 的自动注入被跳过 */
         $this->assertSame(['filter-tables', 'custom.bar', 'format-version', '2'], $bindings);
     }
@@ -317,7 +316,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand();
 
         $counts = [
-            'users'  => ['insert' => 3, 'update' => 1],
+            'users' => ['insert' => 3, 'update' => 1],
             'orders' => ['delete' => 2],
         ];
         $result = self::callMethod($command, 'formatChangeSummary', [$counts]);
@@ -393,7 +392,7 @@ class WalEventDispatchCommandTest extends TestCase
         $partitionMap = [
             'orders_2024_01' => 'orders',
             'orders_2024_02' => 'orders',
-            'logs_archive'   => 'logs',
+            'logs_archive' => 'logs',
         ];
 
         $result = self::callMethod($command, 'resolveTable', ['orders_2024_01', $partitionMap]);
@@ -712,7 +711,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand();
 
         $partitionMap = [
-            'child_partition'  => 'parent_partition',
+            'child_partition' => 'parent_partition',
             'parent_partition' => 'grandparent',
         ];
 
@@ -820,7 +819,7 @@ class WalEventDispatchCommandTest extends TestCase
         $command = $this->makeCommand();
 
         $handlers = [
-            'users'  => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
             'orders' => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
@@ -842,7 +841,7 @@ class WalEventDispatchCommandTest extends TestCase
 
         $handlers = [
             'audit.logs' => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'users'      => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
         $result = self::callMethod($command, 'buildAutoAddTables', [$handlers, []]);
@@ -883,7 +882,7 @@ class WalEventDispatchCommandTest extends TestCase
 
         $handlers = [
             'orders' => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'users'  => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
         /** orders 有两个分区子表 */
@@ -903,8 +902,8 @@ class WalEventDispatchCommandTest extends TestCase
 
         $handlers = [
             'orders' => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'logs'   => [['handler' => new \stdClass(), 'keyName' => 'id']],
-            'users'  => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'logs' => [['handler' => new \stdClass(), 'keyName' => 'id']],
+            'users' => [['handler' => new \stdClass(), 'keyName' => 'id']],
         ];
 
         $partitionMap = [
@@ -1082,7 +1081,8 @@ class WalEventDispatchCommandTest extends TestCase
      */
     protected function makeNoDispatchCommand(array $options = [])
     {
-        $command = new class() extends WalEventDispatchCommand {
+        $command = new class() extends WalEventDispatchCommand
+        {
             /** @var int */
             public $testDispatchCount = 0;
 
@@ -1167,8 +1167,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->getPdo()->commit();
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1252,8 +1252,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("UPDATE %s SET name = 'updated', value = value + 1", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1332,8 +1332,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf('DELETE FROM %s', $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1403,8 +1403,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) SELECT 'row_' || g FROM generate_series(1, 1000) g", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'advance',
+                '--connection' => 'pgsql',
+                '--mode' => 'advance',
                 '--no-add-tables' => true,
             ]);
 
@@ -1464,8 +1464,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'advance',
+                '--connection' => 'pgsql',
+                '--mode' => 'advance',
                 '--no-add-tables' => true,
             ]);
 
@@ -1506,8 +1506,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('a'), ('b'), ('c')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1556,8 +1556,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('a'), ('b')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1608,8 +1608,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('x')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1675,8 +1675,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name, part_key) VALUES ('part_row', 1)", $parentTable));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1729,8 +1729,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('peek1'), ('peek2')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'peek',
+                '--connection' => 'pgsql',
+                '--mode' => 'peek',
                 '--no-add-tables' => true,
             ]);
 
@@ -1784,8 +1784,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('auto1')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1841,10 +1841,10 @@ class WalEventDispatchCommandTest extends TestCase
 
             /** 使用 format-version=1 */
             $command = $this->makeNoDispatchCommand([
-                '--connection'     => 'pgsql',
-                '--mode'           => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--format-version' => '1',
-                '--no-add-tables'  => true,
+                '--no-add-tables' => true,
             ]);
 
             $handlers = [
@@ -1876,8 +1876,8 @@ class WalEventDispatchCommandTest extends TestCase
         $this->skipIfPgsqlNotConfigured();
 
         $command = $this->makeNoDispatchCommand([
-            '--connection'    => 'pgsql',
-            '--mode'          => 'auto',
+            '--connection' => 'pgsql',
+            '--mode' => 'auto',
             '--no-add-tables' => true,
         ]);
 
@@ -1912,8 +1912,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("DELETE FROM %s WHERE name = 'b'", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -1968,8 +1968,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('b1'), ('b2'), ('b3')", $table2));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2030,8 +2030,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement('DROP TABLE knight_phantom_push');
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'advance',
+                '--connection' => 'pgsql',
+                '--mode' => 'advance',
                 '--no-add-tables' => true,
             ]);
 
@@ -2084,8 +2084,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('after_trunc')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2129,8 +2129,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2172,8 +2172,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name, nullable_col, num) VALUES ('has_nulls', NULL, NULL)", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2223,8 +2223,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf('INSERT INTO %s (content) VALUES (?)', $tableName), [$bigText]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2275,8 +2275,8 @@ class WalEventDispatchCommandTest extends TestCase
             ));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2324,8 +2324,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('uuid_row')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2378,8 +2378,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s.%s (name) VALUES ('schema_row')", $schemaName, $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2437,8 +2437,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf('DELETE FROM %s WHERE name = ?', $tableName), ['del_test']);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2489,8 +2489,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (user_id, item_id, name) VALUES (100, 200, 'composite')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2550,8 +2550,8 @@ class WalEventDispatchCommandTest extends TestCase
             }
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2600,8 +2600,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (data) VALUES (decode('deadbeef', 'hex'))", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2653,7 +2653,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('a'), ('b'), ('c')", $tableName));
 
             /** 构造一个第 2 次 dispatch 时抛异常的 command */
-            $command = new class() extends WalEventDispatchCommand {
+            $command = new class() extends WalEventDispatchCommand
+            {
                 public $testDispatchCount = 0;
 
                 protected function dispatchWalChange(\HughCube\Laravel\Knight\Database\Wal\WalChangeRecord $record): void
@@ -2666,8 +2667,8 @@ class WalEventDispatchCommandTest extends TestCase
             };
             $command->setLaravel($this->app);
             $input = new ArrayInput([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'advance',
+                '--connection' => 'pgsql',
+                '--mode' => 'advance',
                 '--no-add-tables' => true,
             ], $command->getDefinition());
             self::setProperty($command, 'input', $input);
@@ -2733,8 +2734,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('mismatch')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2785,8 +2786,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('diffkey')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2837,8 +2838,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement("SELECT pg_create_logical_replication_slot(?, 'wal2json')", [$slotName]);
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2896,8 +2897,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('committed')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'auto',
+                '--connection' => 'pgsql',
+                '--mode' => 'auto',
                 '--no-add-tables' => true,
             ]);
 
@@ -2993,8 +2994,8 @@ class WalEventDispatchCommandTest extends TestCase
             $connection->statement(sprintf("INSERT INTO %s (name) VALUES ('adv_fail_test')", $tableName));
 
             $command = $this->makeNoDispatchCommand([
-                '--connection'    => 'pgsql',
-                '--mode'          => 'advance',
+                '--connection' => 'pgsql',
+                '--mode' => 'advance',
                 '--no-add-tables' => true,
             ]);
 
@@ -3098,7 +3099,8 @@ class WalEventDispatchCommandTest extends TestCase
 
     public function testCheckSlotHealthReturnsTrueWhenCriticalThresholdExceeded()
     {
-        $command = new class() extends WalEventDispatchCommand {
+        $command = new class() extends WalEventDispatchCommand
+        {
             public $connection;
 
             protected function getConnection()
@@ -3114,7 +3116,8 @@ class WalEventDispatchCommandTest extends TestCase
         $bufferedOutput = new BufferedOutput();
         self::setProperty($command, 'output', new OutputStyle($input, $bufferedOutput));
 
-        $command->connection = new class() {
+        $command->connection = new class()
+        {
             public function selectOne($query, array $bindings = [], $useReadPdo = true)
             {
                 return (object) ['lag_bytes' => 3 * 1024 * 1024];
