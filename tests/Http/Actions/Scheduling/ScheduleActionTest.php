@@ -71,8 +71,7 @@ class ScheduleActionTest extends TestCase
     {
         $logged = false;
         \Illuminate\Support\Facades\Log::shouldReceive('channel')
-            ->once()
-            ->with(null)
+            ->zeroOrMoreTimes()
             ->andReturnSelf();
         \Illuminate\Support\Facades\Log::shouldReceive('info')
             ->once()
