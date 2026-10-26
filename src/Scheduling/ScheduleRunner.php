@@ -3,6 +3,7 @@
 namespace HughCube\Laravel\Knight\Scheduling;
 
 use HughCube\Laravel\Knight\Scheduling\Jobs\CommandJob;
+use Illuminate\Console\Application as ConsoleApplication;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -16,6 +17,7 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use ReflectionMethod;
 use ReflectionProperty;
 use Throwable;
@@ -66,6 +68,7 @@ class ScheduleRunner
         $schedule = $this->resolveSchedule();
         $this->clearScheduleMutexCache($schedule);
         $startedAt = Carbon::now()->startOfMinute();
+        $startMicrotime = microtime(true);
 
         /** @var Application $app */
         $app = $this->container;
@@ -104,12 +107,12 @@ class ScheduleRunner
             }
 
             // 4. 执行具体任务项
-            $this->executeSingleEvent($event, $asyncToQueue, $outputCallback, $summary);
+            $this->executeSingleEvent($event, $asyncToQueue, $outputCallback, $summary, $startMicrotime);
         }
 
         // 5. 对齐官方秒级重复任务驱动 (Repeatable Events)
         if ($repeatUntilEndOfMinute) {
-            $repeatableEvents = collect($dueEvents)->filter(function ($event) {
+            $repeatableEvents = Collection::make($dueEvents)->filter(function ($event) {
                 return method_exists($event, 'isRepeatable') && $event->isRepeatable();
             })->all();
 
@@ -120,35 +123,49 @@ class ScheduleRunner
                     $asyncToQueue,
                     $outputCallback,
                     $shouldInterruptCallback,
-                    $summary
+                    $summary,
+                    $startMicrotime
                 );
             }
         }
 
+        $totalDuration = round((microtime(true) - $startMicrotime) * 1000, 2);
+
         return [
-            'triggered_at' => $startedAt->toDateTimeString(),
-            'count' => count($summary),
-            'tasks' => $summary,
+            'triggered_at'   => $startedAt->toDateTimeString(),
+            'count'          => count($summary),
+            'total_duration' => $totalDuration,
+            'tasks'          => $summary,
         ];
     }
 
     /**
      * 执行具体单个任务项 (包含后台分流与同进程直驱).
      *
-     * @param  Event  $event
-     * @param  bool  $asyncToQueue
-     * @param  callable|null  $outputCallback
-     * @param  array  $summary
+     * @param Event $event
+     * @param bool $asyncToQueue
+     * @param callable|null $outputCallback
+     * @param array $summary
+     * @param float $startMicrotime
+     * @throws Throwable
      */
     protected function executeSingleEvent(
         Event $event,
         bool $asyncToQueue,
         ?callable $outputCallback,
-        array &$summary
+        array &$summary,
+        float $startMicrotime = 0.0
     ): void {
+        if ($startMicrotime <= 0.0) {
+            $startMicrotime = microtime(true);
+        }
+
         // 重置常驻内存下 Event 实例跨轮次可能残留的瞬态执行状态
         $event->skippedBecauseOverlapping = false;
         $event->exitCode = null;
+
+        $taskSummary = $this->formatEventSummary($event);
+        $definedMode = $event->runInBackground ? 'background' : 'sync';
 
         // A. 判定是否为后台耗时任务 (runInBackground) 且非闭包
         if (! ($event instanceof CallbackEvent) && ! empty($event->runInBackground)) {
@@ -160,10 +177,15 @@ class ScheduleRunner
                 if (! empty($event->withoutOverlapping)) {
                     if ($event->mutex->exists($event) || ! $event->mutex->create($event)) {
                         $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+                        $now = microtime(true);
                         $summary[] = [
-                            'task' => $event->getSummaryForDisplay(),
-                            'mode' => 'skipped',
-                            'duration' => 0.0,
+                            'task'         => $taskSummary,
+                            'defined_mode' => $definedMode,
+                            'mode'         => 'queue',
+                            'status'       => 'skipped',
+                            'duration'     => 0.0,
+                            'delays'       => round(($now - $startMicrotime) * 1000, 2),
+                            'skip_reason'  => 'overlapping',
                         ];
                         if ($outputCallback !== null) {
                             $outputCallback($event, 'skipped', 0.0);
@@ -185,25 +207,39 @@ class ScheduleRunner
                     $job->onConnection($onConnection);
                 }
 
-                $this->busDispatcher()->dispatch($job);
+                $jobStart = microtime(true);
+                $jobId = $this->busDispatcher()->dispatch($job);
+                $jobEnd = microtime(true);
+                $durationMs = round(($jobEnd - $jobStart) * 1000, 2);
+                $delaysMs = round(($jobEnd - $startMicrotime) * 1000, 2);
 
                 $summary[] = [
-                    'task' => $event->getSummaryForDisplay(),
-                    'mode' => 'queue',
-                    'queue' => $job->queue ?: 'default',
+                    'task'         => $taskSummary,
+                    'defined_mode' => $definedMode,
+                    'mode'         => 'queue',
+                    'status'       => 'pushed',
+                    'queue'        => $job->queue ?: 'default',
+                    'job_id'       => is_scalar($jobId) ? strval($jobId) : null,
+                    'duration'     => $durationMs,
+                    'delays'       => $delaysMs,
                 ];
 
                 if ($outputCallback !== null) {
-                    $outputCallback($event, 'queue', 0.0);
+                    $outputCallback($event, 'queue', round($jobEnd - $jobStart, 2));
                 }
             } else {
                 // Daemon 模式：本地后台独立运行，零队列开销
                 if (! empty($event->withoutOverlapping) && $event->mutex->exists($event)) {
                     $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
+                    $now = microtime(true);
                     $summary[] = [
-                        'task' => $event->getSummaryForDisplay(),
-                        'mode' => 'skipped',
-                        'duration' => 0.0,
+                        'task'         => $taskSummary,
+                        'defined_mode' => $definedMode,
+                        'mode'         => 'fork',
+                        'status'       => 'skipped',
+                        'duration'     => 0.0,
+                        'delays'       => round(($now - $startMicrotime) * 1000, 2),
+                        'skip_reason'  => 'overlapping',
                     ];
                     if ($outputCallback !== null) {
                         $outputCallback($event, 'skipped', 0.0);
@@ -219,41 +255,58 @@ class ScheduleRunner
                     // 原生 run() 内部会自动拼装后台命令并执行
                     $event->run($this->container);
 
-                    $duration = round(microtime(true) - $start, 2);
+                    $end = microtime(true);
+                    $durationMs = round(($end - $start) * 1000, 2);
+                    $delaysMs = round(($end - $startMicrotime) * 1000, 2);
+                    $durationSec = round($end - $start, 2);
 
                     if (! empty($event->skippedBecauseOverlapping)) {
                         $this->eventsDispatcher()->dispatch(new ScheduledTaskSkipped($event));
                         $summary[] = [
-                            'task' => $event->getSummaryForDisplay(),
-                            'mode' => 'skipped',
-                            'duration' => $duration,
+                            'task'         => $taskSummary,
+                            'defined_mode' => $definedMode,
+                            'mode'         => 'fork',
+                            'status'       => 'skipped',
+                            'duration'     => $durationMs,
+                            'delays'       => $delaysMs,
+                            'skip_reason'  => 'overlapping',
                         ];
                         if ($outputCallback !== null) {
-                            $outputCallback($event, 'skipped', $duration);
+                            $outputCallback($event, 'skipped', $durationSec);
                         }
                     } else {
-                        $this->eventsDispatcher()->dispatch(new ScheduledTaskFinished($event, $duration));
+                        $this->eventsDispatcher()->dispatch(new ScheduledTaskFinished($event, $durationSec));
                         $summary[] = [
-                            'task' => $event->getSummaryForDisplay(),
-                            'mode' => 'background',
-                            'duration' => $duration,
+                            'task'         => $taskSummary,
+                            'defined_mode' => $definedMode,
+                            'mode'         => 'fork',
+                            'status'       => 'done',
+                            'duration'     => $durationMs,
+                            'delays'       => $delaysMs,
                         ];
                         if ($outputCallback !== null) {
-                            $outputCallback($event, 'background', $duration);
+                            $outputCallback($event, 'background', $durationSec);
                         }
                     }
                 } catch (Throwable $e) {
-                    $duration = round(microtime(true) - $start, 2);
-                    $this->eventsDispatcher()->dispatch(new ScheduledTaskFailed($event, $e, $duration));
+                    $end = microtime(true);
+                    $durationMs = round(($end - $start) * 1000, 2);
+                    $delaysMs = round(($end - $startMicrotime) * 1000, 2);
+                    $durationSec = round($end - $start, 2);
+
+                    $this->eventsDispatcher()->dispatch(new ScheduledTaskFailed($event, $e, $durationSec));
                     $this->exceptionHandler()->report($e);
                     $summary[] = [
-                        'task' => $event->getSummaryForDisplay(),
-                        'mode' => 'background',
-                        'duration' => $duration,
-                        'error' => $e->getMessage(),
+                        'task'         => $taskSummary,
+                        'defined_mode' => $definedMode,
+                        'mode'         => 'fork',
+                        'status'       => 'fail',
+                        'duration'     => $durationMs,
+                        'delays'       => $delaysMs,
+                        'error'        => $e->getMessage(),
                     ];
                     if ($outputCallback !== null) {
-                        $outputCallback($event, 'error', $duration);
+                        $outputCallback($event, 'error', $durationSec);
                     }
                 }
             }
@@ -261,49 +314,80 @@ class ScheduleRunner
             return;
         }
 
-        // B. 普通短任务 / 闭包任务：在当前进程安全执行
+        // B. 普通短任务 / 闭包任务：通过 Laravel 标准总线在当前进程安全执行
         $job = new CommandJob($event);
         $start = microtime(true);
 
         try {
-            $job->handle();
+            $this->busDispatcher()->dispatchNow($job);
 
-            $duration = round(microtime(true) - $start, 2);
+            $end = microtime(true);
+            $durationMs = round(($end - $start) * 1000, 2);
+            $delaysMs = round(($end - $startMicrotime) * 1000, 2);
+
             $summary[] = [
-                'task' => $event->getSummaryForDisplay(),
-                'mode' => 'sync',
-                'duration' => $duration,
+                'task'         => $taskSummary,
+                'defined_mode' => $definedMode,
+                'mode'         => 'sync',
+                'status'       => 'done',
+                'duration'     => $durationMs,
+                'delays'       => $delaysMs,
             ];
 
             if ($outputCallback !== null) {
-                $outputCallback($event, 'sync', $duration);
+                $outputCallback($event, 'sync', round($end - $start, 2));
             }
         } catch (Throwable $e) {
             // 与官方一致：单个任务失败隔离，记录并继续执行后续任务，不中断整批调度
-            $duration = round(microtime(true) - $start, 2);
+            $end = microtime(true);
+            $durationMs = round(($end - $start) * 1000, 2);
+            $delaysMs = round(($end - $startMicrotime) * 1000, 2);
+
             $this->exceptionHandler()->report($e);
             $summary[] = [
-                'task' => $event->getSummaryForDisplay(),
-                'mode' => 'sync',
-                'duration' => $duration,
-                'error' => $e->getMessage(),
+                'task'         => $taskSummary,
+                'defined_mode' => $definedMode,
+                'mode'         => 'sync',
+                'status'       => 'fail',
+                'duration'     => $durationMs,
+                'delays'       => $delaysMs,
+                'error'        => $e->getMessage(),
             ];
 
             if ($outputCallback !== null) {
-                $outputCallback($event, 'error', $duration);
+                $outputCallback($event, 'error', round($end - $start, 2));
             }
         }
     }
 
     /**
+     * 获取对齐官方视觉的格式化任务命令名.
+     *
+     * @param  Event  $event
+     * @return string
+     */
+    protected function formatEventSummary(Event $event): string
+    {
+        if ($event instanceof CallbackEvent) {
+            return $event->getSummaryForDisplay();
+        }
+
+        $command = trim(str_replace(ConsoleApplication::phpBinary(), '', strval($event->command)));
+
+        return ! empty($command) ? $command : $event->getSummaryForDisplay();
+    }
+
+    /**
      * 持续执行可重复秒级任务直到当前分钟结束 (100% 对齐官方 repeatEvents 契约).
      *
-     * @param  Event[]  $events
-     * @param  Carbon  $startedAt
-     * @param  bool  $asyncToQueue
-     * @param  callable|null  $outputCallback
-     * @param  callable|null  $shouldInterruptCallback
-     * @param  array  $summary
+     * @param Event[] $events
+     * @param Carbon $startedAt
+     * @param bool $asyncToQueue
+     * @param callable|null $outputCallback
+     * @param callable|null $shouldInterruptCallback
+     * @param array $summary
+     * @param float $startMicrotime
+     * @throws Throwable
      */
     protected function repeatEvents(
         array $events,
@@ -311,7 +395,8 @@ class ScheduleRunner
         bool $asyncToQueue,
         ?callable $outputCallback,
         ?callable $shouldInterruptCallback,
-        array &$summary
+        array &$summary,
+        float $startMicrotime = 0.0
     ): void {
         $endOfMinute = $startedAt->copy()->endOfMinute();
         $hasEnteredMaintenanceMode = false;
@@ -369,7 +454,7 @@ class ScheduleRunner
                     continue;
                 }
 
-                $this->executeSingleEvent($event, $asyncToQueue, $outputCallback, $summary);
+                $this->executeSingleEvent($event, $asyncToQueue, $outputCallback, $summary, $startMicrotime);
             }
 
             usleep(100 * 1000); // 100ms 轮询检测
