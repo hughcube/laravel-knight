@@ -20,6 +20,7 @@
         "hughcube/cn-number": "*",
         "hughcube/guzzle-http": "*",
         "hughcube/static-instance": "*",
+        "hughcube/phpinfo": "*",
         "hughcube/laravel-validation": "*",
         "hughcube/laravel-service-support": "*"
     },
