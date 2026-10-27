@@ -11,7 +11,7 @@ use Throwable;
 class LogsRotateCommand extends Command
 {
     protected $signature = 'devops:logs:rotate
-        {--pattern=* : Filename match (Symfony Finder name), defaults to *.log}
+        {--pattern=* : Filename match (Symfony Finder name), defaults to php-error.log and php-opcache-error.log}
         {--dir=* : Target directory, defaults to storage and configured logs path}
         {--date-format= : Date format suffix for rotated filename (defaults to Y-m-d for full rotation, YmdHis for trim mode)}
         {--keep-empty : Do not skip empty files (skipped by default during full rotation)}
@@ -29,7 +29,7 @@ class LogsRotateCommand extends Command
     {
         $patterns = Collection::wrap($this->option('pattern'))->filter();
         if ($patterns->isEmpty()) {
-            $patterns = Collection::make(['*.log']);
+            $patterns = Collection::make(['php-error.log', 'php-opcache-error.log']);
         }
 
         $dirs = Collection::wrap($this->option('dir'))->filter();
