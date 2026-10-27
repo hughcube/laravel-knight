@@ -10,19 +10,23 @@ use Illuminate\Support\Facades\File;
 class LogsPruneCommand extends Command
 {
     protected $signature = 'devops:logs:prune
-        {--days=14 : Delete files whose mtime is older than this many days (defaults to 14)}
-        {--pattern=* : Filename match (Symfony Finder name), defaults to *.log}
+        {--days=30 : Delete files whose mtime is older than this many days (defaults to 30)}
+        {--pattern=* : Filename match (Symfony Finder name), defaults to standard dated log patterns}
         {--dir=* : Target directory, defaults to storage and configured logs path}';
 
     protected $description = 'Prune files under target directories older than the retention days';
 
     public function handle(): void
     {
-        $days = intval($this->option('days') ?: 14);
+        $days = intval($this->option('days') ?: 30);
 
         $patterns = Collection::wrap($this->option('pattern'))->filter();
         if ($patterns->isEmpty()) {
-            $patterns = Collection::make(['*.log']);
+            $patterns = Collection::make([
+                '/^apache-.*-\d{4}-\d{2}-\d{2}\.log$/',
+                '/^laravel-.*-\d{4}-\d{2}-\d{2}\.log$/',
+                '/^php-.*-\d{4}-\d{2}-\d{2}\.log$/',
+            ]);
         }
 
         $dirs = Collection::wrap($this->option('dir'))->filter();
