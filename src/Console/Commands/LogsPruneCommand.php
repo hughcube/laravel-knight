@@ -11,7 +11,7 @@ class LogsPruneCommand extends Command
 {
     protected $signature = 'devops:logs:prune
         {--days=30 : Delete files whose mtime is older than this many days (defaults to 30)}
-        {--pattern=* : Filename match (Symfony Finder name), defaults to standard dated log patterns}
+        {--pattern=* : Filename match (Symfony Finder name), defaults to *.log}
         {--dir=* : Target directory, defaults to storage and configured logs path}';
 
     protected $description = 'Prune files under target directories older than the retention days';
@@ -22,11 +22,7 @@ class LogsPruneCommand extends Command
 
         $patterns = Collection::wrap($this->option('pattern'))->filter();
         if ($patterns->isEmpty()) {
-            $patterns = Collection::make([
-                '/^apache-.*-\d{4}-\d{2}-\d{2}\.log$/',
-                '/^laravel-.*-\d{4}-\d{2}-\d{2}\.log$/',
-                '/^php-.*-\d{4}-\d{2}-\d{2}\.log$/',
-            ]);
+            $patterns = Collection::make(['*.log']);
         }
 
         $dirs = Collection::wrap($this->option('dir'))->filter();
