@@ -267,6 +267,13 @@ class RotateFileJob extends Job
         } finally {
             fclose($handle);
             fclose($dateHandle);
+
+            $perms = 0644;
+            if (false !== ($filePerms = fileperms($from))) {
+                $perms = ($filePerms & 0666) ?: 0644;
+                @chmod($from, $perms);
+            }
+            @chmod($to, $perms);
         }
     }
 
@@ -448,10 +455,12 @@ class RotateFileJob extends Job
                 ];
             }
 
-            $filePerms = fileperms($file);
-            if (false !== $filePerms) {
-                @chmod($partPath, $filePerms & 0777);
+            $perms = 0644;
+            if (false !== ($filePerms = fileperms($file))) {
+                $perms = ($filePerms & 0666) ?: 0644;
+                @chmod($file, $perms);
             }
+            @chmod($partPath, $perms);
 
             if (! @rename($partPath, $archPath)) {
                 @unlink($partPath);
@@ -463,6 +472,7 @@ class RotateFileJob extends Job
                     'message' => 'failed to rename part archive file to target',
                 ];
             }
+            @chmod($archPath, $perms);
 
             // 4. 原地流式覆写并截断源文件 (低内存占用: 64KB 块流式拷贝)
             $readPos = $cut;
