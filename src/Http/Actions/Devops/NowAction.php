@@ -3,6 +3,7 @@
 namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class NowAction extends Controller
 {
+    use DisableResponseCache;
+
     /**
      * @return Response
      */

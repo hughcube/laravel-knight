@@ -3,6 +3,7 @@
 namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use HughCube\Laravel\Knight\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,6 +23,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ClientInfoAction extends Controller
 {
+    use DisableResponseCache;
+
     /**
      * @return array<string, array<string>>
      */
@@ -78,7 +81,9 @@ class ClientInfoAction extends Controller
             return $this->asSuccess($items);
         }
 
-        return new Response($this->renderHtml($items), 200, ['Content-Type' => 'text/html; charset=utf-8']);
+        return $this->disableResponseCache(
+            new Response($this->renderHtml($items), 200, ['Content-Type' => 'text/html; charset=utf-8'])
+        );
     }
 
     /**

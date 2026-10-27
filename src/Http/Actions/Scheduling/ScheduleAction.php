@@ -4,6 +4,7 @@ namespace HughCube\Laravel\Knight\Http\Actions\Scheduling;
 
 use HughCube\Laravel\Knight\Events\ScheduledTasksExecuted;
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use HughCube\Laravel\Knight\Scheduling\ScheduleRunner;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,8 @@ use Throwable;
  */
 class ScheduleAction extends Controller
 {
+    use DisableResponseCache;
+
     /**
      * @var array|string|null 专属日志通道 (null 时自动探测 'schedule' 或回退默认通道)
      */
