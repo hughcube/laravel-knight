@@ -163,6 +163,11 @@ class RotateFileJob extends Job
             $errorCount = 0;
 
             foreach ($files as $file) {
+                // 跳过历史归档文件，避免重复截断
+                if (preg_match('/-\d{4}(?:[-_]?\d{2}){1,5}$/', $file->getFilenameWithoutExtension())) {
+                    continue;
+                }
+
                 $res = static::trimFile(
                     $file->getRealPath(),
                     $maxBytes,
@@ -201,13 +206,24 @@ class RotateFileJob extends Job
         $dateFormat = $dateFormat ?: 'Y-m-d';
         $rotates = Collection::empty();
         foreach ($files as $file) {
+            $nameWithoutExt = $file->getFilenameWithoutExtension();
+
+            // 归档安全门禁：跳过已经带有标准日期后缀的历史归档文件，避免同天或高频轮转导致无限重复追加日期
+            if (preg_match('/-\d{4}(?:[-_]?\d{2}){1,5}$/', $nameWithoutExt)) {
+                continue;
+            }
+
             $datePath = sprintf(
                 '%s/%s-%s%s',
                 File::dirname($file->getRealPath()),
-                $file->getFilenameWithoutExtension(),
+                $nameWithoutExt,
                 Carbon::now()->format($dateFormat),
                 $file->getExtension() ? sprintf('.%s', $file->getExtension()) : ''
             );
+
+            if ($file->getRealPath() === $datePath) {
+                continue;
+            }
 
             if (0 < $file->getSize() || ! $skipEmpty) {
                 static::rotateFile($file->getRealPath(), $datePath);
