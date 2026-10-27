@@ -81,6 +81,10 @@ trait Action
             }
             $this->dispatchActionProcessedEvent();
 
+            if ($result instanceof Response && $this->isDisableResponseCache()) {
+                $this->disableResponseCache($result);
+            }
+
             return $result;
         });
     }
@@ -226,29 +230,75 @@ trait Action
      */
     protected function asResponse(array $data = [], int $code = 200): Response
     {
-        return new JsonResponse([
+        $response = new JsonResponse([
             'code' => $code,
             'message' => 'success',
             'data' => $data ?: new stdClass(),
         ]);
+
+        if ($this->isDisableResponseCache()) {
+            $this->disableResponseCache($response);
+        }
+
+        return $response;
     }
 
     protected function asSuccess(array $data = [], int $statusCode = 200): Response
     {
-        return new KJsonResponse([
+        $response = new KJsonResponse([
             'Code' => 'Success',
             'Message' => 'Success',
             'Data' => $data ?: new stdClass(),
         ], $statusCode);
+
+        if ($this->isDisableResponseCache()) {
+            $this->disableResponseCache($response);
+        }
+
+        return $response;
     }
 
-    protected function asFailure(string $code = 'Failure', string $message = 'Failure', array $data = [], int $statusCode = 200): Response
-    {
-        return new KJsonResponse([
+    protected function asFailure(
+        string $code = 'Failure',
+        string $message = 'Failure',
+        array $data = [],
+        int $statusCode = 200
+    ): Response {
+        $response = new KJsonResponse([
             'Code' => $code,
             'Message' => $message,
             'Data' => $data ?: new stdClass(),
         ], $statusCode);
+
+        if ($this->isDisableResponseCache()) {
+            $this->disableResponseCache($response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * 是否禁用当前 Action 的响应缓存.
+     */
+    protected function isDisableResponseCache(): bool
+    {
+        return false;
+    }
+
+    /**
+     * 为响应设置强力禁用缓存头.
+     *
+     * @param  Response  $response
+     * @return Response
+     */
+    protected function disableResponseCache(Response $response): Response
+    {
+        $response->headers->set('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        $response->headers->set('Vary', '*');
+
+        return $response;
     }
 
     /**

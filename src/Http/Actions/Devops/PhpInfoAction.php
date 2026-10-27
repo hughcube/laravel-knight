@@ -3,6 +3,7 @@
 namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use Hughcube\PhpInfo\PhpInfo;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,11 +19,15 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PhpInfoAction extends Controller
 {
+    use DisableResponseCache;
+
     /**
      * @return Response
      */
     protected function action(): Response
     {
-        return new Response(PhpInfo::html(), 200, ['Content-Type' => 'text/html; charset=utf-8']);
+        return $this->disableResponseCache(
+            new Response(PhpInfo::html(), 200, ['Content-Type' => 'text/html; charset=utf-8'])
+        );
     }
 }

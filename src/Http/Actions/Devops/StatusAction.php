@@ -3,6 +3,7 @@
 namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -25,6 +26,8 @@ use Throwable;
  */
 class StatusAction extends Controller
 {
+    use DisableResponseCache;
+
     /**
      * @return array<string, array<string>>
      */
@@ -62,7 +65,9 @@ class StatusAction extends Controller
             return $this->asSuccess($data);
         }
 
-        return new Response($this->renderHtml($data), 200, ['Content-Type' => 'text/html; charset=utf-8']);
+        return $this->disableResponseCache(
+            new Response($this->renderHtml($data), 200, ['Content-Type' => 'text/html; charset=utf-8'])
+        );
     }
 
     /**

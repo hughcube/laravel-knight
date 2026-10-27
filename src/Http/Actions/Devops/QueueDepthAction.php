@@ -3,6 +3,7 @@
 namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class QueueDepthAction extends Controller
 {
+    use DisableResponseCache;
+
     /**
      * @return array<string, array<string>>
      */

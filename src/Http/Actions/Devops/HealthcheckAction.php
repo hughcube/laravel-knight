@@ -3,6 +3,7 @@
 namespace HughCube\Laravel\Knight\Http\Actions\Devops;
 
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -19,11 +20,15 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class HealthcheckAction extends Controller
 {
+    use DisableResponseCache;
+
     /**
      * @return Response
      */
     protected function action(): Response
     {
-        return new Response('success', 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+        return $this->disableResponseCache(
+            new Response('success', 200, ['Content-Type' => 'text/plain; charset=utf-8'])
+        );
     }
 }

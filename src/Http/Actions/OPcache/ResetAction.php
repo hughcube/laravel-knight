@@ -5,6 +5,7 @@ namespace HughCube\Laravel\Knight\Http\Actions\OPcache;
 use Exception;
 use HughCube\Laravel\Knight\OPcache\LoadedOPcacheExtension;
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ResetAction extends Controller
 {
     use LoadedOPcacheExtension;
+    use DisableResponseCache;
 
     /**
      * @throws Exception

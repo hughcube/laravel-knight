@@ -6,6 +6,7 @@ use Exception;
 use HughCube\Laravel\Knight\Exceptions\UserException;
 use HughCube\Laravel\Knight\OPcache\LoadedOPcacheExtension;
 use HughCube\Laravel\Knight\Routing\Controller;
+use HughCube\Laravel\Knight\Routing\Traits\DisableResponseCache;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -26,6 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 class StatesAction extends Controller
 {
     use LoadedOPcacheExtension;
+    use DisableResponseCache;
 
     /**
      * @return array<string, array<string>>
@@ -78,7 +80,9 @@ class StatesAction extends Controller
             return $this->asSuccess($data);
         }
 
-        return new Response($this->renderView(dirname(__DIR__, 3).'/OPcache/Views/opcache.php'));
+        return $this->disableResponseCache(
+            new Response($this->renderView(dirname(__DIR__, 3).'/OPcache/Views/opcache.php'))
+        );
     }
 
     protected function renderView(string $file): string
