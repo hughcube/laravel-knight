@@ -1,0 +1,10 @@
+---
+description: Project core standards and rules
+globs: *
+alwaysApply: true
+---
+
+<!-- Cursor Thin Entry: Imports AGENTS.md automatically -->
+@file ./AGENTS.md
+
+You must strictly follow and enforce all architecture standards and rules defined in [AGENTS.md](../../AGENTS.md).
