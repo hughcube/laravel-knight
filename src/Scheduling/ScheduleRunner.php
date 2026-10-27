@@ -527,6 +527,9 @@ class ScheduleRunner
 
         if ($this->container->bound(\Illuminate\Contracts\Console\Kernel::class)) {
             $kernel = $this->container->make(\Illuminate\Contracts\Console\Kernel::class);
+            if (method_exists($kernel, 'bootstrap')) {
+                $kernel->bootstrap();
+            }
             if (method_exists($kernel, 'schedule')) {
                 $reflection = new ReflectionMethod($kernel, 'schedule');
                 if (PHP_VERSION_ID < 80100) {

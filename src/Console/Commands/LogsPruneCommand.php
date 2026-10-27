@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\File;
 class LogsPruneCommand extends Command
 {
     protected $signature = 'devops:logs:prune
-        {--days=14 : Delete files whose mtime is older than this many days}
+        {--days=14 : Delete files whose mtime is older than this many days (defaults to 14)}
         {--pattern=* : Filename match (Symfony Finder name), defaults to *.log}
         {--dir=* : Target directory, defaults to storage and configured logs path}';
 

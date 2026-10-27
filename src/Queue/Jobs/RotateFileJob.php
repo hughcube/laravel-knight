@@ -7,6 +7,7 @@ use HughCube\Laravel\Knight\Queue\Job;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Throwable;
@@ -463,43 +464,52 @@ class RotateFileJob extends Job
                 ];
             }
 
-            // 4. 原地覆写并截断源文件
-            fseek($fp, $cut, SEEK_SET);
-            $keptData = stream_get_contents($fp);
-            if (false === $keptData) {
-                return [
-                    'status' => 'error',
-                    'file' => $file,
-                    'before' => $size,
-                    'after' => $size,
-                    'message' => 'failed to read kept segment from source file',
-                ];
+            // 4. 原地流式覆写并截断源文件 (低内存占用: 64KB 块流式拷贝)
+            $readPos = $cut;
+            $writePos = 0;
+            $chunkSize = 65536;
+
+            while ($readPos < $size) {
+                $toRead = min($chunkSize, $size - $readPos);
+                fseek($fp, $readPos, SEEK_SET);
+                $chunk = fread($fp, $toRead);
+                if (false === $chunk || strlen($chunk) !== $toRead) {
+                    return [
+                        'status' => 'error',
+                        'file' => $file,
+                        'before' => $size,
+                        'after' => $size,
+                        'message' => 'failed to read kept segment from source file',
+                    ];
+                }
+                fseek($fp, $writePos, SEEK_SET);
+                fwrite($fp, $chunk);
+                $readPos += $toRead;
+                $writePos += $toRead;
             }
 
-            fseek($fp, 0, SEEK_SET);
-            fwrite($fp, $keptData);
-
+            // 追写并发新追加内容 (最多 100 轮)
             $rounds = 0;
             while ($rounds < 100) {
                 clearstatcache(true, $file);
                 $curStat = fstat($fp);
                 $curSize = $curStat['size'];
-                $expectedSize = $cut + strlen($keptData);
+                $expectedSize = $cut + $writePos;
                 if ($curSize <= $expectedSize) {
                     break;
                 }
                 fseek($fp, $expectedSize, SEEK_SET);
                 $more = stream_get_contents($fp);
                 if (false !== $more && strlen($more) > 0) {
-                    fseek($fp, strlen($keptData), SEEK_SET);
+                    fseek($fp, $writePos, SEEK_SET);
                     fwrite($fp, $more);
-                    $keptData .= $more;
+                    $writePos += strlen($more);
                 }
                 $rounds++;
             }
 
-            ftruncate($fp, strlen($keptData));
-            $afterSize = strlen($keptData);
+            ftruncate($fp, $writePos);
+            $afterSize = $writePos;
 
             // 5. 归档版本清理
             static::pruneArchives($archDir, $stem, $ext, $keepVersions);
@@ -546,7 +556,7 @@ class RotateFileJob extends Job
             $name = $file->getFilename();
             if (preg_match($pattern, $name)) {
                 $files[] = $file;
-            } elseif (str_ends_with($name, '.part') && Carbon::createFromTimestamp($file->getMTime())->addHours(1)->isPast()) {
+            } elseif (Str::endsWith($name, '.part') && Carbon::createFromTimestamp($file->getMTime())->addHours(1)->isPast()) {
                 @unlink($file->getRealPath());
             }
         }
@@ -583,7 +593,10 @@ class RotateFileJob extends Job
             return (int) $val;
         }
         $val = strtoupper(trim(strval($val)));
-        if (str_ends_with($val, 'B') && strlen($val) > 1 && ! str_ends_with($val, 'KB') && ! str_ends_with($val, 'MB') && ! str_ends_with($val, 'GB') && ! str_ends_with($val, 'TB')) {
+        if (Str::endsWith($val, 'IB')) {
+            $val = substr($val, 0, -2) . 'B';
+        }
+        if (Str::endsWith($val, 'B') && strlen($val) > 1 && ! Str::endsWith($val, ['KB', 'MB', 'GB', 'TB'])) {
             $val = substr($val, 0, -1);
         }
         $units = [
@@ -597,8 +610,9 @@ class RotateFileJob extends Job
             'TB' => 1024 * 1024 * 1024 * 1024,
         ];
         foreach ($units as $unit => $multiplier) {
-            if (str_ends_with($val, $unit)) {
+            if (Str::endsWith($val, $unit)) {
                 $num = floatval(trim(substr($val, 0, -strlen($unit))));
+
                 return (int) ($num * $multiplier);
             }
         }
