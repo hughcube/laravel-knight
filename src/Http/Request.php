@@ -153,7 +153,7 @@ class Request extends HttpRequest
      */
     public function isWeChat(): bool
     {
-        return false !== strripos($this->userAgent(), 'MicroMessenger');
+        return false !== strripos(strval($this->userAgent()), 'MicroMessenger');
     }
 
     /**
@@ -161,7 +161,7 @@ class Request extends HttpRequest
      */
     public function isWeChatMiniProgram(): bool
     {
-        return $this->isWeChat() && false !== strripos($this->userAgent(), 'miniProgram');
+        return $this->isWeChat() && false !== strripos(strval($this->userAgent()), 'miniProgram');
     }
 
     /**
@@ -169,7 +169,7 @@ class Request extends HttpRequest
      */
     public function isPostmen(): bool
     {
-        return 0 === strripos($this->userAgent(), 'PostmanRuntime');
+        return 0 === strripos(strval($this->userAgent()), 'PostmanRuntime');
     }
 
     /**

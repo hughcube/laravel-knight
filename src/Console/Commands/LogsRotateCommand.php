@@ -13,12 +13,12 @@ class LogsRotateCommand extends Command
     protected $signature = 'devops:logs:rotate
         {--pattern=* : Filename match (Symfony Finder name), defaults to *.log}
         {--dir=* : Target directory, defaults to storage and configured logs path}
-        {--date-format= : Date format suffix for rotated filename}
-        {--keep-empty : Do not skip empty files (for full rotation)}
-        {--max-size= : Trigger rotate only when file size exceeds this (e.g. 10M). If omitted, full file rotation is performed}
+        {--date-format= : Date format suffix for rotated filename (defaults to Y-m-d for full rotation, YmdHis for trim mode)}
+        {--keep-empty : Do not skip empty files (skipped by default during full rotation)}
+        {--max-size= : Trigger rotate only when file size exceeds this (e.g. 10M, 500MB). If omitted, full file rotation is performed}
         {--keep-size= : Size to retain in live file after trim (e.g. 5M, defaults to half of max-size)}
-        {--keep-versions=30 : Number of archive files to retain (default: 30)}
-        {--archive-dir= : Custom directory for archives}';
+        {--keep-versions=30 : Number of archive files to retain in trim mode (defaults to 30)}
+        {--archive-dir= : Custom directory for archives, defaults to the same directory as the target log file}';
 
     protected $description = 'Rotate or trim log files under target directories';
 

@@ -107,30 +107,28 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     public function boot()
     {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                Config::class,
-                DatabaseCheckSequencesCommand::class,
-                DatabaseRandomizeSequences::class,
-                DatabaseResetAutoIncrementStartId::class,
-                Environment::class,
-                PhpIniFile::class,
-                KRTest::class,
-                ClearModelCache::class,
-                GenerateMixinIdeHelperCommand::class,
-                MigrateRerun::class,
-                LogsPruneCommand::class,
-                LogsRotateCommand::class,
-                WalEventDispatchCommand::class,
-                WalDropSlotCommand::class,
-                WalMonitorSlotsCommand::class,
-                DaemonCommand::class,
-                JobPayloadCommand::class,
-                OPcacheCompileFilesCommand::class,
-                OPcacheClearCliCacheCommand::class,
-                OPcacheCreatePreloadCommand::class,
-            ]);
-        }
+        $this->commands([
+            Config::class,
+            DatabaseCheckSequencesCommand::class,
+            DatabaseRandomizeSequences::class,
+            DatabaseResetAutoIncrementStartId::class,
+            Environment::class,
+            PhpIniFile::class,
+            KRTest::class,
+            ClearModelCache::class,
+            GenerateMixinIdeHelperCommand::class,
+            MigrateRerun::class,
+            LogsPruneCommand::class,
+            LogsRotateCommand::class,
+            WalEventDispatchCommand::class,
+            WalDropSlotCommand::class,
+            WalMonitorSlotsCommand::class,
+            DaemonCommand::class,
+            JobPayloadCommand::class,
+            OPcacheCompileFilesCommand::class,
+            OPcacheClearCliCacheCommand::class,
+            OPcacheCreatePreloadCommand::class,
+        ]);
 
         $this->configureAuthUserProvider();
 
