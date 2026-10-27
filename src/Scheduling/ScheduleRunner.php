@@ -513,18 +513,10 @@ class ScheduleRunner
     }
 
     /**
-     * 在非标准 CLI 模式下主动加载 routes/console.php 或 Kernel::schedule 定义的任务.
+     * 在非标准 CLI (如 Web / HTTP Schedule) 模式下主动引导控制台内核，交由框架自主装配调度任务与注册命令.
      */
     protected function loadEventsIntoSchedule(Schedule $schedule): void
     {
-        $consoleRoutes = function_exists('base_path')
-            ? base_path('routes/console.php')
-            : (method_exists($this->container, 'basePath') ? $this->container->basePath('routes/console.php') : null);
-
-        if (! empty($consoleRoutes) && file_exists($consoleRoutes)) {
-            require $consoleRoutes;
-        }
-
         if ($this->container->bound(\Illuminate\Contracts\Console\Kernel::class)) {
             $kernel = $this->container->make(\Illuminate\Contracts\Console\Kernel::class);
             if (method_exists($kernel, 'bootstrap')) {
