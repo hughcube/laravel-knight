@@ -15,6 +15,7 @@
         <ini name="date.timezone" value="UTC" />
         <!-- <ini name="intl.default_locale" value="en" /> -->
         <ini name="memory_limit" value="2048M" />
+        <env name="LOG_DEPRECATIONS_WHILE_TESTING" value="true" />
         <!--
         <env name="DB_CONNECTION" value="" />
         <env name="TEST_PGSQL_HOST" value="127.0.0.1" />

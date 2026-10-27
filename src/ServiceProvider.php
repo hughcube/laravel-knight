@@ -20,6 +20,7 @@ use HughCube\Laravel\Knight\Console\Commands\Environment;
 use HughCube\Laravel\Knight\Console\Commands\GenerateMixinIdeHelperCommand;
 use HughCube\Laravel\Knight\Console\Commands\KRTest;
 use HughCube\Laravel\Knight\Console\Commands\LogsPruneCommand;
+use HughCube\Laravel\Knight\Console\Commands\LogsRotateCommand;
 use HughCube\Laravel\Knight\Console\Commands\MigrateRerun;
 use HughCube\Laravel\Knight\Console\Commands\PhpIniFile;
 use HughCube\Laravel\Knight\Console\Commands\WalDropSlotCommand;
@@ -119,6 +120,7 @@ class ServiceProvider extends IlluminateServiceProvider
                 GenerateMixinIdeHelperCommand::class,
                 MigrateRerun::class,
                 LogsPruneCommand::class,
+                LogsRotateCommand::class,
                 WalEventDispatchCommand::class,
                 WalDropSlotCommand::class,
                 WalMonitorSlotsCommand::class,

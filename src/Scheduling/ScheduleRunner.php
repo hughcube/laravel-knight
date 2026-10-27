@@ -529,7 +529,9 @@ class ScheduleRunner
             $kernel = $this->container->make(\Illuminate\Contracts\Console\Kernel::class);
             if (method_exists($kernel, 'schedule')) {
                 $reflection = new ReflectionMethod($kernel, 'schedule');
-                $reflection->setAccessible(true);
+                if (PHP_VERSION_ID < 80100) {
+                    $reflection->setAccessible(true);
+                }
                 $reflection->invoke($kernel, $schedule);
             }
         }
@@ -542,7 +544,9 @@ class ScheduleRunner
     {
         try {
             $property = new ReflectionProperty($schedule, 'mutexCache');
-            $property->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $property->setAccessible(true);
+            }
             $property->setValue($schedule, []);
         } catch (Throwable $e) {
             // ignore

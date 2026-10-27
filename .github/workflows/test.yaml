@@ -69,7 +69,7 @@ jobs:
           extensions: mbstring, opcache, fileinfo, pdo, pdo_mysql, pdo_pgsql, redis, pdo_sqlite, sqlite3${{ runner.os != 'Windows' && ', swoole' || '' }} #optional, setup extensions
           coverage: none
           tools: composer:v2
-          ini-values: post_max_size=256M, short_open_tag=On, opcache.enable_cli=1, error_reporting=22527 #optional, setup php.ini configuration
+          ini-values: post_max_size=256M, short_open_tag=On, opcache.enable_cli=1, error_reporting=-1 #optional, setup php.ini configuration
 
       - name: Start local MySQL service
         if: runner.os == 'Linux'

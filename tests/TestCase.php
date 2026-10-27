@@ -43,6 +43,24 @@ class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
+        set_error_handler(function ($errno, $errstr, $errfile = '', $errline = 0) {
+            if ($errno & (E_DEPRECATED | E_USER_DEPRECATED)) {
+                $srcDir = realpath(__DIR__.'/../src');
+                $realFile = realpath($errfile) ?: $errfile;
+                if ($srcDir !== false && strpos($realFile, $srcDir) === 0) {
+                    throw new \ErrorException(
+                        sprintf('[Package Deprecation Error] %s in %s:%d', $errstr, $errfile, $errline),
+                        0,
+                        $errno,
+                        $errfile,
+                        $errline
+                    );
+                }
+            }
+
+            return false;
+        });
+
         // Force resolve log manager to ensure it's properly initialized
         $this->app->make('log');
 
@@ -52,6 +70,13 @@ class TestCase extends OrchestraTestCase
         }
 
         KnightPostgresGrammar::applyToExistingConnections();
+    }
+
+    protected function tearDown(): void
+    {
+        restore_error_handler();
+
+        parent::tearDown();
     }
 
     /**

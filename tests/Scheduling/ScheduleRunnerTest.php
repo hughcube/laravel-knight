@@ -485,4 +485,41 @@ class ScheduleRunnerTest extends TestCase
 
         $event->mutex->forget($event);
     }
+
+    /**
+     * 测试无任务时通过 Kernel::schedule 自动加载事件.
+     */
+    public function testLoadEventsIntoScheduleFromKernel()
+    {
+        /** @var Schedule $freshSchedule */
+        $freshSchedule = $this->app->make(Schedule::class);
+
+        $customKernel = new class implements \Illuminate\Contracts\Console\Kernel {
+            public $scheduled = false;
+
+            public function bootstrap() {}
+            public function handle($input, $output = null) { return 0; }
+            public function call($command, array $parameters = [], $output = null) { return 0; }
+            public function queue($command, array $parameters = []) { return null; }
+            public function all() { return []; }
+            public function output() { return ''; }
+            public function terminate($input, $status) {}
+
+            protected function schedule(Schedule $schedule)
+            {
+                $this->scheduled = true;
+                $schedule->call(function () {
+                    return true;
+                })->everyMinute();
+            }
+        };
+
+        $this->app->instance(\Illuminate\Contracts\Console\Kernel::class, $customKernel);
+
+        $runner = new ScheduleRunner($this->app);
+        self::callMethod($runner, 'loadEventsIntoSchedule', [$freshSchedule]);
+
+        $this->assertTrue($customKernel->scheduled, 'Kernel::schedule 应当被正确调用');
+        $this->assertCount(1, $freshSchedule->events(), 'Kernel 定义的任务应当已加载到 Schedule');
+    }
 }

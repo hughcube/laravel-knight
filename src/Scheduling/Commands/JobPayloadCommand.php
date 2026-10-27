@@ -53,7 +53,9 @@ class JobPayloadCommand extends Command
 
         $reflection = new ReflectionClass(get_class($queue));
         $method = $reflection->getMethod('createPayload');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
         $payload = $method->invokeArgs($queue, [$job, $queueName]);
 
         $this->info(sprintf('job %s payload:', get_class($job)));
