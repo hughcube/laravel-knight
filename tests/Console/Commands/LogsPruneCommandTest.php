@@ -34,4 +34,31 @@ class LogsPruneCommandTest extends TestCase
             File::deleteDirectory($tempDir);
         }
     }
+
+    public function testHandleDefaultPattern()
+    {
+        $tempDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'knight_prune_test_' . uniqid();
+        File::ensureDirectoryExists($tempDir);
+
+        $oldFile = $tempDir . DIRECTORY_SEPARATOR . 'old.log';
+        $oldTxtFile = $tempDir . DIRECTORY_SEPARATOR . 'old.txt';
+
+        File::put($oldFile, 'old content');
+        File::put($oldTxtFile, 'old txt content');
+
+        touch($oldFile, time() - (40 * 86400));
+        touch($oldTxtFile, time() - (40 * 86400));
+
+        try {
+            $this->artisan('devops:logs:prune', [
+                '--dir' => [$tempDir],
+                '--days' => 30,
+            ])->assertSuccessful();
+
+            $this->assertFileDoesNotExist($oldFile);
+            $this->assertFileExists($oldTxtFile);
+        } finally {
+            File::deleteDirectory($tempDir);
+        }
+    }
 }
