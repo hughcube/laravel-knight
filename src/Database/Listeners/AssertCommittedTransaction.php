@@ -29,6 +29,10 @@ class AssertCommittedTransaction
         foreach ($this->getConnections() as $connection) {
             /** @phpstan-ignore-next-line */
             if (method_exists($connection, 'transactionLevel') && $connection->transactionLevel() > 0) {
+                while ($connection->transactionLevel() > 0) {
+                    $connection->rollBack();
+                }
+
                 throw new NotCloseTransactionException(
                     $connection,
                     sprintf("Connection '%s' transaction is not closed!", $connection->getName())
