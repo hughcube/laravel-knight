@@ -1,11 +1,11 @@
 <h1><p align="center"> Laravel Knight </p></h1>
 
 <p align="center">
-    <a href="https://github.com/hughcube-php/laravel-knight/actions?query=workflow%3ATest">
-        <img src="https://github.com/hughcube-php/laravel-knight/workflows/Test/badge.svg" alt="Test Actions status">
+    <a href="https://github.com/hughcube/laravel-knight/actions/workflows/test.yaml">
+        <img src="https://github.com/hughcube/laravel-knight/actions/workflows/test.yaml/badge.svg" alt="Test Actions status">
     </a>
-    <a href="https://github.com/hughcube-php/laravel-knight/actions?query=workflow%3ALint">
-        <img src="https://github.com/hughcube-php/laravel-knight/workflows/Lint/badge.svg" alt="Lint Actions status">
+    <a href="https://github.com/hughcube/laravel-knight/actions/workflows/lint.yaml">
+        <img src="https://github.com/hughcube/laravel-knight/actions/workflows/lint.yaml/badge.svg" alt="Lint Actions status">
     </a>
     <a href="https://styleci.io/repos/373508253">
         <img src="https://github.styleci.io/repos/373508253/shield?branch=master" alt="StyleCI">
@@ -19,8 +19,8 @@
     <a href="https://packagist.org/packages/hughcube/laravel-knight">
         <img src="https://img.shields.io/packagist/php-v/hughcube/laravel-knight.svg?style=flat-square" alt="PHP Version Require">
     </a>
-    <a href="https://github.com/hughcube-php/laravel-knight/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/hughcube-php/laravel-knight.svg?style=flat-square" alt="License">
+    <a href="https://github.com/hughcube/laravel-knight/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/hughcube/laravel-knight.svg?style=flat-square" alt="License">
     </a>
 </p>
 
@@ -251,8 +251,8 @@ return [
 
 You can contribute in one of three ways:
 
-1. File bug reports using the [issue tracker](https://github.com/hughcube-php/laravel-knight/issues).
-2. Answer questions or fix bugs on the [issue tracker](https://github.com/hughcube-php/laravel-knight/issues).
+1. File bug reports using the [issue tracker](https://github.com/hughcube/laravel-knight/issues).
+2. Answer questions or fix bugs on the [issue tracker](https://github.com/hughcube/laravel-knight/issues).
 3. Contribute new features or update the wiki.
 
 _The code contribution process is not very formal. You just need to make sure that you follow the PSR-0, PSR-1, and PSR-2 coding guidelines. Any new code contributions must be accompanied by unit tests where applicable._
